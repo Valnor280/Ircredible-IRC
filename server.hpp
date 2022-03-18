@@ -11,6 +11,9 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 #include <exception>
+#include <set>
+#include <fcntl.h>
+#include <signal.h>
 
 class server
 {
@@ -30,9 +33,12 @@ class server
         };
 		int _sockfd;
 		char * _pswd;
-		sockaddr_in _sockaddr;
+		std::set<int> _open_sock;
+		//sockaddr_in _sockaddr;
 		int _connection;
 		std::string _welcome_msg;
 		std::string _hostname;
+		fd_set _sock_client;
+		fd_set _sock_ready;
 
 };
