@@ -74,11 +74,12 @@ server::server(char * port_number, char * pswd) : _pswd(pswd)
 void server::loop()
 {
 	int numsock;
+	
 	_sock_ready = _sock_client;
 	int max_fd = *(_open_sock.rbegin());
 	timeval time;
 
-	time.tv_sec = 10;
+	time.tv_sec = 86400;
 	time.tv_usec= 0;
 	while(true)
 	{
@@ -97,25 +98,27 @@ void server::loop()
 		else
 		{
 			int                                             new_client_socket;
-			struct addrinfo                                 new_client_address;
+			sockaddr_storage                                 new_client_address;
+			socklen_t	len = sizeof(new_client_address);
 
 			if (FD_ISSET(_sockfd, &_sock_ready))
 			{
 				numsock--;
-
-				if ((new_client_socket = accept(_sockfd, new_client_address.ai_addr, &new_client_address.ai_addrlen)) >= 0)
+				std::cout << _sockfd << std::endl;
+				if ((new_client_socket = accept(_sockfd, (sockaddr *) &new_client_address, &len)) >= 0)
 				{
-					int optval = 1;
+					/*int optval = 1;
 					if (setsockopt(_sockfd, SOL_SOCKET, 0, &optval, sizeof(optval)) != 0)
 					{
+						std::cout << "close" << std::endl;
 						close(new_client_socket);
 					}
-					else
+					else*/
 					{
-						/*char buff[100];
+						char buff[100];
 						//fcntl(new_client_socket, F_SETFL, O_NONBLOCK);
 						recv(new_client_socket, buff, 100, 0);
-						std::cout << buff << std::endl;*/
+						std::cout << buff << std::endl;
 						FD_SET(new_client_socket, &_sock_client);
 						//_unnamed_users.insert(std::make_pair(new_client_socket, pending_socket()));
 						_open_sock.insert(new_client_socket);
@@ -125,6 +128,7 @@ void server::loop()
 				else
 				{
 					std::cerr << "Accept fail: " << strerror(errno) << "\n";
+					
 				}
 			}
 		}
