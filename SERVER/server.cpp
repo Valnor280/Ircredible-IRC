@@ -1,4 +1,5 @@
 #include "server.hpp"
+#include <set>
 
 server::server(char * port_number, char * pswd) : _pswd(pswd)
 {
@@ -74,6 +75,7 @@ server::server(char * port_number, char * pswd) : _pswd(pswd)
 void server::loop()
 {
 	int numsock;
+	int retbuff = 0;
 	int t;
 	int max_fd = *(_open_sock.rbegin());
 	
@@ -82,25 +84,40 @@ void server::loop()
 		_sock_ready = _sock_client;
 		timeval time;
 
-		time.tv_sec = 86400;
-		time.tv_usec= 0;;
+		time.tv_sec = 0;
+		time.tv_usec= 50;
 		numsock = select(max_fd + 1, &_sock_ready, NULL, NULL, &time);
 		if(numsock == -1)
 		{
 			std::cout << "error select" << std::endl;
 			break;
 		}
-		else if(numsock == 0)
+		/*else if(numsock == 0)
 		{
 			std::cout << "time out : " << time.tv_sec << " sec" << std::endl;
-			break;
-		}
+		}*/
 		else
 		{
 			t = accept_connect(numsock);
 			if(t != 0)
-				user_read(numsock, t);
-			std::cout << "ddd";
+			 	user_read(numsock, t);
+		}
+		for(std::set<int>::iterator itr = _open_sock.begin(); itr != _open_sock.end(); itr++)
+		{
+			if ( *itr != _sockfd && FD_ISSET(*itr, &_sock_client))
+			{
+				//		std::cout << "before recv" << std::endl;
+				if ((retbuff = recv(*itr, _buffer, 512, MSG_DONTWAIT)) > 0)
+				{
+					_buffer[retbuff] = 0;
+					std::cout << _buffer << std::endl;
+					for (int k = 0; k < FD_SETSIZE; ++k)
+						if (k != *itr && FD_ISSET(k, &_sock_client))
+						send(k, _buffer, retbuff, 0);
+				}
+				//	std::cout << "after recv" << std::endl;
+				//FD_CLR(*itr, &_sock_client);
+			}
 		}
 	}
 }

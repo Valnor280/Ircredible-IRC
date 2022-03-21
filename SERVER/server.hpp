@@ -16,6 +16,8 @@
 #include <fcntl.h>
 #include <signal.h>
 
+//#define ERR_NEEDMOREPARAMS(NICK, CMD) ':' + _hostname + " 461 " + NICK + " " + CMD + " :Not enough parameters\r\n"
+
 class server
 {
 	public:
