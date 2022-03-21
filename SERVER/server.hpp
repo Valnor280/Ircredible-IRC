@@ -29,9 +29,10 @@ class server
 		void user_read(int &sock_ready, int new_sock);
 		int accept_connect(int numsock);
 	private:
-	    struct ConstructorException : std::exception
+	    struct ConstructorException : public std::exception
         {
-            const char * what() 
+			using std::exception::what;
+            virtual const char * what() 
             {
                 return "Constructor error\n";
             }

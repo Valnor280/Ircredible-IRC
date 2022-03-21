@@ -2,7 +2,7 @@
 
 #include <vector>
 #include <string>
-#include "../USER/user.hpp"
+#include "USER/user.hpp"
 
 class channel
 {

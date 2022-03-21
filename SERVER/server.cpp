@@ -1,4 +1,4 @@
-#include "server.hpp"
+#include "SERVER/server.hpp"
 #include <set>
 
 server::server(char * port_number, char * pswd) : _pswd(pswd)

@@ -1,6 +1,6 @@
 // channel class
 
-#include "./channel.hpp"
+#include "CHANNEL/channel.hpp"
 
 channel::channel( const user creator)
 {
