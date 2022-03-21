@@ -2,6 +2,7 @@
 
 server::server(char * port_number, char * pswd) : _pswd(pswd)
 {
+	int opt = 1;
 	FD_ZERO(&_sock_client);
 	addrinfo hints, *res, *p; // res = potential adress p = adress iterator;
 	memset(&hints, 0, sizeof(hints));
@@ -26,6 +27,12 @@ server::server(char * port_number, char * pswd) : _pswd(pswd)
 		_sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
 		if (_sockfd == -1)
 		{
+			std::cout << "Failed to create socket." << std::endl;
+			continue;
+		}
+
+		if (setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR , &opt, sizeof(opt)) == -1)
+        {
 			std::cout << "Failed to create socket." << std::endl;
 			continue;
 		}
@@ -74,16 +81,31 @@ server::server(char * port_number, char * pswd) : _pswd(pswd)
 void server::loop()
 {
 	int numsock;
+	int retbuff;
 	
 	_sock_ready = _sock_client;
 	int max_fd = *(_open_sock.rbegin());
 	timeval time;
 
+	fd_set available_read	= { 0 };
+    fd_set available_write	= { 0 };
+	fd_set active_read		= { 0 };
+    fd_set active_write		= { 0 };
+	
 	time.tv_sec = 86400;
 	time.tv_usec= 0;
+	char buff[100];
+
+	FD_SET(_sockfd , &active_read);
+
 	while(true)
 	{
-		numsock = select(max_fd + 1, &_sock_ready, NULL, NULL, &time);
+		available_read = active_read;
+		available_write = active_write;
+
+		// std::cout << "before select" << std::endl;
+		numsock = select(FD_SETSIZE, &available_read, &available_write, NULL, &time);
+		// std::cout << "after select" << std::endl;
 		
 		if(numsock == -1)
 		{
@@ -101,36 +123,45 @@ void server::loop()
 			sockaddr_storage                                 new_client_address;
 			socklen_t	len = sizeof(new_client_address);
 
-			if (FD_ISSET(_sockfd, &_sock_ready))
+			if (FD_ISSET(_sockfd, &available_read)) 
 			{
 				numsock--;
 				std::cout << _sockfd << std::endl;
 				if ((new_client_socket = accept(_sockfd, (sockaddr *) &new_client_address, &len)) >= 0)
 				{
-					/*int optval = 1;
-					if (setsockopt(_sockfd, SOL_SOCKET, 0, &optval, sizeof(optval)) != 0)
-					{
-						std::cout << "close" << std::endl;
-						close(new_client_socket);
-					}
-					else*/
-					{
-						char buff[100];
-						//fcntl(new_client_socket, F_SETFL, O_NONBLOCK);
-						recv(new_client_socket, buff, 100, 0);
-						std::cout << buff << std::endl;
-						FD_SET(new_client_socket, &_sock_client);
-						//_unnamed_users.insert(std::make_pair(new_client_socket, pending_socket()));
-						_open_sock.insert(new_client_socket);
-						std::cout << "Accepted conection\n";
-					}
+					recv(new_client_socket, buff, 100, 0);
+					std::cout << buff << std::endl;
+					FD_SET(new_client_socket, &active_read);
+					_open_sock.insert(new_client_socket);
+					std::cout << "Accepted conection\n";
 				}
 				else
 				{
 					std::cerr << "Accept fail: " << strerror(errno) << "\n";
-					
 				}
+			}	
+
+			for (int i = 0; i < FD_SETSIZE; ++i)
+			{
+				if ( i != _sockfd && FD_ISSET(i, &available_read))
+				{
+				//		std::cout << "before recv" << std::endl;
+						if ((retbuff = recv(i, buff, 100, 0)) > 0)
+						{
+							buff[retbuff] = 0;
+							std::cout << buff << std::endl;
+							for (int k = 0; k < FD_SETSIZE; ++k)
+								if (k != i && FD_ISSET(k, &active_read))
+									send(k, buff, retbuff, 0);
+						}
+					//	std::cout << "after recv" << std::endl;
+						FD_CLR(i, &available_read);
+				}
+			//	std::cout << "i = " << i << std::endl;
 			}
+			//std::cout << "end for" << std::endl;
+
+
 		}
 	}
 }

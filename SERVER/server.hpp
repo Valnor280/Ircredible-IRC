@@ -18,7 +18,7 @@
 class server
 {
 	public:
-		server(char *port_number, char * pswd); // constructor should start evrything until listening
+		server(char *port_number, char * pswd); // constructor should start everything until listening
 		~server();
 	
 		void loop();
