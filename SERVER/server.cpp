@@ -1,4 +1,5 @@
 #include "server.hpp"
+#include <set>
 
 server::server(char * port_number, char * pswd) : _pswd(pswd)
 {
@@ -74,62 +75,48 @@ server::server(char * port_number, char * pswd) : _pswd(pswd)
 void server::loop()
 {
 	int numsock;
-	
-	_sock_ready = _sock_client;
+	int retbuff = 0;
+	int t;
 	int max_fd = *(_open_sock.rbegin());
-	timeval time;
-
-	time.tv_sec = 86400;
-	time.tv_usec= 0;
+	
 	while(true)
 	{
+		_sock_ready = _sock_client;
+		timeval time;
+
+		time.tv_sec = 0;
+		time.tv_usec= 50;
 		numsock = select(max_fd + 1, &_sock_ready, NULL, NULL, &time);
-		
 		if(numsock == -1)
 		{
 			std::cout << "error select" << std::endl;
 			break;
 		}
-		else if(numsock == 0)
+		/*else if(numsock == 0)
 		{
 			std::cout << "time out : " << time.tv_sec << " sec" << std::endl;
-			break;
-		}
+		}*/
 		else
 		{
-			int                                             new_client_socket;
-			sockaddr_storage                                 new_client_address;
-			socklen_t	len = sizeof(new_client_address);
-
-			if (FD_ISSET(_sockfd, &_sock_ready))
+			t = accept_connect(numsock);
+			if(t != 0)
+			 	user_read(numsock, t);
+		}
+		for(std::set<int>::iterator itr = _open_sock.begin(); itr != _open_sock.end(); itr++)
+		{
+			if ( *itr != _sockfd && FD_ISSET(*itr, &_sock_client))
 			{
-				numsock--;
-				std::cout << _sockfd << std::endl;
-				if ((new_client_socket = accept(_sockfd, (sockaddr *) &new_client_address, &len)) >= 0)
+				//		std::cout << "before recv" << std::endl;
+				if ((retbuff = recv(*itr, _buffer, 512, MSG_DONTWAIT)) > 0)
 				{
-					/*int optval = 1;
-					if (setsockopt(_sockfd, SOL_SOCKET, 0, &optval, sizeof(optval)) != 0)
-					{
-						std::cout << "close" << std::endl;
-						close(new_client_socket);
-					}
-					else*/
-					{
-						char buff[100];
-						//fcntl(new_client_socket, F_SETFL, O_NONBLOCK);
-						recv(new_client_socket, buff, 100, 0);
-						std::cout << buff << std::endl;
-						FD_SET(new_client_socket, &_sock_client);
-						//_unnamed_users.insert(std::make_pair(new_client_socket, pending_socket()));
-						_open_sock.insert(new_client_socket);
-						std::cout << "Accepted conection\n";
-					}
+					_buffer[retbuff] = 0;
+					std::cout << _buffer << std::endl;
+					for (int k = 0; k < FD_SETSIZE; ++k)
+						if (k != *itr && FD_ISSET(k, &_sock_client))
+						send(k, _buffer, retbuff, 0);
 				}
-				else
-				{
-					std::cerr << "Accept fail: " << strerror(errno) << "\n";
-					
-				}
+				//	std::cout << "after recv" << std::endl;
+				//FD_CLR(*itr, &_sock_client);
 			}
 		}
 	}
