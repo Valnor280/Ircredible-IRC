@@ -12,25 +12,43 @@
 #include <arpa/inet.h>
 #include <exception>
 #include <set>
+#include <map>
 #include <fcntl.h>
 #include <signal.h>
+
+//#define ERR_NEEDMOREPARAMS(NICK, CMD) ':' + _hostname + " 461 " + NICK + " " + CMD + " :Not enough parameters\r\n"
 
 class server
 {
 	public:
-		server(char *port_number, char * pswd); // constructor should start everything until listening
+		server(char *port_number, char * pswd); // constructor should start evrything until listening
 		~server();
 	
 		void loop();
-		//need a loop fcnt with select and acces;
+
+		void user_read(int &sock_ready, int new_sock);
+		int accept_connect(int numsock);
 	private:
-	    struct ConstructorException : std::exception
+	    struct ConstructorException : public std::exception
         {
-            const char * what()
+			using std::exception::what;
+            virtual const char * what() 
             {
                 return "Constructor error\n";
             }
         };
+		/*struct pending_socket
+        {
+        	std::string     nickname;
+            std::string     username;
+            bool            pass_check;
+            pending_socket()
+            : nickname(std::string())
+            , username(std::string())
+            , pass_check(false)
+            {
+            }
+        };*/
 		int _sockfd;
 		char * _pswd;
 		std::set<int> _open_sock;
@@ -38,6 +56,7 @@ class server
 		int _connection;
 		std::string _welcome_msg;
 		std::string _hostname;
+		char _buffer[512 + 1];
 		fd_set _sock_client;
 		fd_set _sock_ready;
 
