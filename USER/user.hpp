@@ -6,26 +6,26 @@
 class user
 {
 	private:
-		string		_nick; // nickname used for identification by server
-		string		_username; // username used when displaying messages
-		string		_real_name; // full name of the client using the server
-		string		_mode;	// gives level of commands or privileges accessible to the user
+		std::string		_nick; // nickname used for identification by server
+		std::string		_username; // username used when displaying messages
+		std::string		_real_name; // full name of the client using the server
+		std::string		_mode;	// gives level of commands or privileges accessible to the user
 	
 	public:
 		user();
 		~user();
 
 		// GETTERS
-		string		get_nick() const;
-		string		get_username() const;
-		string		get_real_name() const;
-		int			get_mode() const;
+		std::string		get_nick() const;
+		std::string		get_username() const;
+		std::string		get_real_name() const;
+		std::string		get_mode() const;
 
 		//SETTERS
-		bool		set_nick( string new_nick );
-		bool		set_username( string new_username );
-		bool		set_real_name( string new_real_name );
-		void		set_mode( int new_access_level );
+		bool		set_nick( std::string new_nick );
+		bool		set_username( std::string new_username );
+		bool		set_real_name( std::string new_real_name );
+		void		set_mode( std::string new_access_level );
 
 		// UTILS
 		void		print_user() const;
