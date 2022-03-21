@@ -15,6 +15,10 @@
 #include <map>
 #include <fcntl.h>
 #include <signal.h>
+#include <map>
+
+#include "USER/user.hpp"
+
 
 //#define ERR_NEEDMOREPARAMS(NICK, CMD) ':' + _hostname + " 461 " + NICK + " " + CMD + " :Not enough parameters\r\n"
 
@@ -59,5 +63,7 @@ class server
 		char _buffer[512 + 1];
 		fd_set _sock_client;
 		fd_set _sock_ready;
+
+		std::map<int, user> _user_map;
 
 };

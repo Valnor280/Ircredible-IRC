@@ -13,6 +13,7 @@ class user
 	
 	public:
 		user();
+		user(std::string username);//username constructor
 		~user();
 
 		// GETTERS

@@ -12,9 +12,13 @@ void server::user_read(int &num_sock_ready, int new_sock)
 			std::cout << new_sock << std::endl;
 			FD_CLR(new_sock, &_sock_ready);
             --num_sock_ready;
+			
+			send(new_sock, "Enter Username :", 16, 0);
 			memset(_buffer, 0, 512 + 1);
 			ret = recv(new_sock, _buffer, 512, MSG_PEEK);
 			std::cout << "socket n'" << new_sock << ". bytes received: " << ret << "\n";
+		
+		
 			if (ret == -1)
 			{
 				if (errno == EAGAIN)
@@ -32,6 +36,8 @@ void server::user_read(int &num_sock_ready, int new_sock)
             	FD_CLR(new_sock, &_sock_client);
 				break;
 			}
+
+
 		}
 	}
 }

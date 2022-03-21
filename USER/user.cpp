@@ -7,6 +7,11 @@ user::user(): _nick(""), _username(""), _real_name(""), _mode("")
 	// nothing here
 }
 
+user::user(std::string username): _nick(""), _username(username), _real_name(""), _mode("")
+{
+	// nothing here
+}
+
 user::~user()
 {
 	// nothing here

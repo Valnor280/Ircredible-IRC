@@ -78,6 +78,7 @@ void server::loop()
 	int retbuff = 0;
 	int t;
 	int max_fd = *(_open_sock.rbegin());
+	std::string str_buff;
 	
 	while(true)
 	{
@@ -102,8 +103,9 @@ void server::loop()
 			//if(t != 0)
 			 	//user_read(numsock, t);
 		}
-		for(std::set<int>::iterator itr = _open_sock.begin(); itr != _open_sock.end() || _open_sock.empty() == true; itr++)
+		for(std::set<int>::iterator itr = _open_sock.begin(); itr != _open_sock.end() || _open_sock.empty() == true; ++itr)
 		{
+			
 			if ( *itr != _sockfd && FD_ISSET(*itr, &_sock_client))
 			{
 				//		std::cout << "before recv" << std::endl;
@@ -111,17 +113,53 @@ void server::loop()
 				{
 					_buffer[retbuff] = 0;
 					std::cout << "msg : " << _buffer << "socket :" << *itr << std::endl;
-					/*for (int k = 0; k < FD_SETSIZE; ++k)
+					for (int k = 0; k < FD_SETSIZE; ++k)
 						if (k != *itr && FD_ISSET(k, &_sock_client))
-						send(k, _buffer, retbuff, 0);*/
+						{
+							
+							if (_user_map[*itr].get_username().empty())
+							{
+								str_buff += _buffer;
+								str_buff.erase(str_buff.end() - 1);
+								_user_map[*itr].set_username(str_buff);
+							}
+							else if (_user_map[*itr].get_mode().empty())
+							{
+								str_buff += _user_map[*itr].get_username();
+								str_buff += " joined the chat !\n";
+
+								send(k, str_buff.c_str(), str_buff.size() , 0);
+								
+								_user_map[*itr].set_mode("joined");//c'est temporaire hein...
+							}
+							else
+							{							
+								str_buff += "[";
+								str_buff += _user_map[*itr].get_username();
+								str_buff += "] :";
+								str_buff += _buffer;
+								send(k, str_buff.c_str(), str_buff.size() , 0);
+
+
+							}
+
+
+							str_buff.erase(str_buff.begin(), str_buff.end());
+						}
 				}
-				else if(retbuff == 0)
+				else if (retbuff == 0)
 				{
 					std::cout << "\nsocket n'" << *itr << " is closed on client side.\n";
+					_user_map.erase(*itr);
 					close(*itr);
             		FD_CLR(*itr, &_sock_client);
+					_user_map.erase(*itr);
 					_open_sock.erase(*itr);
 				}
+				
+				
+
+
 				//	std::cout << "after recv" << std::endl;
 				//FD_CLR(*itr, &_sock_client);
 			}
