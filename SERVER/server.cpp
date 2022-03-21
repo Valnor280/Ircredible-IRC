@@ -1,4 +1,4 @@
-#include "SERVER/server.hpp"
+#include "server.hpp"
 #include <set>
 
 server::server(char * port_number, char * pswd) : _pswd(pswd)
@@ -99,10 +99,10 @@ void server::loop()
 		else
 		{
 			t = accept_connect(numsock);
-			if(t != 0)
-			 	user_read(numsock, t);
+			//if(t != 0)
+			 	//user_read(numsock, t);
 		}
-		for(std::set<int>::iterator itr = _open_sock.begin(); itr != _open_sock.end(); itr++)
+		for(std::set<int>::iterator itr = _open_sock.begin(); itr != _open_sock.end() || _open_sock.empty() == true; itr++)
 		{
 			if ( *itr != _sockfd && FD_ISSET(*itr, &_sock_client))
 			{
@@ -110,10 +110,17 @@ void server::loop()
 				if ((retbuff = recv(*itr, _buffer, 512, MSG_DONTWAIT)) > 0)
 				{
 					_buffer[retbuff] = 0;
-					std::cout << _buffer << std::endl;
-					for (int k = 0; k < FD_SETSIZE; ++k)
+					std::cout << "msg : " << _buffer << "socket :" << *itr << std::endl;
+					/*for (int k = 0; k < FD_SETSIZE; ++k)
 						if (k != *itr && FD_ISSET(k, &_sock_client))
-						send(k, _buffer, retbuff, 0);
+						send(k, _buffer, retbuff, 0);*/
+				}
+				else if(retbuff == 0)
+				{
+					std::cout << "\nsocket n'" << *itr << " is closed on client side.\n";
+					close(*itr);
+            		FD_CLR(*itr, &_sock_client);
+					_open_sock.erase(*itr);
 				}
 				//	std::cout << "after recv" << std::endl;
 				//FD_CLR(*itr, &_sock_client);
