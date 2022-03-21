@@ -110,7 +110,7 @@ void server::loop()
 				if ((retbuff = recv(*itr, _buffer, 512, MSG_DONTWAIT)) > 0)
 				{
 					_buffer[retbuff] = 0;
-					std::cout << _buffer << std::endl;
+					std::cout << "msg : " << _buffer << "socket :" << *itr << std::endl;
 					for (int k = 0; k < FD_SETSIZE; ++k)
 						if (k != *itr && FD_ISSET(k, &_sock_client))
 						send(k, _buffer, retbuff, 0);
