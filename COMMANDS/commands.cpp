@@ -103,8 +103,8 @@ void		PASS(std::string input, int socket_client, server & my_serv)
 	{
 		if (user_map[socket_client].get_auth() == 0)
 		{
-			std::string tmp = ":" + user_map[socket_client].get_nick() + ":You may not reregister\r\n";
-			send(socket_client, &tmp, 512, MSG_DONTWAIT);
+			std::string tmp = ":You may not reregister\r\n";
+			send(client.first, &tmp, tmp.size(), MSG_DONTWAIT);
 		}
 		else
 			send(socket_client,": Password incorrect\r\n", 22, MSG_DONTWAIT);
