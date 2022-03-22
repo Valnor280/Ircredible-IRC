@@ -225,6 +225,10 @@ server::~server()
 	close(_sockfd);
 }
 
+char *server::get_pswd()
+{
+	return this->_pswd;
+}
 
 // // LISTE DE COMMANDES SERVER SIDE
 // void		server::ADMIN(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };

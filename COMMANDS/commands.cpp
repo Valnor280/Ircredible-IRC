@@ -41,23 +41,28 @@ void		NICK(std::string input, std::pair<int, user> client, server & my_serv)
     std::cout << std::endl << std::endl;
 };
 
-void		server::PASS(std::string input, std::pair<int, user> client, std::map<int, user> &user_map) 
+void		PASS(std::string input, std::pair<int, user> client, server & my_serv) 
 { 
     std::cout << "PASS called" << std::endl;
 	int i = 3;
 	std::map<int, user>::iterator itr;
-	input.erase(input.begin(), input.begin() + 4);
+	if (input.size() > 3)
+		input.erase(input.begin(), input.begin() + 4);
+	else
+	{
+		send(client.first, ": * PASS :Not enough parameters\r\n", 512, 0);
+	}
 	while (input.at(i) == ' ')
 		i++;
 	if(input.at(i) == *(input.end()))
 		send(client.first, ": * PASS :Not enough parameters\r\n", 512, 0);
-	if (input.compare(_pswd) == 0 && user_map[client.first].get_auth() == 1)
+	if (input.compare(my_serv.get_pswd()) == 0 && my_serv._user_map[client.first].get_auth() == 1)
 	{
-		user_map[client.first].set_auth(0);
+		my_serv._user_map[client.first].set_auth(0);
 	}
 	else
 	{
-		if (user_map[client.first].get_auth() == 0)
+		if (my_serv.user_map[client.first].get_auth() == 0)
 		{
 			std::string tmp = ":" + user_map[client.first].get_nick() + ":You may not reregister\r\n";
 			send(client.first, &tmp, 512, 0);

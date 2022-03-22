@@ -35,8 +35,8 @@ class server
 
 		void user_read(int &sock_ready, int new_sock);
 		int accept_connect(int numsock);
+		char *get_pswd();
 
-		void		PASS(std::string input, std::pair<int, user> client, std::map<int, user> &user_map);
 	private:
 	    struct ConstructorException : public std::exception
         {
