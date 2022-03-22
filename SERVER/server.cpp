@@ -121,6 +121,15 @@ server::server(char * port_number, char * pswd) : _pswd(pswd)
     }
 	FD_SET(_sockfd, &_sock_client);
 	_open_sock.insert(_sockfd);
+
+	// testing macros
+	// 	user	test;
+	// test.set_nick("jay");
+	// test.set_username("johnny");
+	// test.set_real_name("Johnny Cool");
+	// test.set_status("registered");
+	// test.set_hostname(_hostname);
+	// std::cout << RPL_WELCOME(":server_example.com", "Ircredible IRC", test.get_nick() + "!" + test.get_username() + "@" + test.get_hostname()) << std::endl;
 }
 
 void server::loop()
@@ -182,7 +191,7 @@ void server::loop()
 						else if (cmd_map.find(str_buff.substr(0, str_index)) == cmd_map.end())
 							std::cout << "Error : command doesn't exist !" << std::endl;
 						else
-							cmd_map[str_buff.substr(0, str_index)](str_buff, *user_itr, _user_map);
+							cmd_map[str_buff.substr(0, str_index)](str_buff, *user_itr, *this);
 						
 						str_index = str_buff.find('\n');
 						
