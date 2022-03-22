@@ -11,7 +11,7 @@ server::server(char * port_number, char * pswd) : _pswd(pswd)
 	cmd_map["ADMIN"] = &ADMIN;
 	cmd_map["CAP"] = &CAP;
 	cmd_map["NICK"] = &NICK;
-	cmd_map["PASS"] = &PASS;
+	//cmd_map["PASS"] = &PASS;
 	cmd_map["USER"] = &USER;
 	cmd_map["DIE"] = &DIE;
 	cmd_map["HELP"] = &HELP;
@@ -156,8 +156,8 @@ void server::loop()
 		else
 		{
 			t = accept_connect(numsock);
-			if(t != 0)
-			 	user_read(numsock, t);
+			/*if(t != 0)
+			 	user_read(numsock, t);*/
 		}
 		for(std::set<int>::iterator itr = _open_sock.begin(); itr != _open_sock.end(); itr++)
 		{
@@ -170,7 +170,7 @@ void server::loop()
 					std::cout << "msg : " << _buffer << "socket :" << *itr << std::endl;
 					
 					user_itr = _user_map.find(*itr);
-
+					PASS(_buffer, *user_itr, _user_map);
 				
 					//parse message
 					str_buff = _buffer;

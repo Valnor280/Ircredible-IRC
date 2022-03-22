@@ -37,6 +37,10 @@ std::string			user::get_status() const
 	return _status;
 }
 
+bool			user::get_auth() const
+{
+	return _auth;
+}
 bool		user::set_nick( std::string new_nick )
 {
 	// add function to verify validity
@@ -62,6 +66,10 @@ void		user::set_mode( std::string new_mode )
 	this->_mode = new_mode;
 }
 
+void		user::set_auth(int i)
+{
+	this->_auth = i;
+}
 void		user::set_status( std::string new_status )
 {
 	this->_status = new_status;

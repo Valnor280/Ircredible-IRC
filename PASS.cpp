@@ -1,25 +1,24 @@
 #include "SERVER/server.hpp"
 
-void		server::PASS(std::string input, std::pair<int, user> pair)
+void	PASS(std::string input, std::pair<int, user> client, std::map<int, user> &user_map, char *_pswd);
 {
-	int i;
+	int i = 3;
 	std::map<int, user>::iterator itr;
-	for ( i = 0; i < 4, i++;)
-		input.erase(i);
+	input.erase(input.begin(), input.begin() + 4);
 	while (input.at(i) == ' ')
 		i++;
 	if(input.at(i) == *(input.end()))
-		send(pair.first, ERR_NEEDMOREPARAMS("*", PASS_CMD), 512, 0);
-	if (input.compare(_pswd) == 0 && user_map[pair.first].get_auth() == 1)
+		send(client.first, ": * PASS :Not enough parameters\r\n", 512, 0);
+	if (input.compare(_pswd) == 0 && user_map[client.first].get_auth() == 1)
 	{
-		user_map[pair.first].set_auth(0);
+		user_map[client.first].set_auth(0);
 	}
 	else
 	{
-		if (user_map[pair.first].get_auth() == 0)
-			send(pair.first, ERR_ALREADYREGISTRED(user_map[pair.first].get_nick()), 512, 0);
+		if (user_map[client.first].get_auth() == 0)
+			send(client.first, ":" + user_map[client.first].get_nick() ":You may not reregister\r\n", 512, 0);
 		else
-			send(pair.first, ERR_PASSWDMISMATCH, 512, 0);
-		user_map[pair.first].set_auth(1);
+			send(client.first, ": Password incorrect\r\n", 512, 0);
+		user_map[client.first].set_auth(1);
 	}
 }

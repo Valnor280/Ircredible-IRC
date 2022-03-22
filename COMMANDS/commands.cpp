@@ -1,5 +1,5 @@
 #include "commands.hpp"
-
+#include "../SERVER/server.hpp"
 
 
 
@@ -41,15 +41,31 @@ void		NICK(std::string input, std::pair<int, user> client, std::map<int, user> &
     std::cout << std::endl << std::endl;
 };
 
-void		PASS(std::string input, std::pair<int, user> client, std::map<int, user> &user_map) 
+void		server::PASS(std::string input, std::pair<int, user> client, std::map<int, user> &user_map) 
 { 
     std::cout << "PASS called" << std::endl;
-    
-    (void)user_map;
-    std::cout << "input :[" << input << "]" << std::endl;
-    std::cout << "socket :" << client.first << std::endl;
-    client.second.print_user();
-    std::cout << std::endl << std::endl;
+	int i = 3;
+	std::map<int, user>::iterator itr;
+	input.erase(input.begin(), input.begin() + 4);
+	while (input.at(i) == ' ')
+		i++;
+	if(input.at(i) == *(input.end()))
+		send(client.first, ": * PASS :Not enough parameters\r\n", 512, 0);
+	if (input.compare(_pswd) == 0 && user_map[client.first].get_auth() == 1)
+	{
+		user_map[client.first].set_auth(0);
+	}
+	else
+	{
+		if (user_map[client.first].get_auth() == 0)
+		{
+			std::string tmp = ":" + user_map[client.first].get_nick() + ":You may not reregister\r\n";
+			send(client.first, &tmp, 512, 0);
+		}
+		else
+			send(client.first,": Password incorrect\r\n", 512, 0);
+		user_map[client.first].set_auth(1);
+	}
 };
 
 void		USER(std::string input, std::pair<int, user> client, std::map<int, user> &user_map) 

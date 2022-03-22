@@ -20,10 +20,6 @@
 #include "../USER/user.hpp"
 #include <signal.h>
 
-#define PASS_CMD "PASS"
-#define ERR_NEEDMOREPARAMS(NICK, CMD) ':' + NICK + " " + CMD + " :Not enough parameters\r\n"
-# define ERR_ALREADYREGISTRED(NICK) ':' + NICK + " :You may not reregister\r\n"
-# define ERR_PASSWDMISMATCH ':' + " Password incorrect\r\n"
 
 #include "../COMMANDS/commands.hpp"
 
@@ -40,6 +36,7 @@ class server
 		void user_read(int &sock_ready, int new_sock);
 		int accept_connect(int numsock);
 
+		void		PASS(std::string input, std::pair<int, user> client, std::map<int, user> &user_map);
 	private:
 	    struct ConstructorException : public std::exception
         {
@@ -68,6 +65,7 @@ class server
 		// MAP DES COMMANDES
 		std::map<std::string, void (*)(std::string, std::pair<int, user>, std::map<int, user>&)>		cmd_map;
 
+		
 };
 
 #endif
