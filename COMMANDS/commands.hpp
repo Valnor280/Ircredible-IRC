@@ -1,8 +1,10 @@
 #ifndef COMMANDS_HPP
 # define COMMANDS_HPP
+
+
 #include <string>
 #include <iostream>
-#include "../USER/user.hpp"
+#include "USER/user.hpp"
 
 //// LISTE DE COMMANDES SERVER-SIDE////
 void		ADMIN(std::string input, std::pair<int, user> client);

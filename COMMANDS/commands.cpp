@@ -26,6 +26,11 @@ void		WALLOPS(std::string input, std::pair<int, user> client) { (void)input; (vo
 void		WHO(std::string input, std::pair<int, user> client) { (void)input; (void)client; std::cout << "ADMIN called" << std::endl; };
 void		WHOIS(std::string input, std::pair<int, user> client) { (void)input; (void)client; std::cout << "ADMIN called" << std::endl; };
 void		WHOWAS(std::string input, std::pair<int, user> client) { (void)input; (void)client; std::cout << "ADMIN called" << std::endl; };
+void		LIST(std::string input, std::pair<int, user> client) { (void)input; (void)client; std::cout << "ADMIN called" << std::endl; };
+void		PING(std::string input, std::pair<int, user> client){ (void)input; (void)client; std::cout << "ADMIN called" << std::endl; };
+void		PONG(std::string input, std::pair<int, user> client) { (void)input; (void)client; std::cout << "ADMIN called" << std::endl; };
+void		PART(std::string input, std::pair<int, user> client) { (void)input; (void)client; std::cout << "ADMIN called" << std::endl; };
+
 
 // LISTE DE COMMANDES CHANNEL SIDE
 void		INVITE(std::string input, std::pair<int, user> client) { (void)input; (void)client; std::cout << "ADMIN called" << std::endl; };

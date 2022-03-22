@@ -1,4 +1,5 @@
-
+#ifndef SERVER_HPP
+#define SERVER_HPP
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -17,7 +18,10 @@
 #include <map>
 #include <fcntl.h>
 #include <signal.h>
-#include "../COMMANDS/commands.hpp"
+
+
+#include "COMMANDS/commands.hpp"
+#include "USER/user.hpp"
 
 //#define ERR_NEEDMOREPARAMS(NICK, CMD) ':' + _hostname + " 461 " + NICK + " " + CMD + " :Not enough parameters\r\n"
 
@@ -69,3 +73,5 @@ class server
 		std::map<std::string, void (*)(std::string, std::pair<int, user>)>		cmd_map;
 
 };
+
+#endif
