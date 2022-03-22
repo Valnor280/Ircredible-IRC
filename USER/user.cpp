@@ -37,6 +37,11 @@ std::string			user::get_status() const
 	return _status;
 }
 
+std::string			user::get_hostname() const
+{
+	return _hostname;
+}
+
 bool		user::set_nick( std::string new_nick )
 {
 	// add function to verify validity
@@ -65,6 +70,11 @@ void		user::set_mode( std::string new_mode )
 void		user::set_status( std::string new_status )
 {
 	this->_status = new_status;
+}
+
+void		user::set_hostname( std::string new_hostname )
+{
+	this->_hostname = new_hostname;
 }
 
 void		user::print_user() const
