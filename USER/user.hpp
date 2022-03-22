@@ -13,6 +13,7 @@ class user
 		std::string		_real_name; // full name of the client using the server
 		std::string		_mode;	// gives level of commands or privileges accessible to the user
 		std::string     _status;
+		std::string		_hostname;
 
 
 	public:
@@ -25,6 +26,7 @@ class user
 		std::string		get_real_name() const;
 		std::string		get_mode() const;
 		std::string		get_status() const;
+		std::string		get_hostname() const;
 
 		//SETTERS
 		bool		set_nick( std::string new_nick );
@@ -32,6 +34,7 @@ class user
 		bool		set_real_name( std::string new_real_name );
 		void		set_mode( std::string new_access_level );
 		void		set_status( std::string status );
+		void		set_hostname( std::string new_hostname );
 
 		// UTILS
 		void		print_user() const;
