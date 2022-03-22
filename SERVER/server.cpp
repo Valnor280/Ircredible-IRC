@@ -1,8 +1,59 @@
+
+
 #include "server.hpp"
 #include <set>
 
+
+
 server::server(char * port_number, char * pswd) : _pswd(pswd)
 {
+	// SERVER-SIDE
+	cmd_map["ADMIN"] = &ADMIN;
+	cmd_map["CAP"] = &CAP;
+	cmd_map["NICK"] = &NICK;
+	cmd_map["PASS"] = &PASS;
+	cmd_map["USER"] = &USER;
+	cmd_map["DIE"] = &DIE;
+	cmd_map["HELP"] = &HELP;
+	cmd_map["INFO"] = &INFO;
+	cmd_map["ISON"] = &ISON;
+	cmd_map["KILL"] = &KILL;
+	cmd_map["LIST"] = &LIST;
+	cmd_map["LUSERS"] = &LUSERS;
+	cmd_map["MODE"] = &MODE;
+	cmd_map["MOTD"] = &MOTD;
+	cmd_map["NAMES"] = &NAMES;
+	cmd_map["PART"] = &PART;
+	cmd_map["PING"] = &PING;
+	cmd_map["PONG"] = &PONG;
+	cmd_map["REHASH"] = &REHASH;
+	cmd_map["STATS"] = &STATS;
+	cmd_map["SUMMON"] = &SUMMON;
+	cmd_map["TIME"] = &TIME;
+	cmd_map["USERHOST"] = &USERHOST;
+	cmd_map["USERS"] = &USERS;
+	cmd_map["VERSION"] = &VERSION;
+	cmd_map["WALLOPS"] = &WALLOPS;
+	cmd_map["WHO"] = &WHO;
+	cmd_map["WHOIS"] = &WHOIS;
+	cmd_map["WHOWAS"] = &WHOWAS;
+
+	// CHANNEL-SIDE
+	cmd_map["INVITE"] = &INVITE;
+	cmd_map["JOIN"] = &JOIN;
+	cmd_map["KICK"] = &KICK;
+	cmd_map["KNOCK"] = &KNOCK;
+	cmd_map["TOPIC"] = &TOPIC;
+
+	// USER-SIDE
+	cmd_map["AWAY"] = &AWAY;
+	cmd_map["NOTICE"] = &NOTICE;
+	cmd_map["OPER"] = &OPER;
+	cmd_map["PRIVMSG"] = &PRIVMSG;
+	cmd_map["QUIT"] = &QUIT;
+	cmd_map["SETNAME"] = &SETNAME;
+	cmd_map["USERIP"] = &USERIP;
+
 	FD_ZERO(&_sock_client);
 	addrinfo hints, *res, *p; // res = potential adress p = adress iterator;
 	memset(&hints, 0, sizeof(hints));
@@ -79,6 +130,11 @@ void server::loop()
 	int t;
 	int max_fd;
 	
+	std::string	str_buff;
+	size_t		str_index;
+	std::map<int, user>::iterator user_itr;
+
+	
 	while(true)
 	{
 		max_fd = *(_open_sock.rbegin());
@@ -112,9 +168,32 @@ void server::loop()
 				{
 					_buffer[retbuff] = 0;
 					std::cout << "msg : " << _buffer << "socket :" << *itr << std::endl;
+					
+					user_itr = _user_map.find(*itr);
+
+				
+					//parse message
+					str_buff = _buffer;
+					while (!str_buff.empty())
+					{
+						//std::cout << "str_buff '" << str_buff << "'" << std::endl;
+						if ((str_index = str_buff.find(' ')) == std::string::npos)
+							std::cout << "Error parse command '" << str_buff << "' " << std::endl;
+						else if (cmd_map.find(str_buff.substr(0, str_index)) == cmd_map.end())
+							std::cout << "Error : command doesn't exist !" << std::endl;
+						else
+							cmd_map[str_buff.substr(0, str_index)](str_buff, *user_itr, _user_map);
+						
+						str_index = str_buff.find('\n');
+						
+						str_buff.erase(0, str_index + 1);
+					}
+				
 					/*for (int k = 0; k < FD_SETSIZE; ++k)
 						if (k != *itr && FD_ISSET(k, &_sock_client))
 						send(k, _buffer, retbuff, 0);*/
+
+				
 				}
 				else if(retbuff == 0)
 				{
@@ -139,44 +218,44 @@ server::~server()
 }
 
 
-// LISTE DE COMMANDES SERVER SIDE
-void		server::ADMIN(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
-void		server::NICK(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
-void		server::PASS(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
-void		server::USER(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
-void		server::DIE(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
-void		server::HELP(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
-void		server::INFO(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
-void		server::ISON(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
-void		server::KILL(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
-void		server::LUSERS(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; }; // a voir
-void		server::MODE(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
-void		server::MOTD(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
-void		server::NAMES(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; }; // l'option X est chelou
-void		server::REHASH(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; }; // a voir
-void		server::STATS(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
-void		server::SUMMON(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
-void		server::TIME(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
-void		server::USERHOST(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
-void		server::USERS(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; }; // a voir
-void		server::VERSION(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; }; // a voir
-void		server::WALLOPS(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
-void		server::WHO(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
-void		server::WHOIS(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
-void		server::WHOWAS(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
+// // LISTE DE COMMANDES SERVER SIDE
+// void		server::ADMIN(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
+// void		server::NICK(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
+// void		server::PASS(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
+// void		server::USER(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
+// void		server::DIE(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
+// void		server::HELP(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
+// void		server::INFO(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
+// void		server::ISON(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
+// void		server::KILL(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
+// void		server::LUSERS(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; }; // a voir
+// void		server::MODE(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
+// void		server::MOTD(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
+// void		server::NAMES(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; }; // l'option X est chelou
+// void		server::REHASH(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; }; // a voir
+// void		server::STATS(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
+// void		server::SUMMON(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
+// void		server::TIME(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
+// void		server::USERHOST(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
+// void		server::USERS(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; }; // a voir
+// void		server::VERSION(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; }; // a voir
+// void		server::WALLOPS(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
+// void		server::WHO(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
+// void		server::WHOIS(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
+// void		server::WHOWAS(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
 
-// LISTE DE COMMANDES CHANNEL SIDE
-void		server::INVITE(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
-void		server::JOIN(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
-void		server::KICK(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
-void		server::KNOCK(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; }; // a voir
-void		server::TOPIC(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
+// // LISTE DE COMMANDES CHANNEL SIDE
+// void		server::INVITE(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
+// void		server::JOIN(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
+// void		server::KICK(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
+// void		server::KNOCK(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; }; // a voir
+// void		server::TOPIC(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
 
-// LISTE DE COMMANDES USER SIDE
-void		server::AWAY(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
-void		server::NOTICE(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
-void		server::OPER(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
-void		server::PRIVMSG(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
-void		server::QUIT(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
-void		server::SETNAME(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
-void		server::USERIP(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
+// // LISTE DE COMMANDES USER SIDE
+// void		server::AWAY(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
+// void		server::NOTICE(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
+// void		server::OPER(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
+// void		server::PRIVMSG(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
+// void		server::QUIT(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
+// void		server::SETNAME(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };
+// void		server::USERIP(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };

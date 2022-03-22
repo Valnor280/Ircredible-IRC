@@ -32,6 +32,11 @@ std::string			user::get_mode() const
 	return _mode;
 }
 
+std::string			user::get_status() const
+{
+	return _status;
+}
+
 bool		user::set_nick( std::string new_nick )
 {
 	// add function to verify validity
@@ -57,6 +62,11 @@ void		user::set_mode( std::string new_mode )
 	this->_mode = new_mode;
 }
 
+void		user::set_status( std::string new_status )
+{
+	this->_status = new_status;
+}
+
 void		user::print_user() const
 {
 	std::cout << "|| USER IDENTIFICATION ||" << std::endl;
@@ -64,5 +74,6 @@ void		user::print_user() const
 	std::cout << "Username  : " << _username << std::endl;
 	std::cout << "Real name : " << _real_name << std::endl;
 	std::cout << "Mode      : " << _mode << std::endl;
+	std::cout << "STATUS    : " << _status << std::endl;
 }
 
