@@ -9,7 +9,8 @@ SRCS =	main.cpp \
 		SERVER/server.cpp \
 		SERVER/accept.cpp \
 		SERVER/user_read.cpp \
-		USER/user.cpp
+		USER/user.cpp \
+		COMMANDS/commands.cpp
 
 
 OBJS = $(SRCS:%.cpp=$(OBJS_DIR)/%.o)
