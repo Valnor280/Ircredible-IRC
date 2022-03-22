@@ -100,8 +100,8 @@ void server::loop()
 		else
 		{
 			t = accept_connect(numsock);
-			//if(t != 0)
-			 	//user_read(numsock, t);
+			if(t != 0)
+			 	user_read(numsock, t);
 		}
 		for(std::set<int>::iterator itr = _open_sock.begin(); itr != _open_sock.end(); itr++)
 		{

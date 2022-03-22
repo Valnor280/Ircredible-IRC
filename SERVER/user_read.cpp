@@ -14,6 +14,7 @@ void server::user_read(int &num_sock_ready, int new_sock)
             --num_sock_ready;
 			memset(_buffer, 0, 512 + 1);
 			ret = recv(new_sock, _buffer, 512, MSG_PEEK);
+			PASS(std::string(_buffer), std::make_pair(new_sock, NULL));
 			std::cout << "socket n'" << new_sock << ". bytes received: " << ret << "\n";
 			if (ret == -1)
 			{
