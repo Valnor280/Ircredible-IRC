@@ -94,6 +94,7 @@ void		user::print_user() const
 	std::cout << "Username  : " << _username << std::endl;
 	std::cout << "Real name : " << _real_name << std::endl;
 	std::cout << "Mode      : " << _mode << std::endl;
-	std::cout << "STATUS    : " << _status << std::endl;
+	std::cout << "Status    : " << _status << std::endl;
+	std::cout << "Hostname  : " << _hostname << std::endl;
 }
 
