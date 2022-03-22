@@ -1,5 +1,5 @@
 // user class
-#ifdef USER_HPP
+#ifndef USER_HPP
 #define USER_HPP
 
 
