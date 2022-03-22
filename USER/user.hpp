@@ -1,4 +1,7 @@
 // user class
+#ifdef USER_HPP
+#define USER_HPP
+
 
 #include <string>
 #include <iostream>
@@ -30,3 +33,5 @@ class user
 		// UTILS
 		void		print_user() const;
 };
+
+#endif

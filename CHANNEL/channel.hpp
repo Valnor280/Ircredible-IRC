@@ -1,4 +1,7 @@
 // channel class
+#ifndef CHANNEL_HPP
+#define CHANNEL_HPP
+
 
 #include <vector>
 #include <string>
@@ -28,4 +31,6 @@ class channel
 		void				remove_op_user( const user member );
 		void				clear_user_list();
 		void				clear_op_list();
-}
+};
+
+#endif
