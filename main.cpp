@@ -2,7 +2,9 @@
 
 int main(int ac, char **av)
 {
-			
+
+
+
 	if (ac != 3 || *(av[2]) == '\0') 
 	{
         std::cout << "Please launch the program using: '" << av[0] << " <port> <password>'\n";
