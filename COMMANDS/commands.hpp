@@ -6,11 +6,10 @@
 #include <iostream>
 #include <map>
 #include "USER/user.hpp"
-#include "../SERVER/server.hpp"
+#include "SERVER/server.hpp"
+#include "UTILS/utils.hpp"
 
 // #define RPL_WELCOME(client, network_name, id) (client + " :Welcome to the " + network_name + " Network, " + id)
-
-class server;
 
 //// LISTE DE COMMANDES SERVER-SIDE////
 void		ADMIN(std::string input, std::pair<int, user> client, server & my_serv);

@@ -34,7 +34,45 @@ void		NICK(std::string input, std::pair<int, user> client, server & my_serv)
 { 
     std::cout << "NICK called" << std::endl;
     
-    (void)my_serv;
+    size_t  begsub;
+    size_t  endsub;
+    if ((begsub = input.find(' ')) == std::string::npos)
+        std::cout << "Error Nick function: no space" << std::endl;
+    if ((endsub = input.find('\r')) == std::string::npos  && (endsub = input.find('\n')) == std::string::npos)
+        std::cout << "Error Nick function: no \\r or \\n" << std::endl;
+
+    //recup le nick
+    std::string nick = input.substr(begsub + 1, endsub - begsub - 1);
+
+    
+    
+    //check nick format
+    if ((!isspecial(nick[0]) && !isalpha(nick[0])) || nick.size() > 9)
+    {
+        std::cout << "************ ERR_ERRONEUSNICKNAME (432) *****************" << std::endl;
+        //"<client> <nick> :Erroneus nickname"
+        return;
+    }
+    for(std::string::iterator it = nick.begin(); it != nick.end(); ++it)
+        if (!isspecial(*it) && !isalnum(*it) && *it != '-')
+        {
+            std::cout << "************ ERR_ERRONEUSNICKNAME (432) *****************" << std::endl;
+            //"<client> <nick> :Erroneus nickname"
+            return;
+        }
+
+
+    //check si il existe
+    for (std::map<int, user>::iterator itr = my_serv.get_usermap().begin(); itr != my_serv.get_usermap().end(); ++itr)
+    {
+        if (itr->second.get_nick() == nick)
+        {
+            std::cout << "************ ERROR : ERR_NICKNAMEINUSE (433) *****************" << std::endl;
+            //"<client> <nick> :Nickname is already in use"
+            return;
+        }
+    }
+    client.second.set_nick(nick);
     std::cout << "input :[" << input << "]" << std::endl;
     std::cout << "socket :" << client.first << std::endl;
     client.second.print_user();

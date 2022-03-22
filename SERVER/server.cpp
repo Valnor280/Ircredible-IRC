@@ -220,6 +220,12 @@ void server::loop()
 	}
 }
 
+std::map<int, user>	&server::get_usermap(void)
+{
+	return (this->_user_map);
+}
+
+
 server::~server()
 {
 	close(_connection);
