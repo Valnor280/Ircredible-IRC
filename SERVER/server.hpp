@@ -1,5 +1,3 @@
-#ifndef SERVER_HPP
-# define SERVER_HPP
 
 
 #include <sys/types.h>
@@ -71,5 +69,3 @@ class server
 		std::map<std::string, void (*)(std::string, std::pair<int, user>)>		cmd_map;
 
 };
-
-#endif
