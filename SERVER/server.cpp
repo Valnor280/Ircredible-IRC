@@ -125,10 +125,11 @@ void server::loop()
 	int numsock;
 	int retbuff = 0;
 	int t;
-	int max_fd = *(_open_sock.rbegin());
+	int max_fd;
 	
 	while(true)
 	{
+		max_fd = *(_open_sock.rbegin());
 		_sock_ready = _sock_client;
 		timeval time;
 
@@ -150,7 +151,7 @@ void server::loop()
 			//if(t != 0)
 			 	//user_read(numsock, t);
 		}
-		for(std::set<int>::iterator itr = _open_sock.begin(); itr != _open_sock.end() || _open_sock.empty() == true; itr++)
+		for(std::set<int>::iterator itr = _open_sock.begin(); itr != _open_sock.end(); itr++)
 		{
 			if ( *itr != _sockfd && FD_ISSET(*itr, &_sock_client))
 			{
@@ -169,6 +170,8 @@ void server::loop()
 					close(*itr);
             		FD_CLR(*itr, &_sock_client);
 					_open_sock.erase(*itr);
+					if (_open_sock.empty() == 0)
+						break;
 				}
 				//	std::cout << "after recv" << std::endl;
 				//FD_CLR(*itr, &_sock_client);
