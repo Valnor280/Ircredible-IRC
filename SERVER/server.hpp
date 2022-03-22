@@ -14,10 +14,13 @@
 #include <set>
 #include <map>
 #include <fcntl.h>
+#include "../USER/user.hpp"
 #include <signal.h>
 
-//#define ERR_NEEDMOREPARAMS(NICK, CMD) ':' + _hostname + " 461 " + NICK + " " + CMD + " :Not enough parameters\r\n"
-
+#define PASS_CMD "PASS"
+#define ERR_NEEDMOREPARAMS(NICK, CMD) ':' + NICK + " " + CMD + " :Not enough parameters\r\n"
+# define ERR_ALREADYREGISTRED(NICK) ':' + NICK + " :You may not reregister\r\n"
+# define ERR_PASSWDMISMATCH ':' + " Password incorrect\r\n"
 class server
 {
 	public:
@@ -84,18 +87,6 @@ class server
                 return "Constructor error\n";
             }
         };
-		/*struct pending_socket
-        {
-        	std::string     nickname;
-            std::string     username;
-            bool            pass_check;
-            pending_socket()
-            : nickname(std::string())
-            , username(std::string())
-            , pass_check(false)
-            {
-            }
-        };*/
 		int _sockfd;
 		char * _pswd;
 		std::set<int> _open_sock;
@@ -106,6 +97,9 @@ class server
 		char _buffer[512 + 1];
 		fd_set _sock_client;
 		fd_set _sock_ready;
+
+		//MAP USER
+		std::map<int, user> user_map;
 
 		// MAP DES COMMANDES
 		//std::map<std::string, >
