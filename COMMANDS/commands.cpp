@@ -34,7 +34,45 @@ void		NICK(std::string input, std::pair<int, user> client, server & my_serv)
 { 
     std::cout << "NICK called" << std::endl;
     
-    (void)my_serv;
+    size_t  begsub;
+    size_t  endsub;
+    if ((begsub = input.find(' ')) == std::string::npos)
+        std::cout << "Error Nick function: no space" << std::endl;
+    if ((endsub = input.find('\r')) == std::string::npos  && (endsub = input.find('\n')) == std::string::npos)
+        std::cout << "Error Nick function: no \\r or \\n" << std::endl;
+
+    //recup le nick
+    std::string nick = input.substr(begsub + 1, endsub - begsub - 1);
+
+    
+    
+    //check nick format
+    if ((!isspecial(nick[0]) && !isalpha(nick[0])) || nick.size() > 9)
+    {
+        std::cout << "************ ERR_ERRONEUSNICKNAME (432) *****************" << std::endl;
+        //"<client> <nick> :Erroneus nickname"
+        return;
+    }
+    for(std::string::iterator it = nick.begin(); it != nick.end(); ++it)
+        if (!isspecial(*it) && !isalnum(*it) && *it != '-')
+        {
+            std::cout << "************ ERR_ERRONEUSNICKNAME (432) *****************" << std::endl;
+            //"<client> <nick> :Erroneus nickname"
+            return;
+        }
+
+
+    //check si il existe
+    for (std::map<int, user>::iterator itr = my_serv.get_usermap().begin(); itr != my_serv.get_usermap().end(); ++itr)
+    {
+        if (itr->second.get_nick() == nick)
+        {
+            std::cout << "************ ERROR : ERR_NICKNAMEINUSE (433) *****************" << std::endl;
+            //"<client> <nick> :Nickname is already in use"
+            return;
+        }
+    }
+    client.second.set_nick(nick);
     std::cout << "input :[" << input << "]" << std::endl;
     std::cout << "socket :" << client.first << std::endl;
     client.second.print_user();
@@ -44,34 +82,36 @@ void		NICK(std::string input, std::pair<int, user> client, server & my_serv)
 void		PASS(std::string input, std::pair<int, user> client, server & my_serv) 
 { 
     std::cout << "PASS called" << std::endl;
-	int i = 3;
-	std::map<int, user>::iterator itr;
-	if (input.size() > 3)
-		input.erase(input.begin(), input.begin() + 4);
+
+	std::cout << input << std::endl;
+	std::map<int, user> user_map = my_serv.get_usermap();
+  	size_t  begsub;
+    size_t  endsub;
+    if ((begsub = input.find(' ')) == std::string::npos)
+        send(client.first, ": * PASS :Not enough parameters\r\n", 34, MSG_DONTWAIT);
+    if ((endsub = input.find('\r')) == std::string::npos  && (endsub = input.find('\n')) == std::string::npos)
+	{
+        std::cout << "Error Pass function: no \\r or \\n" << std::endl;
+	}
+	std::string pass = input.substr(begsub + 1, endsub - begsub - 1);
+	if (pass.compare(my_serv.get_pswd()) == 0 && user_map[client.first].get_auth() == 1)
+	{
+		user_map[client.first].set_auth(0);
+	}
 	else
 	{
-		send(client.first, ": * PASS :Not enough parameters\r\n", 512, 0);
-	}
-	while (input.at(i) == ' ')
-		i++;
-	if(input.at(i) == *(input.end()))
-		send(client.first, ": * PASS :Not enough parameters\r\n", 512, 0);
-	if (input.compare(my_serv.get_pswd()) == 0 && my_serv._user_map[client.first].get_auth() == 1)
-	{
-		my_serv._user_map[client.first].set_auth(0);
-	}
-	else
-	{
-		if (my_serv.user_map[client.first].get_auth() == 0)
+		if (user_map[client.first].get_auth() == 0)
 		{
+			std::cout << pass << std::endl;
 			std::string tmp = ":" + user_map[client.first].get_nick() + ":You may not reregister\r\n";
-			send(client.first, &tmp, 512, 0);
+			send(client.first, &tmp, 512, MSG_DONTWAIT);
 		}
 		else
-			send(client.first,": Password incorrect\r\n", 512, 0);
+			send(client.first,": Password incorrect\r\n", 22, MSG_DONTWAIT);
 		user_map[client.first].set_auth(1);
 	}
 }
+
 void		USER(std::string input, std::pair<int, user> client, server & my_serv) 
 { 
     std::cout << "USER called" << std::endl;

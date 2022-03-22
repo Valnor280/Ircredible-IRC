@@ -11,7 +11,7 @@ server::server(char * port_number, char * pswd) : _pswd(pswd)
 	cmd_map["ADMIN"] = &ADMIN;
 	cmd_map["CAP"] = &CAP;
 	cmd_map["NICK"] = &NICK;
-	//cmd_map["PASS"] = &PASS;
+	cmd_map["PASS"] = &PASS;
 	cmd_map["USER"] = &USER;
 	cmd_map["DIE"] = &DIE;
 	cmd_map["HELP"] = &HELP;
@@ -218,6 +218,12 @@ void server::loop()
 		}
 	}
 }
+
+std::map<int, user>	&server::get_usermap(void)
+{
+	return (this->_user_map);
+}
+
 
 server::~server()
 {

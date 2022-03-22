@@ -2,7 +2,7 @@
 
 #include "USER/user.hpp"
 
-user::user(): _nick(""), _username(""), _real_name(""), _mode("")
+user::user(): _nick(""), _username(""), _real_name(""), _mode(""), _auth(1)
 {
 	// nothing here
 }

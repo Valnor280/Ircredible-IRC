@@ -20,6 +20,7 @@
 #include "../USER/user.hpp"
 #include <signal.h>
 
+class server;
 
 #include "../COMMANDS/commands.hpp"
 
@@ -35,7 +36,9 @@ class server
 
 		void user_read(int &sock_ready, int new_sock);
 		int accept_connect(int numsock);
+
 		char *get_pswd();
+		std::map<int, user>	&get_usermap(void);
 
 	private:
 	    struct ConstructorException : public std::exception
