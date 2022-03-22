@@ -63,7 +63,7 @@ class server
 		
 		
 		// MAP DES COMMANDES
-		std::map<std::string, void (*)(std::string, std::pair<int, user>, std::map<int, user>&)>		cmd_map;
+		std::map<std::string, void (*)(std::string, std::pair<int, user>, server &)>		cmd_map;
 
 		
 };
