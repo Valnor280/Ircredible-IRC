@@ -170,7 +170,6 @@ void server::loop()
 					std::cout << "msg : " << _buffer << "socket :" << *itr << std::endl;
 					
 					user_itr = _user_map.find(*itr);
-					PASS(_buffer, *user_itr, _user_map);
 				
 					//parse message
 					str_buff = _buffer;

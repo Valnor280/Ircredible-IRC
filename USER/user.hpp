@@ -15,6 +15,7 @@ class user
 		bool			_auth; // bool if the user go the right pswd 0 =yes 1 = no
 	
 		std::string     _status;
+		std::string		_hostname;
 
 
 	public:
@@ -28,6 +29,7 @@ class user
 		std::string		get_mode() const;
 		bool			get_auth() const;
 		std::string		get_status() const;
+		std::string		get_hostname() const;
 
 		//SETTERS
 		bool		set_nick( std::string new_nick );
@@ -36,6 +38,7 @@ class user
 		void		set_mode( std::string new_access_level );
 		void		set_auth(int i);
 		void		set_status( std::string status );
+		void		set_hostname( std::string new_hostname );
 
 		// UTILS
 		void		print_user() const;
