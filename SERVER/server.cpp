@@ -165,8 +165,8 @@ void server::loop()
 		else
 		{
 			t = accept_connect(numsock);
-			//if(t != 0)
-			 	//user_read(numsock, t);
+			/*if(t != 0)
+			 	user_read(numsock, t);*/
 		}
 		for(std::set<int>::iterator itr = _open_sock.begin(); itr != _open_sock.end(); itr++)
 		{
@@ -179,7 +179,6 @@ void server::loop()
 					std::cout << "msg : " << _buffer << "socket :" << *itr << std::endl;
 					
 					user_itr = _user_map.find(*itr);
-
 				
 					//parse message
 					str_buff = _buffer;
@@ -232,6 +231,10 @@ server::~server()
 	close(_sockfd);
 }
 
+char *server::get_pswd()
+{
+	return this->_pswd;
+}
 
 // // LISTE DE COMMANDES SERVER SIDE
 // void		server::ADMIN(std::string input) { (void)input; std::cout << "ADMIN called" << std::endl; };

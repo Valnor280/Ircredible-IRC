@@ -17,14 +17,13 @@
 #include <set>
 #include <map>
 #include <fcntl.h>
+#include "../USER/user.hpp"
 #include <signal.h>
 
 class server;
 
-#include "COMMANDS/commands.hpp"
-#include "USER/user.hpp"
+#include "../COMMANDS/commands.hpp"
 
-//#define ERR_NEEDMOREPARAMS(NICK, CMD) ':' + _hostname + " 461 " + NICK + " " + CMD + " :Not enough parameters\r\n"
 
 class server
 {
@@ -37,6 +36,8 @@ class server
 
 		void user_read(int &sock_ready, int new_sock);
 		int accept_connect(int numsock);
+
+		char *get_pswd();
 		std::map<int, user>	&get_usermap(void);
 
 	private:
@@ -48,18 +49,6 @@ class server
                 return "Constructor error\n";
             }
         };
-		/*struct pending_socket
-        {
-        	std::string     nickname;
-            std::string     username;
-            bool            pass_check;
-            pending_socket()
-            : nickname(std::string())
-            , username(std::string())
-            , pass_check(false)
-            {
-            }
-        };*/
 		int _sockfd;
 		char * _pswd;
 		std::set<int> _open_sock;
@@ -79,6 +68,7 @@ class server
 		// MAP DES COMMANDES
 		std::map<std::string, void (*)(std::string, std::pair<int, user>, server &)>		cmd_map;
 
+		
 };
 
 #endif

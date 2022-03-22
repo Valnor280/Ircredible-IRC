@@ -1,5 +1,5 @@
 #include "commands.hpp"
-
+#include "../SERVER/server.hpp"
 
 
 
@@ -82,13 +82,35 @@ void		NICK(std::string input, std::pair<int, user> client, server & my_serv)
 void		PASS(std::string input, std::pair<int, user> client, server & my_serv) 
 { 
     std::cout << "PASS called" << std::endl;
-    
-    (void)my_serv;
-    std::cout << "input :[" << input << "]" << std::endl;
-    std::cout << "socket :" << client.first << std::endl;
-    client.second.print_user();
-    std::cout << std::endl << std::endl;
-};
+
+	std::cout << input << std::endl;
+	std::map<int, user> user_map = my_serv.get_usermap();
+  	size_t  begsub;
+    size_t  endsub;
+    if ((begsub = input.find(' ')) == std::string::npos)
+        send(client.first, ": * PASS :Not enough parameters\r\n", 34, MSG_DONTWAIT);
+    if ((endsub = input.find('\r')) == std::string::npos  && (endsub = input.find('\n')) == std::string::npos)
+	{
+        std::cout << "Error Pass function: no \\r or \\n" << std::endl;
+	}
+	std::string pass = input.substr(begsub + 1, endsub - begsub - 1);
+	if (pass.compare(my_serv.get_pswd()) == 0 && user_map[client.first].get_auth() == 1)
+	{
+		user_map[client.first].set_auth(0);
+	}
+	else
+	{
+		if (user_map[client.first].get_auth() == 0)
+		{
+			std::cout << pass << std::endl;
+			std::string tmp = ":" + user_map[client.first].get_nick() + ":You may not reregister\r\n";
+			send(client.first, &tmp, 512, MSG_DONTWAIT);
+		}
+		else
+			send(client.first,": Password incorrect\r\n", 22, MSG_DONTWAIT);
+		user_map[client.first].set_auth(1);
+	}
+}
 
 void		USER(std::string input, std::pair<int, user> client, server & my_serv) 
 { 
