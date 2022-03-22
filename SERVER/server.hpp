@@ -69,8 +69,13 @@ class server
 		fd_set _sock_client;
 		fd_set _sock_ready;
 
+		
+		//MAP DES USERS
+		std::map<int, user> 													_user_map;
+		
+		
 		// MAP DES COMMANDES
-		std::map<std::string, void (*)(std::string, std::pair<int, user>)>		cmd_map;
+		std::map<std::string, void (*)(std::string, std::pair<int, user>)>		_cmd_map;
 
 };
 
