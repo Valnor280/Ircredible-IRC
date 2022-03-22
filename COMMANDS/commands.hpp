@@ -8,6 +8,7 @@
 
 //// LISTE DE COMMANDES SERVER-SIDE////
 void		ADMIN(std::string input, std::pair<int, user> client);
+void		CAP(std::string input, std::pair<int, user> client);
 void		NICK(std::string input, std::pair<int, user> client);
 void		PASS(std::string input, std::pair<int, user> client);
 void		USER(std::string input, std::pair<int, user> client);

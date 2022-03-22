@@ -9,6 +9,7 @@ server::server(char * port_number, char * pswd) : _pswd(pswd)
 {
 	// SERVER-SIDE
 	cmd_map["ADMIN"] = &ADMIN;
+	cmd_map["CAP"] = &CAP;
 	cmd_map["NICK"] = &NICK;
 	cmd_map["PASS"] = &PASS;
 	cmd_map["USER"] = &USER;
@@ -129,6 +130,11 @@ void server::loop()
 	int t;
 	int max_fd;
 	
+	std::string	str_buff;
+	size_t		str_index;
+	std::map<int, user>::iterator user_itr;
+
+	
 	while(true)
 	{
 		max_fd = *(_open_sock.rbegin());
@@ -162,9 +168,32 @@ void server::loop()
 				{
 					_buffer[retbuff] = 0;
 					std::cout << "msg : " << _buffer << "socket :" << *itr << std::endl;
+					
+					user_itr = _user_map.find(*itr);
+
+				
+					//parse message
+					str_buff = _buffer;
+					while (!str_buff.empty())
+					{
+						//std::cout << "str_buff '" << str_buff << "'" << std::endl;
+						if ((str_index = str_buff.find(' ')) == std::string::npos)
+							std::cout << "Error parse command '" << str_buff << "' " << std::endl;
+						else if (cmd_map.find(str_buff.substr(0, str_index)) == cmd_map.end())
+							std::cout << "Error : command doesn't exist !" << std::endl;
+						else
+							cmd_map[str_buff.substr(0, str_index)](str_buff, *user_itr);
+						
+						str_index = str_buff.find('\n');
+						
+						str_buff.erase(0, str_index + 1);
+					}
+				
 					/*for (int k = 0; k < FD_SETSIZE; ++k)
 						if (k != *itr && FD_ISSET(k, &_sock_client))
 						send(k, _buffer, retbuff, 0);*/
+
+				
 				}
 				else if(retbuff == 0)
 				{
