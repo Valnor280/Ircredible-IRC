@@ -182,7 +182,7 @@ void server::loop()
 						else if (cmd_map.find(str_buff.substr(0, str_index)) == cmd_map.end())
 							std::cout << "Error : command doesn't exist !" << std::endl;
 						else
-							cmd_map[str_buff.substr(0, str_index)](str_buff, *user_itr);
+							cmd_map[str_buff.substr(0, str_index)](str_buff, *user_itr, _user_map);
 						
 						str_index = str_buff.find('\n');
 						
