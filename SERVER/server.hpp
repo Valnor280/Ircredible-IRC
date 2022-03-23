@@ -38,7 +38,9 @@ class server
 		int accept_connect(int numsock);
 
 		char *get_pswd();
-		std::map<int, user>	&get_usermap(void);
+		std::string				get_servername() const;
+		std::map<int, user>		&get_usermap(void);
+		std::map<int, user>		&get_admin_map( void );
 
 	private:
 	    struct ConstructorException : public std::exception
@@ -59,6 +61,7 @@ class server
 		char _buffer[512 + 1];
 		fd_set _sock_client;
 		fd_set _sock_ready;
+		std::string		_servername; // SERVERNAME qui nous sert dans les reponses qu'on envoie (de base je le set dans le constructeur mais normalement on le recupere dans le fichier de config)
 
 		
 		//MAP DES USERS
@@ -66,7 +69,7 @@ class server
 		
 		
 		// MAP DES COMMANDES
-		std::map<std::string, void (*)(std::string, int, server &)>		cmd_map;
+		std::map<std::string, void (*)(std::string, int, server &)>				cmd_map;
 
 		
 };

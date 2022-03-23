@@ -48,6 +48,11 @@ std::string			user::get_hostname() const
 	return _hostname;
 }
 
+std::string			user::get_id() const
+{
+	return this->get_nick() + "!" + this->get_username() + "@" + this->get_hostname();
+}
+
 bool		user::set_nick( std::string new_nick )
 {
 	// add function to verify validity
