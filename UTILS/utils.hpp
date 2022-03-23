@@ -3,8 +3,10 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 
-bool    isspecial(char c);
+bool    						isspecial(char c);
+std::vector<std::string>		ft_split(std::string buffer, char sep);
 
 
 #endif

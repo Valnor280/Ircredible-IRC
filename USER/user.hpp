@@ -29,6 +29,7 @@ class user
 		bool			get_auth() const;
 		std::string		get_status() const;
 		std::string		get_hostname() const;
+		std::string		get_id() const; // Permet de construire une string tel que "[nickname]![username]@[hostname]"
 
 		//SETTERS
 		bool		set_nick( std::string new_nick );
