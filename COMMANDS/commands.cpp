@@ -184,7 +184,7 @@ void		INFO(std::string input, int socket_client, server & my_serv)
 	// SENDING the END_OF_INFO reply to signify we have sent everything needed
 	ret = ":" + target.get_id() + " 374 " + target.get_nick() + " :End of /INFO command\r\n";
 	send(socket_client, ret.c_str(), ret.length(), 0);
-    // std::cout << "input :[" << input << "]" << std::endl;
+	// std::cout << "input :[" << input << "]" << std::endl;
     // std::cout << "socket :" << socket_client << std::endl;
     // my_serv.get_usermap()[socket_client].print_user();
     std::cout << std::endl << std::endl;
@@ -202,13 +202,24 @@ void		ISON(std::string input, int socket_client, server & my_serv)
 };
 
 void		KILL(std::string input, int socket_client, server & my_serv) 
-{ 
+{
     std::cout << "KILL called" << std::endl;
-    
-    (void)my_serv;
-    std::cout << "input :[" << input << "]" << std::endl;
-    std::cout << "socket :" << socket_client << std::endl;
-    my_serv.get_usermap()[socket_client].print_user();
+	user				target = (my_serv.get_usermap())[socket_client];
+	if (target.get_mode().find('o') == std::string::npos)
+	{
+		// send reply num 481 ERR_NOPRIVILEGES
+	}
+	else
+	{
+		std::vector<std::string>	splitted = ft_split(input, ' ');
+		if (splitted.size() < 3)
+		{
+			//send reply num 461 ERR_NEEDMOREPARAMS
+		}
+	}
+    // std::cout << "input :[" << input << "]" << std::endl;
+    // std::cout << "socket :" << socket_client << std::endl;
+    // my_serv.get_usermap()[socket_client].print_user();
     std::cout << std::endl << std::endl;
 };
 

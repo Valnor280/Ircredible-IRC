@@ -65,7 +65,9 @@ class server
 
 		
 		//MAP DES USERS
-		std::map<int, user> 													_user_map;
+		std::map<int, user> 													_user_map; // map generale avec socket_client en clé
+
+		std::map<std::string, user &>												_registered_map; // map permettant d'acceder a des users par leur nickname
 		
 		
 		// MAP DES COMMANDES

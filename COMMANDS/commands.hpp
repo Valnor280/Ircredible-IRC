@@ -59,4 +59,5 @@ void		SETNAME(std::string input, int socket_client, server & my_serv);
 void		USERIP(std::string input, int socket_client, server & my_serv);
 
 
+
 #endif
