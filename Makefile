@@ -40,4 +40,6 @@ fclean	:	clean
 re		:	fclean
 				@make all
 
+irc : all 
+	./Ircredible 8000 pswd
 .PHONY : all clean fclean re test

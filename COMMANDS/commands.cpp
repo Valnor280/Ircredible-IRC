@@ -193,6 +193,14 @@ void		USER(std::string input, int socket_client, server & my_serv)
     std::cout << "input :[" << input << "]" << std::endl;
     std::cout << "socket :" << socket_client << std::endl;
     my_serv.get_usermap()[socket_client].print_user();
+
+	// REPLY MSG DEVRAIT PAS ETRE LA MAIS TMP
+	/*
+	send(socket_client, send_reply("test", socket_client, my_serv, 1).c_str(), send_reply("test", socket_client, my_serv, 1).length(), MSG_DONTWAIT);
+	send(socket_client, send_reply("test", socket_client, my_serv, 2).c_str(), send_reply("test", socket_client, my_serv, 2).length(), MSG_DONTWAIT);
+	send(socket_client, send_reply("test", socket_client, my_serv, 3).c_str(), send_reply("test", socket_client, my_serv, 3).length(), MSG_DONTWAIT);
+	send(socket_client, send_reply("test", socket_client, my_serv, 4).c_str(), send_reply("test", socket_client, my_serv, 4).length(), MSG_DONTWAIT);
+	*/
     std::cout << std::endl << std::endl;
 };
 
