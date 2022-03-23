@@ -173,7 +173,9 @@ void server::loop()
 			if ( *itr != _sockfd && FD_ISSET(*itr, &_sock_client))
 			{
 				//		std::cout << "before recv" << std::endl;
-				if ((retbuff = recv(*itr, _buffer, 512, MSG_DONTWAIT)) > 0)
+
+				retbuff = recv(*itr, _buffer, 512, MSG_DONTWAIT);
+				if (retbuff > 0)
 				{
 					_buffer[retbuff] = 0;
 					std::cout << "msg : " << _buffer << "socket :" << *itr << std::endl;
@@ -193,10 +195,8 @@ void server::loop()
 							cmd_map[str_buff.substr(0, str_index)](str_buff, user_itr->first, *this);
 						
 						str_index = str_buff.find('\n');
-						
 						str_buff.erase(0, str_index + 1);
 					}
-				
 					/*for (int k = 0; k < FD_SETSIZE; ++k)
 						if (k != *itr && FD_ISSET(k, &_sock_client))
 						send(k, _buffer, retbuff, 0);*/
@@ -208,6 +208,7 @@ void server::loop()
 					std::cout << "\nsocket n'" << *itr << " is closed on client side.\n";
 					close(*itr);
             		FD_CLR(*itr, &_sock_client);
+					_user_map.erase(*itr);
 					_open_sock.erase(*itr);
 					if (_open_sock.empty() == 0)
 						break;
@@ -215,6 +216,7 @@ void server::loop()
 				//	std::cout << "after recv" << std::endl;
 				//FD_CLR(*itr, &_sock_client);
 			}
+			
 		}
 	}
 }

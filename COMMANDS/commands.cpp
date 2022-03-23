@@ -34,6 +34,14 @@ void		NICK(std::string input, int socket_client, server & my_serv)
 { 
     std::cout << "NICK called" << std::endl;
     
+	std::cout << socket_client << std::endl;
+	if(my_serv.get_usermap()[socket_client].get_auth() == 1)
+	{
+		std::cout << my_serv.get_usermap()[socket_client].get_auth() << std::endl;
+		std::string tmp = ": User not authenticated\r\n";
+		send(socket_client, tmp.c_str(), tmp.size(), MSG_DONTWAIT);
+		return;
+	}
     size_t  begsub;
     size_t  endsub;
     if ((begsub = input.find(' ')) == std::string::npos)
@@ -83,32 +91,34 @@ void		PASS(std::string input, int socket_client, server & my_serv)
 { 
     std::cout << "PASS called" << std::endl;
 
-
-	std::cout << input << std::endl;
-	std::map<int, user> user_map = my_serv.get_usermap();
   	size_t  begsub;
     size_t  endsub;
     if ((begsub = input.find(' ')) == std::string::npos)
+	{
         send(socket_client, ": * PASS :Not enough parameters\r\n", 34, MSG_DONTWAIT);
+		return;
+	}
     if ((endsub = input.find('\r')) == std::string::npos  && (endsub = input.find('\n')) == std::string::npos)
 	{
         std::cout << "Error Pass function: no \\r or \\n" << std::endl;
 	}
 	std::string pass = input.substr(begsub + 1, endsub - begsub - 1);
-	if (pass.compare(my_serv.get_pswd()) == 0 && user_map[socket_client].get_auth() == 1)
+	if (pass.compare(my_serv.get_pswd()) == 0 && my_serv.get_usermap()[socket_client].get_auth() == 1)
 	{
-		user_map[socket_client].set_auth(0);
+		my_serv.get_usermap()[socket_client].set_auth(0);
+		return;
 	}
 	else
 	{
-		if (user_map[socket_client].get_auth() == 0)
+		if (my_serv.get_usermap()[socket_client].get_auth() == 0)
 		{
 			std::string tmp = ":You may not reregister\r\n";
-			send(client.first, &tmp, tmp.size(), MSG_DONTWAIT);
+			send(socket_client, tmp.c_str(), tmp.size(), MSG_DONTWAIT);
 		}
 		else
 			send(socket_client,": Password incorrect\r\n", 22, MSG_DONTWAIT);
-		user_map[socket_client].set_auth(1);
+		my_serv.get_usermap()[socket_client].set_auth(1);
+		return;
 	}
 }
 
@@ -116,7 +126,53 @@ void		USER(std::string input, int socket_client, server & my_serv)
 { 
     std::cout << "USER called" << std::endl;
     
-    (void)my_serv;
+	if(my_serv.get_usermap()[socket_client].get_auth() == 1)
+	{
+		std::string tmp = ": User not authenticated\r\n";
+		send(socket_client, &tmp, tmp.size(), 0);
+		return;
+	}
+	if (my_serv.get_usermap()[socket_client].get_username().empty() == 0)
+	{
+		std::string tmp = ":You may not reregister\r\n";
+		send(socket_client, tmp.c_str(), tmp.size(), MSG_DONTWAIT);
+		return;
+	}
+	size_t  begsub;
+    size_t  endsub;
+    if ((begsub = input.find(' ')) == std::string::npos)
+	{
+        send(socket_client, ": * USER :Not enough parameters\r\n", 34, MSG_DONTWAIT);
+		return;
+	}
+	else if ((endsub = input.find(' ', begsub + 1)) == std::string::npos)
+	{
+		send(socket_client, ": * USER :Not enough parameters\r\n", 34, MSG_DONTWAIT);
+		return;
+	}
+	std::string username = "~" + input.substr(begsub + 1, endsub - begsub - 1);
+	std::cout << username << "TEST\n";
+	if ((endsub = input.find(' ', endsub + 1)) == std::string::npos)
+	{
+        send(socket_client, ": * USER :Not enough parameters\r\n", 34, MSG_DONTWAIT);
+		return;
+	}
+	if ((endsub = input.find(' ', endsub + 1)) == std::string::npos)
+	{
+        send(socket_client, ": * USER :Not enough parameters\r\n", 34, MSG_DONTWAIT);
+		return;
+	}
+	begsub = endsub + 1;
+    if ((endsub = input.find('\r')) == std::string::npos  && (endsub = input.find('\n')) == std::string::npos)
+	{
+        std::cout << "Error Pass function: no \\r or \\n" << std::endl;
+	}
+	std::string realname = input.substr(begsub + 1, endsub - begsub - 1);
+	if(username.length() > USERLEN)
+		username.resize(USERLEN);
+	my_serv.get_usermap()[socket_client].set_username(username);
+	my_serv.get_usermap()[socket_client].set_real_name(realname);
+	std::cout << "username:" << username << " real name:" << realname << std::endl;
     std::cout << "input :[" << input << "]" << std::endl;
     std::cout << "socket :" << socket_client << std::endl;
     my_serv.get_usermap()[socket_client].print_user();
