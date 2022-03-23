@@ -23,7 +23,7 @@
 class server;
 
 #include "../COMMANDS/commands.hpp"
-
+#define USERLEN 12
 
 class server
 {
