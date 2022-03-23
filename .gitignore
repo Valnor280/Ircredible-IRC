@@ -35,6 +35,7 @@
 *.exe
 *.out
 *.app
+Ircredible
 
 ### VisualStudioCode ###
 .vscode/*
