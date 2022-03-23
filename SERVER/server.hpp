@@ -41,6 +41,9 @@ class server
 		std::string				get_servername() const;
 		std::map<int, user>		&get_usermap(void);
 		std::map<int, user>		&get_admin_map( void );
+		std::string				get_hostname(void) const;
+		std::string				get_version(void) const;
+		std::string				get_date(void) const;
 
 	private:
 	    struct ConstructorException : public std::exception
@@ -62,7 +65,8 @@ class server
 		fd_set _sock_client;
 		fd_set _sock_ready;
 		std::string		_servername; // SERVERNAME qui nous sert dans les reponses qu'on envoie (de base je le set dans le constructeur mais normalement on le recupere dans le fichier de config)
-
+		std::string 	_version; // On doit avoir une version du server mais je sais pas a quoi ca correspond donc set dans le constructeur x)
+		std::string		_dateofbirth; // explicite
 		
 		//MAP DES USERS
 		std::map<int, user> 													_user_map;

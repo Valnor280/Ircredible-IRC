@@ -5,7 +5,7 @@
 
 
 
-server::server(char * port_number, char * pswd) : _pswd(pswd), _servername("Ircredible_IRC")
+server::server(char * port_number, char * pswd) : _pswd(pswd), _servername("Ircredible_IRC"), _version("2.0")
 {
 	// SERVER-SIDE
 	cmd_map["ADMIN"] = &ADMIN;
@@ -54,6 +54,12 @@ server::server(char * port_number, char * pswd) : _pswd(pswd), _servername("Ircr
 	cmd_map["SETNAME"] = &SETNAME;
 	cmd_map["USERIP"] = &USERIP;
 
+   	time_t now = time(0);
+   
+   	// convert now to string form
+   	char* dt = ctime(&now);
+	this->_dateofbirth = dt;
+	_dateofbirth.resize(_dateofbirth.size() - 1);
 	FD_ZERO(&_sock_client);
 	addrinfo hints, *res, *p; // res = potential adress p = adress iterator;
 	memset(&hints, 0, sizeof(hints));
@@ -240,4 +246,19 @@ char *server::get_pswd()
 std::string		server::get_servername() const
 {
 	return this->_servername;
+}
+
+std::string				server::get_hostname(void) const
+{
+	return this->_hostname;
+}
+
+std::string				server::get_version(void) const
+{
+	return this->_version;
+}
+
+std::string				server::get_date(void) const
+{
+	return this->_dateofbirth;
 }
