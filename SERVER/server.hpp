@@ -38,12 +38,12 @@ class server
 		int accept_connect(int numsock);
 
 		char *get_pswd();
-		std::string				get_servername() const;
-		std::map<int, user>		&get_usermap(void);
-		std::map<int, user>		&get_admin_map( void );
-		std::string				get_hostname(void) const;
-		std::string				get_version(void) const;
-		std::string				get_date(void) const;
+		std::string						get_servername() const;
+		std::map<int, user>				&get_usermap(void);
+		std::map<std::string, user>		&get_regi_map(void);
+		std::string						get_hostname(void) const;
+		std::string						get_version(void) const;
+		std::string						get_date(void) const;
 
 	private:
 	    struct ConstructorException : public std::exception
@@ -71,7 +71,7 @@ class server
 		//MAP DES USERS
 		std::map<int, user> 													_user_map; // map generale avec socket_client en clé
 
-		std::map<std::string, user &>												_registered_map; // map permettant d'acceder a des users par leur nickname
+		std::map<std::string, user>											_registered_map; // map permettant d'acceder a des users par leur nickname
 		
 		
 		// MAP DES COMMANDES
