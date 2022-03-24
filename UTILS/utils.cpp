@@ -25,6 +25,13 @@ std::vector<std::string>		ft_split(std::string buffer, char sep)
 		}
 		i++;
 	}
+<<<<<<< HEAD
+=======
+	if (i == buffer.length() && ret.empty())
+	{
+		ret.push_back(buffer);
+	}
+>>>>>>> master
 	return ret;
 }
 
@@ -50,6 +57,18 @@ std::string		ft_to_string(size_t value)
 	return (sign + output);
 }
 
+<<<<<<< HEAD
+=======
+std::string						ft_toupper(std::string input)
+{
+	for (unsigned long i = 0; i < input.size(); i++)
+	{
+		input[i] = toupper(input[i]);
+	}
+	return input;
+}
+
+>>>>>>> master
 void							send_welcome(int socket_client, server & my_serv)
 {
 	send(socket_client, send_reply("test", socket_client, my_serv, 1).c_str(), send_reply("test", socket_client, my_serv, 1).length(), MSG_DONTWAIT);

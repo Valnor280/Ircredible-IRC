@@ -58,6 +58,14 @@ int				user::get_registration() const
 	return this->_registration;
 }
 
+<<<<<<< HEAD
+=======
+int				user::get_socket() const
+{
+	return this->_socket;
+}
+
+>>>>>>> master
 bool		user::set_nick( std::string new_nick )
 {
 	// add function to verify validity
@@ -103,6 +111,14 @@ void		user::set_registration( int new_reg )
 		this->_registration = new_reg;
 }
 
+<<<<<<< HEAD
+=======
+void		user::set_socket( int new_socket )
+{
+	this->_socket = new_socket;
+}
+
+>>>>>>> master
 void		user::print_user() const
 {
 	std::cout << "|| USER IDENTIFICATION ||" << std::endl;
