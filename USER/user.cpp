@@ -2,12 +2,7 @@
 
 #include "USER/user.hpp"
 
-user::user(): _nick(""), _username(""), _real_name(""), _mode("")
-{
-	// nothing here
-}
-
-user::user(std::string username): _nick(""), _username(username), _real_name(""), _mode("")
+user::user(): _nick(""), _username(""), _real_name(""), _mode(""), _auth(1), _registration(0)
 {
 	// nothing here
 }
@@ -37,6 +32,32 @@ std::string			user::get_mode() const
 	return _mode;
 }
 
+std::string			user::get_status() const
+{
+	return _status;
+}
+
+
+bool			user::get_auth() const
+{
+	return _auth;
+}
+
+std::string			user::get_hostname() const
+{
+	return _hostname;
+}
+
+std::string			user::get_id() const
+{
+	return this->get_nick() + "!" + this->get_username() + "@" + this->get_hostname();
+}
+
+int				user::get_registration() const
+{
+	return this->_registration;
+}
+
 bool		user::set_nick( std::string new_nick )
 {
 	// add function to verify validity
@@ -62,6 +83,26 @@ void		user::set_mode( std::string new_mode )
 	this->_mode = new_mode;
 }
 
+void		user::set_auth(int i)
+{
+	this->_auth = i;
+}
+void		user::set_status( std::string new_status )
+{
+	this->_status = new_status;
+}
+
+void		user::set_hostname( std::string new_hostname )
+{
+	this->_hostname = new_hostname;
+}
+
+void		user::set_registration( int new_reg )
+{
+	if (new_reg >= 0 && new_reg <= 2)
+		this->_registration = new_reg;
+}
+
 void		user::print_user() const
 {
 	std::cout << "|| USER IDENTIFICATION ||" << std::endl;
@@ -69,5 +110,7 @@ void		user::print_user() const
 	std::cout << "Username  : " << _username << std::endl;
 	std::cout << "Real name : " << _real_name << std::endl;
 	std::cout << "Mode      : " << _mode << std::endl;
+	std::cout << "Status    : " << _status << std::endl;
+	std::cout << "Hostname  : " << _hostname << std::endl;
 }
 

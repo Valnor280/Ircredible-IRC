@@ -12,17 +12,11 @@ int server::accept_connect(int numsock)
 		std::cout << _sockfd << std::endl;
 		if ((new_client_socket = accept(_sockfd, (sockaddr *) &new_client_address, &len)) >= 0)
 		{
-			FD_SET(new_client_socket, &_sock_client);
-			//FD_SET(new_client_socket, &_sock_ready);
-			//.insert(std::make_pair(new_client_socket, pending_socket()));
+			FD_SET(new_client_socket, &_sock_client);			
 			_open_sock.insert(new_client_socket);
 			std::cout << "Accepted conection\n";
-			
-			//user creation
-			std::pair<int, user> pr = std::make_pair(new_client_socket, user()); 
-			_user_map.insert(pr);
-
-			send(new_client_socket, "Enter username :", 16, 0);
+			_user_map.insert(std::make_pair(new_client_socket, user()));
+		
 		}
 		else
 		{

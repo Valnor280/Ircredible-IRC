@@ -9,7 +9,9 @@ SRCS =	main.cpp \
 		SERVER/server.cpp \
 		SERVER/accept.cpp \
 		SERVER/user_read.cpp \
-		USER/user.cpp
+		USER/user.cpp \
+		COMMANDS/commands.cpp \
+		UTILS/utils.cpp
 
 
 OBJS = $(SRCS:%.cpp=$(OBJS_DIR)/%.o)
@@ -38,4 +40,6 @@ fclean	:	clean
 re		:	fclean
 				@make all
 
+irc : all 
+	./Ircredible 8000 pswd
 .PHONY : all clean fclean re test
