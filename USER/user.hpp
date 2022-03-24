@@ -16,6 +16,7 @@ class user
 										// 0 : nothing yet or just PASS
 										// 1 : NICK has been set
 										// 2 : USER has been set
+		std::string		_away_msg; // the away msg used by the command away and its reply
 	
 		std::string     _status;
 		std::string		_hostname;
@@ -35,6 +36,7 @@ class user
 		std::string		get_hostname() const;
 		std::string		get_id() const; // Permet de construire une string tel que "[nickname]![username]@[hostname]"
 		int				get_registration() const;
+		std::string		get_away_msg() const;
 
 		//SETTERS
 		bool		set_nick( std::string new_nick );
@@ -45,6 +47,7 @@ class user
 		void		set_status( std::string status );
 		void		set_hostname( std::string new_hostname );
 		void		set_registration( int new_reg );
+		void		set_away_msg(std::string msg);
 
 		// UTILS
 		void		print_user() const;

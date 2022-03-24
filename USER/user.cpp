@@ -58,6 +58,11 @@ int				user::get_registration() const
 	return this->_registration;
 }
 
+std::string		user::get_away_msg() const
+{
+	return this->_away_msg;
+}
+
 bool		user::set_nick( std::string new_nick )
 {
 	// add function to verify validity
@@ -101,6 +106,11 @@ void		user::set_registration( int new_reg )
 {
 	if (new_reg >= 0 && new_reg <= 2)
 		this->_registration = new_reg;
+}
+
+void		user::set_away_msg( std::string msg )
+{
+	this->_away_msg = msg;
 }
 
 void		user::print_user() const
