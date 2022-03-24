@@ -5,7 +5,7 @@
 
 
 
-server::server(char * port_number, char * pswd) : _pswd(pswd), _servername("Ircredible_IRC"), _version("2.0")
+server::server(char * port_number, char * pswd) : _pswd(pswd), _servername("Ircredible_IRC"), _version("2.0"), _motd("RTFM!")
 {
 	// SERVER-SIDE
 	cmd_map["ADMIN"] = &ADMIN;
@@ -54,7 +54,7 @@ server::server(char * port_number, char * pswd) : _pswd(pswd), _servername("Ircr
 	cmd_map["SETNAME"] = &SETNAME;
 	cmd_map["USERIP"] = &USERIP;
 
-   	// time_t now = time(0);
+   	time_t now = time(0);
 	// std::vector<std::string>		test = ft_split("PING 0.0.0.0\r\n", ' ');
 	// for (unsigned long i = 0; i < test.size(); i++)
 	// {
@@ -203,7 +203,7 @@ void server::loop()
 						//std::cout << "str_buff '" << str_buff << "'" << std::endl;
 						if (cmd_map.find(ft_toupper(input[0])) == cmd_map.end())
 						{
-							std::cout << "Error : command doesn't exist !" << std::endl;
+							std::cout <<  send_reply(input[0], *itr, *this, 421) << std::endl;
 						}
 						else
 						{
@@ -273,6 +273,12 @@ std::string				server::get_version(void) const
 std::string				server::get_date(void) const
 {
 	return this->_dateofbirth;
+}
+
+
+std::string				server::get_motd(void) const
+{
+	return this->_motd;
 }
 
 std::map<std::string, user>		&server::get_regi_map(void)

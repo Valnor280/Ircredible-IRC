@@ -58,6 +58,12 @@ int				user::get_registration() const
 	return this->_registration;
 }
 
+
+std::string		user::get_away_msg() const
+{
+	return this->_away_msg;
+}
+
 int				user::get_socket() const
 {
 	return this->_socket;
@@ -108,6 +114,10 @@ void		user::set_registration( int new_reg )
 		this->_registration = new_reg;
 }
 
+void		user::set_away_msg( std::string msg )
+{
+	this->_away_msg = msg;
+}
 void		user::set_socket( int new_socket )
 {
 	this->_socket = new_socket;
