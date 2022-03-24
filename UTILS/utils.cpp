@@ -83,7 +83,6 @@ void							send_welcome(int socket_client, server & my_serv)
 
 std::string send_reply(std::string input, int socket_client, server & my_serv, int code)
 {
-	(void)input;
 	std::string true_code = ft_to_string(code);
 	if (code < 10)
 		true_code = std::string(2, '0').append(ft_to_string(code));
@@ -97,7 +96,7 @@ std::string send_reply(std::string input, int socket_client, server & my_serv, i
 	switch (code)
 	{
 	case 1:
-			return ret += ":Welcome to the Ircredible Network, " + my_serv.get_usermap()[socket_client].get_id() + "\n\r";
+			return ret += ":Welcome to the Ircredible Network, " + my_serv.get_usermap()[socket_client].get_id() + "\r\n";
 	case 2:
 			return ret += ":Your host is " + my_serv.get_servername() + ", running version " + my_serv.get_version() + "\r\n";
 	case 3:

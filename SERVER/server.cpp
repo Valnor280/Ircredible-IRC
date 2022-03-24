@@ -203,7 +203,7 @@ void server::loop()
 						//std::cout << "str_buff '" << str_buff << "'" << std::endl;
 						if (cmd_map.find(ft_toupper(input[0])) == cmd_map.end())
 						{
-							std::cout <<  send_reply(input[0], *itr, *this, 421) << std::endl;
+							send(*itr, send_reply(input[0], *itr, *this, 421).c_str(), send_reply(input[0], *itr, *this, 421).length(), MSG_DONTWAIT);
 						}
 						else
 						{
