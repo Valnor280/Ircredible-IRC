@@ -205,7 +205,7 @@ std::string send_reply(std::string input, int socket_client, server & my_serv, i
 	case 409:
 			return ret += ":No origin specified\r\n";
 	case 411:
-			return ret += ":No recipient given" + input + "\r\n"; //<command>
+			return ret += ":No recipient given " + input + "\r\n"; //<command>
 	case 412:
 			return ret += ":No text to send\r\n";
 	case 421:
