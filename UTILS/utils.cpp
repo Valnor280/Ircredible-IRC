@@ -82,8 +82,6 @@ std::string send_reply(std::string input, int socket_client, server & my_serv, i
 	std::string ret;
 	if (my_serv.get_usermap()[socket_client].get_nick().empty())
 		ret = std::string(":" + my_serv.get_hostname() + " " + true_code + " * ");
-	else if (code == 691)
-		ret = std::string(":" + my_serv.get_hostname() + " " + true_code + " ");
 	else
 		ret = ":" + my_serv.get_hostname() + " " + true_code + " " + my_serv.get_usermap()[socket_client].get_nick() + " ";
 	switch (code)
@@ -122,12 +120,126 @@ std::string send_reply(std::string input, int socket_client, server & my_serv, i
 			return ret += my_serv.get_usermap()[socket_client].get_nick() + " " + my_serv.get_usermap()[socket_client].get_username() + " " + my_serv.get_hostname() + " * " + ":" + my_serv.get_usermap()[socket_client].get_real_name() + "\r\n";
 	case 312:
 			return ret += my_serv.get_usermap()[socket_client].get_nick() + " " + my_serv.get_servername() + " : \r\n"; // This one not sure if we have to use it
-	case 312:
-			return ret +=
-	case 312:
-			return ret +=
-	case 312:
-			return ret +=
+	case 313:
+			return ret += my_serv.get_usermap()[socket_client].get_nick() + " :is an IRC operator\r\n";
+	case 314:
+			return ret += my_serv.get_usermap()[socket_client].get_nick() + " " + my_serv.get_usermap()[socket_client].get_username()+ " " + my_serv.get_hostname() + " * " + ":" + my_serv.get_usermap()[socket_client].get_real_name() + "\r\n";
+	case 315:
+			return ret += input + " :End of WHO list\r\n"; // need <name>
+	//case 317:
+			//return ret += my_serv.get_usermap()[socket_client].get_nick() + " " + my_serv.get_usermap()[socket_client].get_time_idle() + " :seconds idle\r\n";
+	case 318:
+			return ret += my_serv.get_usermap()[socket_client].get_nick() + " :End of WHOIS list\r\n";
+	//case 319:
+		//	return ret += my_serv.get_usermap()[socket_client].get_nick() + ":*( ( "@" / "+" ) <channel> " " )\r\n";
+	case 322:
+			return ret += "<channel> <# visible> :<topic>\r\n";
+	case 323:
+			return ret += ":End of LIST\r\n";
+	case 324:
+			return ret += "<channel> <mode> <mode params>\r\n";
+	case 331:
+			return ret += "<channel> :No topic is set\r\n";
+	case 332:
+			return ret += "<channel> :<topic>\r\n";
+	case 341:
+			return ret += "<channel> <nick>\r\n";
+	case 351:
+			return ret += "<version>.<debuglevel> <server> :<comments>\r\n"; // maybe no use for us
+	case 352:
+			return ret += "<channel> <user> <host> <server> <nick> ( H / G > [*] [ ( @ / + ) ] :<hopcount> <real name>\r\n";
+	case 353:
+			return ret += "( = / * / @ ) <channel> :[ @ / + ] <nick> *(  [ @ / + ] <nick> )\r\n";
+	case 366:
+			return ret += "<channel> :End of NAMES list\r\n";
+	case 367:
+			return ret += "<channel> <banmask>\r\n";
+	case 368:
+			return ret += "<channel> :End of channel ban list\r\n";
+	case 369:
+			return ret +=  my_serv.get_usermap()[socket_client].get_nick() + " :End of WHOWAS\r\n";
+	case 371:
+			return ret += ":" + input + "\r\n"; // <string>
+	case 372:
+			return ret += ":- " + my_serv.get_motd() + "\r\n";
+	case 374:
+			return ret += ":End of INFO list\r\n";
+	case 375:
+			return ret += ":- " + my_serv.get_servername() + " Message of the day - \r\n";
+	case 376:
+			return ret += ":End of MOTD command\r\n";
+	case 381:
+			return ret += ":You are now an IRC operator\r\n";
+	case 382:
+			return ret += "<config file> :Rehashing\r\n";
+	case 391:
+			return ret +=  my_serv.get_servername() + " : " + input + "\r\n"; // <string showing server's local time>
+	case 401:
+			return ret += input + " :No such nick/channel\r\n"; // nickname
+	case 402:
+			return ret += input + " :No such server\r\n"; // <server name>
+	case 403:
+			return ret += input + " :No such channel\r\n"; // <channel name> :No such channel
+	case 404:
+			return ret += input + " :Cannot send to channel\r\n"; // <channel name> 
+	case 405:
+			return ret += input + " :You have joined too many channels\r\n"; // ''
+	case 406:
+			return ret += input + " :There was no such nickname\r\n";
+	case 409:
+			return ret += ":No origin specified\r\n";
+	case 411:
+			return ret += ":No recipient given" + input + "\r\n"; //<command>
+	case 412:
+			return ret += ":No text to send\r\n";
+	case 421:
+			return ret += input + " :Unknown command\r\n"; //<command>
+	case 422:
+			return ret += ":MOTD File is missing\r\n";
+	case 423:
+			return ret += my_serv.get_servername() + " :No administrative info available\r\n";
+	case 432:
+			return ret += input + " :Erroneous nickname\r\n"; // nick
+	case 433:
+			return ret += input + " :Nickname is already in use\r\n"; // nick
+	case 441:
+			return ret += input + "<channel> :They aren't on that channel\r\n"; //nick
+	case 442:
+			return ret += input + " :You're not on that channel\r\n"; // channel
+	case 443:
+			return ret += my_serv.get_usermap()[socket_client].get_username() + "<channel> :is already on channel\r\n";
+	case 451:
+			return ret += ":You have not registered\r\n";
+	case 461:
+			return ret += input + " :Not enough parameters\r\n";
+	case 462:
+			return ret += ":Unauthorized command (already registered)\r\n";
+	case 464:
+			return ret += ":Password incorrect\r\n";
+	case 471:
+			return ret += input + " :Cannot join channel (+l)\r\n";
+	case 472:
+			return ret += input + " :is unknown mode char to me for <channel>\r\n";
+	case 473:
+			return ret += input + " :Cannot join channel (+i)\r\n";
+	case 474:
+			return ret += input + " :Cannot join channel (+b)\r\n";
+	case 475:
+			return ret += input + " :Cannot join channel (+k)\r\n";
+	case 476:
+			return ret += input + " :Bad Channel Mask\r\n";
+	case 481:
+			return ret += ":Permission Denied- You're not an IRC operator\r\n";
+	case 482:
+			return ret += "<channel> :You're not channel operator\r\n";
+	case 483:
+			return ret += ":You can't kill a server!\r\n";
+	case 491:
+			return ret += ":No O-lines for your host\r\n";
+	case 501:
+			return ret += ":Unknown MODE flag\r\n";
+	case 502:
+			return ret += ":Cannot change mode for other users\r\n";
 	}
 
 

@@ -19,7 +19,8 @@
 #include <fcntl.h>
 #include "../USER/user.hpp"
 #include <signal.h>
-
+#include "RPL_ERR_DEFINE.hpp"
+#include "UTILS/utils.hpp"
 class server;
 
 #include "../COMMANDS/commands.hpp"
@@ -44,6 +45,7 @@ class server
 		std::string				get_hostname(void) const;
 		std::string				get_version(void) const;
 		std::string				get_date(void) const;
+		std::string				get_motd(void) const;
 
 	private:
 	    struct ConstructorException : public std::exception
@@ -67,6 +69,7 @@ class server
 		std::string		_servername; // SERVERNAME qui nous sert dans les reponses qu'on envoie (de base je le set dans le constructeur mais normalement on le recupere dans le fichier de config)
 		std::string 	_version; // On doit avoir une version du server mais je sais pas a quoi ca correspond donc set dans le constructeur x)
 		std::string		_dateofbirth; // explicite
+		std::string		_motd; // message of the day
 		
 		//MAP DES USERS
 		std::map<int, user> 													_user_map; // map generale avec socket_client en clé

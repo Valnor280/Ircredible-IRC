@@ -5,7 +5,7 @@
 
 
 
-server::server(char * port_number, char * pswd) : _pswd(pswd), _servername("Ircredible_IRC"), _version("2.0")
+server::server(char * port_number, char * pswd) : _pswd(pswd), _servername("Ircredible_IRC"), _version("2.0"), _motd("RTFM!")
 {
 	// SERVER-SIDE
 	cmd_map["ADMIN"] = &ADMIN;
@@ -198,7 +198,7 @@ void server::loop()
 						//std::cout << "str_buff '" << str_buff << "'" << std::endl;
 						if (cmd_map.find(ft_toupper(input[0])) == cmd_map.end())
 						{
-							std::cout << "Error : command doesn't exist !" << std::endl;
+							std::cout <<  send_reply(input[0], *itr, *this, 421) << std::endl;
 						}
 						else
 						{
@@ -266,4 +266,9 @@ std::string				server::get_version(void) const
 std::string				server::get_date(void) const
 {
 	return this->_dateofbirth;
+}
+
+std::string				server::get_motd(void) const
+{
+	return this->_motd;
 }
