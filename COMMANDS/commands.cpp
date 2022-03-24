@@ -295,6 +295,54 @@ void		KILL(std::string input, int socket_client, server & my_serv)
     std::cout << std::endl << std::endl;
 };
 
+void		PRIVMSG(std::string input, int socket_client, server & my_serv) 
+{ 
+    std::cout << "PRIVMSG called" << std::endl;
+    
+    std::vector<std::string> splitted = ft_split(input, ' '); 
+    std::map<int, user> usermap = my_serv.get_usermap();    
+    std::map<int, user>::iterator it = usermap.begin();
+    user sender = usermap[socket_client];
+    std::string ret;
+
+
+    while (it != usermap.end())
+    {
+        if (it->second.get_username() == splitted[1] /* || channel_name == spitted*/)// ne gere pas les channel
+            break;
+        ++it;
+    }
+    if (it == usermap.end())
+    {
+        std::cout << "HERE '" << splitted[1] << "'" << std::endl;
+		ret = ":" + sender.get_id() + " 401 " + sender.get_nick() + " :" + splitted[1] + "\r\n";
+        std::cout << "ret '" << ret << "'" << std::endl;
+        ret = ":" + sender.get_id() + " 401 " + sender.get_nick() + " :salut\r\n";
+        // std::cout << "ret '" << ret << "'" << std::endl;
+        //"<client> 401 <nickname> :No such nick/channel"
+    }
+    else
+    {
+		ret = ":" + sender.get_id() + " PRIVMSG " + sender.get_nick() + " :" + splitted[2] + "\r\n";
+        socket_client = it->first;
+    }
+/*
+    if (pas les permission du channel)
+    {
+		ret = ":" + sender.get_id() + " 403 " + sender.get_nick() + " :No such nick/channel\r\n";
+        "<client> 403 <channel> :No such channel"
+    }
+*/
+
+
+    send(socket_client, ret.c_str(), ret.size(), MSG_DONTWAIT);
+
+    std::cout << "input :[" << input << "]" << std::endl;
+    std::cout << "socket :" << socket_client << std::endl;
+    my_serv.get_usermap()[socket_client].print_user();
+    std::cout << std::endl << std::endl;
+};
+
 void		LUSERS(std::string input, int socket_client, server & my_serv) 
 { 
     std::cout << "LUSERS called" << std::endl;
@@ -474,11 +522,31 @@ void		LIST(std::string input, int socket_client, server & my_serv)
 void		PING(std::string input, int socket_client, server & my_serv)
 { 
     std::cout << "PING called" << std::endl;
+    std::cout << "input '" << input << "'" << std::endl;
+
+    std::string			        ret;
+	user				        target = (my_serv.get_usermap())[socket_client];
+	std::vector<std::string>	splitted;
+
+    char *pch = std::strtok((char *)input.c_str(), " ");
+
+    while (pch)
+    {
+        splitted.push_back(pch);
+        pch = std::strtok(NULL, " ");
+    }
+
+    std::cout << "0 :" << splitted[0] << std::endl;
+    std::cout << "1 :" << splitted[1] << std::endl;
+
+	ret = ":" + target.get_id() + target.get_nick() + " :" + splitted[1] + "\r\n";
+    std::cout << "ret '" << ret << "'" << std::endl;
+    send(socket_client, ret.c_str(), ret.size(), MSG_DONTWAIT);
     
-    (void)my_serv;
     std::cout << "input :[" << input << "]" << std::endl;
     std::cout << "socket :" << socket_client << std::endl;
     my_serv.get_usermap()[socket_client].print_user();
+    
     std::cout << std::endl << std::endl;
 };
 
@@ -589,17 +657,6 @@ void		NOTICE(std::string input, int socket_client, server & my_serv)
 void		OPER(std::string input, int socket_client, server & my_serv) 
 { 
     std::cout << "OPER called" << std::endl;
-    
-    (void)my_serv;
-    std::cout << "input :[" << input << "]" << std::endl;
-    std::cout << "socket :" << socket_client << std::endl;
-    my_serv.get_usermap()[socket_client].print_user();
-    std::cout << std::endl << std::endl;
-};
-
-void		PRIVMSG(std::string input, int socket_client, server & my_serv) 
-{ 
-    std::cout << "PRIVMSG called" << std::endl;
     
     (void)my_serv;
     std::cout << "input :[" << input << "]" << std::endl;
