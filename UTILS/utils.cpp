@@ -50,6 +50,14 @@ std::string		ft_to_string(size_t value)
 	return (sign + output);
 }
 
+void							send_welcome(int socket_client, server & my_serv)
+{
+	send(socket_client, send_reply("test", socket_client, my_serv, 1).c_str(), send_reply("test", socket_client, my_serv, 1).length(), MSG_DONTWAIT);
+	send(socket_client, send_reply("test", socket_client, my_serv, 2).c_str(), send_reply("test", socket_client, my_serv, 2).length(), MSG_DONTWAIT);
+	send(socket_client, send_reply("test", socket_client, my_serv, 3).c_str(), send_reply("test", socket_client, my_serv, 3).length(), MSG_DONTWAIT);
+	send(socket_client, send_reply("test", socket_client, my_serv, 4).c_str(), send_reply("test", socket_client, my_serv, 4).length(), MSG_DONTWAIT);
+}
+
 std::string send_reply(std::string input, int socket_client, server & my_serv, int code)
 {
 	(void)input;
