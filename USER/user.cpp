@@ -2,7 +2,7 @@
 
 #include "USER/user.hpp"
 
-user::user(): _nick(""), _username(""), _real_name(""), _mode(""), _auth(1)
+user::user(): _nick(""), _username(""), _real_name(""), _mode(""), _auth(1), _registration(0)
 {
 	// nothing here
 }
@@ -53,6 +53,11 @@ std::string			user::get_id() const
 	return this->get_nick() + "!" + this->get_username() + "@" + this->get_hostname();
 }
 
+int				user::get_registration() const
+{
+	return this->_registration;
+}
+
 bool		user::set_nick( std::string new_nick )
 {
 	// add function to verify validity
@@ -90,6 +95,12 @@ void		user::set_status( std::string new_status )
 void		user::set_hostname( std::string new_hostname )
 {
 	this->_hostname = new_hostname;
+}
+
+void		user::set_registration( int new_reg )
+{
+	if (new_reg >= 0 && new_reg <= 2)
+		this->_registration = new_reg;
 }
 
 void		user::print_user() const
