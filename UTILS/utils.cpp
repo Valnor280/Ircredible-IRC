@@ -16,9 +16,16 @@ std::vector<std::string>		ft_split(std::string buffer, char sep)
 
 	while (i < buffer.length())
 	{
-		if ((buffer[i] == sep || i == buffer.length() - 1) && i != start_index)
+		if (buffer[i] == sep && i != start_index)
 		{
 			end_index = i;
+			std::string		sub_str = buffer.substr(start_index, end_index - start_index);
+			ret.push_back(sub_str);
+			start_index = end_index + 1;
+		}
+		else if ( i == buffer.length() - 1 && i != start_index)
+		{
+			end_index = i + 1;
 			std::string		sub_str = buffer.substr(start_index, end_index - start_index);
 			ret.push_back(sub_str);
 			start_index = end_index + 1;
