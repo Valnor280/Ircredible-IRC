@@ -5,23 +5,26 @@
 
 #include <vector>
 #include <string>
+#include <algorithm>
 #include "USER/user.hpp"
 
 class channel
 {
 	private:
-		string		_name;
-		vector<user>		_user_list;
-		vector<user>		_op_list;
+		std::string				_name;
+		std::vector<user>		_user_list;
+		std::vector<user>		_op_list;
+		std::string				_chan_mode;
 	
 	public:
 		channel( const user creator );
 		~channel();
 
 		// GETTERS
-		string				get_name() const;
-		vector<user>		get_user_list() const;
-		vector<user>		get_op_list() const;
+		std::string				get_name() const;
+		std::vector<user>		get_user_list() const;
+		std::vector<user>		get_op_list() const;
+		std::string				get_chan_mode() const;
 
 		// SETTERS
 		void				set_name( std::string new_name );

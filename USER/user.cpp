@@ -134,3 +134,4 @@ void		user::print_user() const
 	std::cout << "Hostname  : " << _hostname << std::endl;
 }
 
+bool operator==(const user& lhs, const user& rhs) { return lhs.get_socket() == rhs.get_socket();}

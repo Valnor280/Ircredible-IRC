@@ -23,6 +23,7 @@
 #include <signal.h>
 #include "RPL_ERR_DEFINE.hpp"
 #include "UTILS/utils.hpp"
+#include "CHANNEL/channel.hpp"
 class server;
 
 #include "../COMMANDS/commands.hpp"
@@ -83,6 +84,9 @@ class server
 		
 		// MAP DES COMMANDES
 		std::map<std::string, void (*)(std::string, int, server &)>				cmd_map;
+
+		//VEctor des chans
+		std::vector<channel>	_chan_map;
 
 		
 };
