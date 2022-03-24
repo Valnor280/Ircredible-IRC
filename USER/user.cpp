@@ -58,6 +58,11 @@ int				user::get_registration() const
 	return this->_registration;
 }
 
+int				user::get_socket() const
+{
+	return this->_socket;
+}
+
 bool		user::set_nick( std::string new_nick )
 {
 	// add function to verify validity
@@ -101,6 +106,11 @@ void		user::set_registration( int new_reg )
 {
 	if (new_reg >= 0 && new_reg <= 2)
 		this->_registration = new_reg;
+}
+
+void		user::set_socket( int new_socket )
+{
+	this->_socket = new_socket;
 }
 
 void		user::print_user() const

@@ -218,6 +218,8 @@ void server::loop()
 				{
 					std::cout << "\nsocket n'" << *itr << " is closed on client side.\n";
 					close(*itr);
+					if (_user_map[*itr].get_registration() == 3)
+						_registered_map.erase(_user_map[*itr].get_nick());
             		FD_CLR(*itr, &_sock_client);
 					_user_map.erase(*itr);
 					_open_sock.erase(*itr);
@@ -266,4 +268,9 @@ std::string				server::get_version(void) const
 std::string				server::get_date(void) const
 {
 	return this->_dateofbirth;
+}
+
+std::map<std::string, user>		&server::get_regi_map(void)
+{
+	return this->_registered_map;
 }

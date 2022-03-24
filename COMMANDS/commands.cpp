@@ -101,7 +101,11 @@ void		NICK(std::string input, int socket_client, server & my_serv)
 	if (my_serv.get_usermap()[socket_client].get_registration() == 0)
 		my_serv.get_usermap()[socket_client].set_registration(1);
 	else if (my_serv.get_usermap()[socket_client].get_registration() == 2)
+	{
+		my_serv.get_usermap()[socket_client].set_registration(3);
 		send_welcome(socket_client, my_serv);
+		my_serv.get_regi_map().insert(std::make_pair(my_serv.get_usermap()[socket_client].get_nick(), my_serv.get_usermap()[socket_client]));
+	}
 
     std::cout << "input :[" << input << "]" << std::endl;
     std::cout << "socket :" << socket_client << std::endl;
@@ -201,7 +205,11 @@ void		USER(std::string input, int socket_client, server & my_serv)
 	if (my_serv.get_usermap()[socket_client].get_registration() == 0)
 		my_serv.get_usermap()[socket_client].set_registration(2);
 	else if (my_serv.get_usermap()[socket_client].get_registration() == 1)
+	{
+		my_serv.get_usermap()[socket_client].set_registration(3);
 		send_welcome(socket_client, my_serv);
+		my_serv.get_regi_map().insert(std::make_pair(my_serv.get_usermap()[socket_client].get_nick(), my_serv.get_usermap()[socket_client]));
+	}
 
 	std::cout << "username:" << username << " real name:" << realname << std::endl;
     std::cout << "input :[" << input << "]" << std::endl;
