@@ -240,6 +240,8 @@ std::string send_reply(std::string input, int socket_client, server & my_serv, i
 			return ret += ":Unknown MODE flag\r\n";
 	case 502:
 			return ret += ":Cannot change mode for other users\r\n";
+	default:
+			return ret += " ";
 	}
 
 
