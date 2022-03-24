@@ -16,7 +16,7 @@ std::vector<std::string>		ft_split(std::string buffer, char sep)
 
 	while (i < buffer.length())
 	{
-		if ((buffer[i] == sep || i == buffer.length()) && i != start_index)
+		if ((buffer[i] == sep || i == buffer.length() - 1) && i != start_index)
 		{
 			end_index = i;
 			std::string		sub_str = buffer.substr(start_index, end_index - start_index);
@@ -61,6 +61,16 @@ std::string						ft_toupper(std::string input)
 		input[i] = toupper(input[i]);
 	}
 	return input;
+}
+
+bool							check_mode_input( std::string arg)
+{
+	(void)arg;
+// 	unsigned long		i = 0;
+// 	std::string			signs = "+-";
+
+	//if (arg[i] )
+	return true;
 }
 
 void							send_welcome(int socket_client, server & my_serv)
