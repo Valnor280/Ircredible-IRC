@@ -370,11 +370,28 @@ void		MODE(std::string input, int socket_client, server & my_serv)
 void		MOTD(std::string input, int socket_client, server & my_serv) 
 { 
     std::cout << "MOTD called" << std::endl;
-    
-    (void)my_serv;
-    std::cout << "input :[" << input << "]" << std::endl;
-    std::cout << "socket :" << socket_client << std::endl;
-    my_serv.get_usermap()[socket_client].print_user();
+    std::vector<std::string>	splitted = ft_split(input, ' ');
+
+	if (splitted.size() > 1 && splitted[1] !=  my_serv.get_servername())
+	{
+		std::string tmp = send_reply("MOTD", socket_client, my_serv, ERR_NOSUCHSERVER);
+		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+	}
+	else if (my_serv.get_motd().empty() == 0)
+	{
+		std::string tmp = send_reply("MOTD", socket_client, my_serv, RPL_MOTDSTART);
+		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+		tmp = send_reply("MOTD", socket_client, my_serv, RPL_MOTD);
+		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+		tmp = send_reply("MOTD", socket_client, my_serv, RPL_ENDOFMOTD);
+		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+	}
+	else
+	{
+		std::string tmp = send_reply("MOTD", socket_client, my_serv, ERR_NOMOTD);
+		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+	}
+
     std::cout << std::endl << std::endl;
 };
 
@@ -426,10 +443,23 @@ void		TIME(std::string input, int socket_client, server & my_serv)
 { 
     std::cout << "TIME called" << std::endl;
     
-    (void)my_serv;
-    std::cout << "input :[" << input << "]" << std::endl;
-    std::cout << "socket :" << socket_client << std::endl;
-    my_serv.get_usermap()[socket_client].print_user();
+	std::vector<std::string>	splitted = ft_split(input, ' ');
+
+	if (splitted.size() > 1 && splitted[1] !=  my_serv.get_servername())
+	{
+		std::string tmp = send_reply("INFO", socket_client, my_serv, ERR_NOSUCHSERVER);
+		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+	}
+	else
+	{
+		time_t t; // t passed as argument in function time()
+		struct tm * tt; // decalring variable for localtime()
+		time (&t); //passing argument to time()
+		tt = localtime(&t);
+		std::string timer = "Current Day, Date and Time is = " + std::string(asctime(tt));
+		std::string tmp = send_reply(timer, socket_client, my_serv, RPL_TIME);
+		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+	}
     std::cout << std::endl << std::endl;
 };
 

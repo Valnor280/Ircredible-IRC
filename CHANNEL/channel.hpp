@@ -24,7 +24,7 @@ class channel
 		vector<user>		get_op_list() const;
 
 		// SETTERS
-		void				set_name( string new_name );
+		void				set_name( std::string new_name );
 		void				add_user( const user member );
 		void				remove_user( const user member );
 		void				add_op_user( const user member );

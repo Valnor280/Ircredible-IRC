@@ -54,7 +54,7 @@ server::server(char * port_number, char * pswd) : _pswd(pswd), _servername("Ircr
 	cmd_map["SETNAME"] = &SETNAME;
 	cmd_map["USERIP"] = &USERIP;
 
-   	time_t now = time(0);
+   	_time_struct = time(0);
 	// std::vector<std::string>		test = ft_split("PING 0.0.0.0\r\n", ' ');
 	// for (unsigned long i = 0; i < test.size(); i++)
 	// {
@@ -62,7 +62,8 @@ server::server(char * port_number, char * pswd) : _pswd(pswd), _servername("Ircr
 	// }
    
    	// convert now to string form
-   	char* dt = ctime(&now);
+   	char* dt = ctime(&_time_struct);
+
 	this->_dateofbirth = dt;
 	_dateofbirth.resize(_dateofbirth.size() - 1);
 	FD_ZERO(&_sock_client);
@@ -203,7 +204,7 @@ void server::loop()
 						//std::cout << "str_buff '" << str_buff << "'" << std::endl;
 						if (cmd_map.find(ft_toupper(input[0])) == cmd_map.end())
 						{
-							std::cout <<  send_reply(input[0], *itr, *this, 421) << std::endl;
+							send(*itr, send_reply(input[0], *itr, *this, 421).c_str(), send_reply(input[0], *itr, *this, 421).length(), MSG_DONTWAIT);
 						}
 						else
 						{

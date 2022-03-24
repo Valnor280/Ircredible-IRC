@@ -73,6 +73,7 @@ class server
 		std::string 	_version; // On doit avoir une version du server mais je sais pas a quoi ca correspond donc set dans le constructeur x)
 		std::string		_dateofbirth; // explicite
 		std::string		_motd; // message of the day
+		time_t 			_time_struct;
 		
 		//MAP DES USERS
 		std::map<int, user> 													_user_map; // map generale avec socket_client en clé
