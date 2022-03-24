@@ -17,7 +17,7 @@ class channel
 		std::string				_chan_mode;
 	
 	public:
-		channel( const user creator );
+		channel( const user creator, std::string name);
 		~channel();
 
 		// GETTERS
@@ -36,4 +36,5 @@ class channel
 		void				clear_op_list();
 };
 
+bool operator==(const channel& lhs, const channel& rhs);
 #endif

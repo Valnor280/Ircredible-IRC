@@ -618,10 +618,14 @@ void		JOIN(std::string input, int socket_client, server & my_serv)
     std::cout << "JOIN called" << std::endl;
     
 	std::vector<std::string>	splitted = ft_split(input, ' ');
-
+	std::vector<std::string>	chan;
 	if (splitted[1].find(',') > 0)
 	{
-		std::vector<std::string>	chan = ft_split(splitted[1], ',');
+		chan = ft_split(splitted[1], ',');
+	}
+	else
+	{
+		chan.push_back(splitted[1]);
 	}
 	if (splitted.size() > 2)
 	{
@@ -630,6 +634,14 @@ void		JOIN(std::string input, int socket_client, server & my_serv)
 			key = ft_split(splitted[2], ',');
 		else
 			key.push_back(splitted[2]);
+	}
+
+	for(std::vector<channel>::iterator itr = my_serv.get_chan_vect().begin(); itr != my_serv.get_chan_vect().end(); ++itr)
+	{
+		/*if(itr->get_name() == chan[0])
+			void;
+		else*/
+			my_serv.get_chan_vect().push_back(channel(my_serv.get_usermap()[socket_client], chan[0]));
 	}
 
     std::cout << std::endl << std::endl;

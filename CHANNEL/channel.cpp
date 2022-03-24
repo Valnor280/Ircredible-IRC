@@ -2,7 +2,7 @@
 
 #include "CHANNEL/channel.hpp"
 
-channel::channel( const user creator) : _name(" ")
+channel::channel( const user creator, std::string name) : _name(name)
 {
 	_user_list.push_back(creator);
 	_op_list.push_back(creator);
@@ -66,4 +66,9 @@ void				channel::clear_user_list()
 void				channel::clear_op_list()
 {
 	this->_op_list.clear();
+}
+
+bool operator==(const channel& lhs, const channel& rhs)
+{
+	return lhs.get_name() == rhs.get_name();
 }
