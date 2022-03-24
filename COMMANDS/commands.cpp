@@ -330,12 +330,37 @@ void		LUSERS(std::string input, int socket_client, server & my_serv)
     my_serv.get_usermap()[socket_client].print_user();
     std::cout << std::endl << std::endl;
 };
- // a voir
+
 void		MODE(std::string input, int socket_client, server & my_serv) 
 { 
     std::cout << "MODE called" << std::endl;
-    
-    (void)my_serv;
+    user				target = (my_serv.get_usermap())[socket_client];
+
+	std::vector<std::string>	args = ft_split(input, ' ');
+	if (args.size() < 3)
+	{
+		// ERRNEEDMOREPARAMS
+	}
+	else if (args[1] != target.get_nick()) // AJOUTER LA VERIFICATION DE NOM DE CHANNELS?
+	{
+		// ERR_USERSDONTMATCH
+	}
+	else
+	{
+		unsigned long		i = 2;
+
+		while (i < args.size())
+		{
+			if (check_mode_input(args[i]))
+			{
+				//ERR_UMODEUNKNOWNFLAG
+			}
+
+			i++;
+		}
+	}
+
+
     std::cout << "input :[" << input << "]" << std::endl;
     std::cout << "socket :" << socket_client << std::endl;
     my_serv.get_usermap()[socket_client].print_user();

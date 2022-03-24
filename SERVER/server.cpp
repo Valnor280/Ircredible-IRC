@@ -54,7 +54,12 @@ server::server(char * port_number, char * pswd) : _pswd(pswd), _servername("Ircr
 	cmd_map["SETNAME"] = &SETNAME;
 	cmd_map["USERIP"] = &USERIP;
 
-   	time_t now = time(0);
+   	// time_t now = time(0);
+	// std::vector<std::string>		test = ft_split("PING 0.0.0.0\r\n", ' ');
+	// for (unsigned long i = 0; i < test.size(); i++)
+	// {
+	// 	std::cout << test[i] << std::endl;
+	// }
    
    	// convert now to string form
    	char* dt = ctime(&now);
