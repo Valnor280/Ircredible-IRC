@@ -11,15 +11,38 @@ class user
 		std::string		_username; // username used when displaying messages
 		std::string		_real_name; // full name of the client using the server
 		std::string		_mode;	// gives level of commands or privileges accessible to the user
+								// a : user is away and any private message must be answered by the away message
+								// B : user is a bot
+								// d : disables PRIVMSG for the user (can only receive messages through channels)
+								// D : disables messages from everyone except Operators, servers and services
+								// H : hides Operator status, users using /WHOIS will not see you are Operator                 [only if already 'o']
+								// I : hides online time in /WHOIS                                                             [can be stopped by server config]
+								// i : makes you invisible on /WHO and /NAMES commands to anyone outside the channel
+								// o : Operator status!                                                                        [set by server or by /OPER]
+								// O : local Operator, see 'o'
+								// p : hides channels you are in from /WHOIS
+								// q : Un-kickable (can only be kicked by certain services)                                    [only if already 'o']
+								// r : indicates this is a "registered nick"                                                   [authentificated by a service]
+								// R : only receives private messages from "registered nicks"
+								// S : user is a service bot
+								// T : prevents you from receiving CTCP's? (Client to Client protocols) on verra...
+								// V : indicates you are using a /VHOST (virtual host) and you are hiding you IP adress        [set by the server /VHOST, /OPER, /*HOST]
+								// W : Let's you see when people do a /WHOIS on you                                            [only if already 'o']
+								// w : can listen to WALLOPS messages (/WALLOPS from Operators)
+								// x : gives you a hidden/cloaked hostname
+								// Z : only allows interaction with secure users (users with mode 'z')
+								// z : indicates you are connected via SSL/TLS (secure connection)
 		bool			_auth; // bool if the user go the right pswd 0 =yes 1 = no
 		int				_registration; // int that gives us a value for where user currently is in terms of registration:
 										// 0 : nothing yet or just PASS
 										// 1 : NICK has been set
 										// 2 : USER has been set
+										// 3 : ALL is set, RPL_WELCOME has been sent and user has been added to registered map
 		std::string		_away_msg; // the away msg used by the command away and its reply
 	
 		std::string     _status;
 		std::string		_hostname;
+		int				_socket;
 
 
 	public:
@@ -37,6 +60,7 @@ class user
 		std::string		get_id() const; // Permet de construire une string tel que "[nickname]![username]@[hostname]"
 		int				get_registration() const;
 		std::string		get_away_msg() const;
+		int				get_socket() const;
 
 		//SETTERS
 		bool		set_nick( std::string new_nick );
@@ -48,6 +72,7 @@ class user
 		void		set_hostname( std::string new_hostname );
 		void		set_registration( int new_reg );
 		void		set_away_msg(std::string msg);
+		void		set_socket(int new_socket );
 
 		// UTILS
 		void		print_user() const;
