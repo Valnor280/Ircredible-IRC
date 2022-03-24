@@ -35,7 +35,7 @@ void		ADMIN(std::string input, int socket_client, server & my_serv)
 		ret = ":" + target.get_id() + " 256 " + target.get_nick() + " " + my_serv.get_servername() + " :Administrative info\r\n"; // premiere reponse (code 256)
 		ret += ":" + target.get_id() + " 257 " + target.get_nick() + " :Hello and welcome to the Ircredible IRC server located in Paris, France.\r\n"; // info de localisation du server dans le monde
 		ret += ":" + target.get_id() + " 258 " + target.get_nick() + " :The server is currently hosted inside the 42 school cluster server.\r\n"; // info de l'ecole
-		ret += ":" + target.get_id() + " 259 " + target.get_nick() + " :addubois@student.42.fr, admadene@student.42.fr, fsacquin@student.42.fr\r\n"; // adresses mails de contact administrateurs
+		ret += ":" + target.get_id() + " 259 " + target.get_nick() + " :Please contact : addubois@student.42.fr, admadene@student.42.fr, fsacquin@student.42.fr for more info\r\n"; // adresses mails de contact administrateurs
 	}
 
 	send(socket_client, ret.c_str(), ret.length(), 0);
