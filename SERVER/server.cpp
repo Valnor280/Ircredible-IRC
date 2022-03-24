@@ -192,13 +192,18 @@ void server::loop()
 					str_buff = _buffer;
 					while (!str_buff.empty())
 					{
+						std::vector<std::string>		input_temp = ft_split(str_buff, '\n');
+						std::vector<std::string>		input_temp_2 = ft_split(input_temp[0], '\r');
+						std::vector<std::string>		input = ft_split(input_temp_2[0], ' ');
 						//std::cout << "str_buff '" << str_buff << "'" << std::endl;
-						if ((str_index = str_buff.find(' ')) == std::string::npos)
-							std::cout << "Error parse command '" << str_buff << "' " << std::endl;
-						else if (cmd_map.find(str_buff.substr(0, str_index)) == cmd_map.end())
+						if (cmd_map.find(ft_toupper(input[0])) == cmd_map.end())
+						{
 							std::cout << "Error : command doesn't exist !" << std::endl;
+						}
 						else
-							cmd_map[str_buff.substr(0, str_index)](str_buff, user_itr->first, *this);
+						{
+							cmd_map[ft_toupper(input[0])](str_buff, user_itr->first, *this);
+						}
 						
 						str_index = str_buff.find('\n');
 						str_buff.erase(0, str_index + 1);

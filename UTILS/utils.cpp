@@ -25,6 +25,10 @@ std::vector<std::string>		ft_split(std::string buffer, char sep)
 		}
 		i++;
 	}
+	if (i == buffer.length() && ret.empty())
+	{
+		ret.push_back(buffer);
+	}
 	return ret;
 }
 
@@ -48,6 +52,15 @@ std::string		ft_to_string(size_t value)
 	}
 
 	return (sign + output);
+}
+
+std::string						ft_toupper(std::string input)
+{
+	for (unsigned long i = 0; i < input.size(); i++)
+	{
+		input[i] = toupper(input[i]);
+	}
+	return input;
 }
 
 void							send_welcome(int socket_client, server & my_serv)
