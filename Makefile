@@ -43,4 +43,8 @@ re		:	fclean
 
 irc : all 
 	./Ircredible 8000 pswd
+irc1 : all 
+	./Ircredible 8001 pswd
+irc2 : all 
+	./Ircredible 8002 pswd
 .PHONY : all clean fclean re test
