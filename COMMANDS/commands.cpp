@@ -617,10 +617,21 @@ void		JOIN(std::string input, int socket_client, server & my_serv)
 { 
     std::cout << "JOIN called" << std::endl;
     
-    (void)my_serv;
-    std::cout << "input :[" << input << "]" << std::endl;
-    std::cout << "socket :" << socket_client << std::endl;
-    my_serv.get_usermap()[socket_client].print_user();
+	std::vector<std::string>	splitted = ft_split(input, ' ');
+
+	if (splitted[1].find(',') > 0)
+	{
+		std::vector<std::string>	chan = ft_split(splitted[1], ',');
+	}
+	if (splitted.size() > 2)
+	{
+		std::vector<std::string>	key;
+		if(splitted[2].find(',') > 0)
+			key = ft_split(splitted[2], ',');
+		else
+			key.push_back(splitted[2]);
+	}
+
     std::cout << std::endl << std::endl;
 };
 

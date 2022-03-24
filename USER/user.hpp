@@ -76,6 +76,10 @@ class user
 
 		// UTILS
 		void		print_user() const;
+		
+		
 };
+
+bool operator==(const user& lhs, const user& rhs);
 
 #endif

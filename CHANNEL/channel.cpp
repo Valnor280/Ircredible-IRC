@@ -2,32 +2,38 @@
 
 #include "CHANNEL/channel.hpp"
 
-channel::channel( const user creator)
+channel::channel( const user creator) : _name(" ")
 {
+	_user_list.push_back(creator);
 	_op_list.push_back(creator);
 }
 
 channel::~channel()
 {
-	// nothing here
+
 }
 
-string			channel::get_name() const
+std::string			channel::get_name() const
 {
 	return _name;
 }
 
-vector<user>	get_user_list() const
+std::vector<user>	channel::get_user_list() const
 {
-	return _user_list;
+	return this->_user_list;
 }
 
-vector<user>	get_op_list() const
+std::vector<user>	channel::get_op_list() const
 {
-	return _op_list;
+	return this->_op_list;
 }
 
-void				channel::set_name( string new_name )
+std::string			channel::get_chan_mode() const
+{
+	return this->_chan_mode;
+}
+
+void				channel::set_name( std::string new_name )
 {
 	this->_name = new_name;
 }
@@ -39,7 +45,7 @@ void				channel::add_user( const user member )
 
 void				channel::remove_user( const user member )
 {
-	this->_user_list.erase(_user_list.find(member));
+	this->_user_list.erase(find(_user_list.begin(), _user_list.end(), member));
 }
 
 void				channel::add_op_user( const user member )
@@ -49,7 +55,7 @@ void				channel::add_op_user( const user member )
 
 void				channel::remove_op_user( const user member )
 {
-	this->_op_list.erase(_op_list.find(member));
+	this->_op_list.erase(find(_op_list.begin(), _op_list.end(), member));
 }
 
 void				channel::clear_user_list()
