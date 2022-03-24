@@ -1,6 +1,8 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
+// ceci est un test
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/time.h>
