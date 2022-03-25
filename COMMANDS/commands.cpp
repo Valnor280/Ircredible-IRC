@@ -159,6 +159,7 @@ void		PASS(std::string input, int socket_client, server & my_serv)
 	}
 }
 
+
 void		USER(std::string input, int socket_client, server & my_serv) 
 { 
     std::cout << "USER called" << std::endl;
@@ -746,16 +747,6 @@ void		AWAY(std::string input, int socket_client, server & my_serv)
     std::cout << std::endl << std::endl;
 };
 
-void		NOTICE(std::string input, int socket_client, server & my_serv) 
-{ 
-    std::cout << "NOTICE called" << std::endl;
-    
-	(void)my_serv;
-    std::cout << "input :[" << input << "]" << std::endl;
-    std::cout << "socket :" << socket_client << std::endl;
-    my_serv.get_usermap()[socket_client].print_user();
-    std::cout << std::endl << std::endl;
-};
 
 void		OPER(std::string input, int socket_client, server & my_serv) 
 { 
@@ -803,28 +794,35 @@ void		PRIVMSG(std::string input, int socket_client, server & my_serv)
 
     size_t i = 2;
 
-    if (splitted.size() < 2 || *splitted[1].begin() == ':' || *splitted[2].begin() != ':')//ne gere pas le multi target
+    if (splitted.size() < 2 || *splitted[1].begin() == ':')//ne gere pas le multi target
     {
        
        ret = send_reply(input, socket_client, my_serv, ERR_NORECIPIENT);
+    }
+    else if (splitted.size() > 2 && *splitted[2].begin() != ':')
+    {
+       ret = send_reply(input, socket_client, my_serv, ERR_NOTEXTTOSEND);
     }
     else
     {
 
         while (it != usermap.end())
         {
-            // std::cout << "username :" << it->second.get_nick() << std::endl;
             if (it->second.get_nick() == splitted[1] /* || channel_name == spitted*/)// ne gere pas les channel
                 break;
             ++it;
         }
         if (it == usermap.end())
         {
-            std::cout << "error nonick" << std::endl;
+            std::cout << "ERROR no nick !" << std::endl;
 	    	ret = ":" + my_serv.get_hostname() + " 401 " + sender.get_nick() + " :" + splitted[1] + " \r\n";//bug chelou avec \r
-            // ret = send_reply(splitted[1] + " ", socket_client, my_serv, ERR_NOSUCHNICK);
         }
-        else
+        else if (it->second.get_mode == "a")
+        {
+            ret = send_reply(input, it->first, my_serv, RPL_AWAY);
+        }
+        //else if ()// RPL_CANNOTSENDTOCHAN
+        else 
         {
 	    	ret = ":" + sender.get_id() + " " + sender.get_nick() + " ";
             while (i < splitted.size())
@@ -842,7 +840,7 @@ void		PRIVMSG(std::string input, int socket_client, server & my_serv)
         if (splitted.size() >= 3)
             std::cout << "split 2'" <<splitted[2]<< "'" << std::endl;
 
-        std::cout << "ret '"<<ret << "'"<<std::endl;
+        std::cout << "ret '"<< ret << "'"<<std::endl;
         // ret.insert(ret.end() - 2, ' ');
 /*  
         if (pas les permission du channel)
@@ -860,6 +858,78 @@ void		PRIVMSG(std::string input, int socket_client, server & my_serv)
     std::cout << std::endl << std::endl;
 };
 
+void		NOTICE(std::string input, int socket_client, server & my_serv) 
+{ 
+    std::cout << "NOTICE called" << std::endl;
+    
+    std::vector<std::string> splitted = ft_split(input, ' '); 
+    std::map<int, user> usermap = my_serv.get_usermap();    
+    std::map<int, user>::iterator it = usermap.begin();
+    user sender = usermap[socket_client];
+    std::string ret;
+
+    size_t i = 2;
+
+    if (splitted.size() < 2 || *splitted[1].begin() == ':')//ne gere pas le multi target
+    {
+        return;
+    }
+    else if (splitted.size() > 2 && *splitted[2].begin() != ':')
+    {
+        return;
+    }
+    else
+    {
+
+        while (it != usermap.end())
+        {
+            if (it->second.get_nick() == splitted[1] /* || channel_name == spitted*/)// ne gere pas les channel
+                break;
+            ++it;
+        }
+        if (it == usermap.end())
+        {
+            return;
+        }
+        else if (it->second.get_mode == "a")
+        {
+            return;
+        }
+        //else if ()// RPL_CANNOTSENDTOCHAN
+        else 
+        {
+	    	ret = ":" + sender.get_id() + " " + sender.get_nick() + " ";
+            while (i < splitted.size())
+            {
+                ret += splitted[i];
+                if (i != splitted.size() - 1)
+                    ret += " ";
+                ++i;
+            }
+            socket_client = it->first;
+        }
+
+        if (splitted.size() >= 2)
+            std::cout << "split 1'" <<splitted[1]<< "'" << std::endl;
+        if (splitted.size() >= 3)
+            std::cout << "split 2'" <<splitted[2]<< "'" << std::endl;
+
+        std::cout << "ret '"<< ret << "'"<<std::endl;
+        // ret.insert(ret.end() - 2, ' ');
+/*  
+        if (pas les permission du channel)
+        {
+	    	ret = ":" + sender.get_id() + " 403 " + sender.get_nick() + " :No such nick/channel\r\n";
+            "<client> 403 <channel> :No such channel"
+        }
+*/
+    }
+    send(socket_client, ret.c_str(), ret.size(), MSG_DONTWAIT);
+
+    std::cout << "input :[" << input << "]" << std::endl;
+    std::cout << "socket :" << socket_client << std::endl;
+    my_serv.get_usermap()[socket_client].print_user();
+    std::cout << std::endl << std::endl;
 
 void		QUIT(std::string input, int socket_client, server & my_serv) 
 { 
