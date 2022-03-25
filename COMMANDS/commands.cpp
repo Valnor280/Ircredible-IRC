@@ -729,21 +729,21 @@ void		OPER(std::string input, int socket_client, server & my_serv)
 	if (splitted.size() != 3)
 	{
 		// ERR_NEEDMOREPARAMS
-		tmp = send_reply("OPER", socket_client, my_serv, ERR_NEEDMOREPARAMS);
+		tmp = send_reply("OPER", socket_client, my_serv, ERR_NEEDMOREPARAMS, "");
 		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 	}
 	// we can configure the server to not take any client as OPER and return ERR_NOOPERHOST all time
 	else if (splitted[2].substr(0, splitted[2].size() - 2) != my_serv.get_admin_pswd())
 	{
 		//ERR_PASSWDMISMATCH
-		tmp = send_reply("OPER", socket_client, my_serv, ERR_PASSWDMISMATCH);
+		tmp = send_reply("OPER", socket_client, my_serv, ERR_PASSWDMISMATCH, "");
 		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 	}
 	else
 	{
 		if (modif_mode_user(target, 'o', 2))
 			target.set_op_name(splitted[1]);
-		tmp = send_reply("OPER", socket_client, my_serv, RPL_YOUREOPER);
+		tmp = send_reply("OPER", socket_client, my_serv, RPL_YOUREOPER, "");
 		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 	}
     std::cout << "input :[" << input << "]" << std::endl;
@@ -766,12 +766,23 @@ void		PRIVMSG(std::string input, int socket_client, server & my_serv)
 
     if (splitted.size() < 2 || *splitted[1].begin() == ':')//ne gere pas le multi target
     {
-       
        ret = send_reply(input, socket_client, my_serv, ERR_NORECIPIENT, "");
     }
     else if (splitted.size() > 2 && *splitted[2].begin() != ':')
     {
-       ret = send_reply(input, socket_client, my_serv, ERR_NOTEXTTOSEND);
+       ret = send_reply(input, socket_client, my_serv, ERR_NOTEXTTOSEND, "");
+    }
+    else if (*splitted[1].begin() == '#')
+    {
+        std::map<std::string, channel>::iterator itchan = my_serv.get_chan_map().find(splitted[1]);
+        if (itchan == y_serv.get_chan_map().end())
+        {
+           ret = send_reply(input, socket_client, my_serv, ERR_CANNOTSENDTOCHAN, splitted[1]);
+        }
+        else
+        {
+            for ()
+        }
     }
     else
     {
@@ -789,11 +800,12 @@ void		PRIVMSG(std::string input, int socket_client, server & my_serv)
         }
         else if (it->second.get_mode().find('a') != std::string::npos)
         {
-            ret = send_reply(input, it->first, my_serv, RPL_AWAY);
+            ret = send_reply(input, it->first, my_serv, RPL_AWAY, "");
         }
-        //else if ()// RPL_CANNOTSENDTOCHAN
         else 
         {
+
+
 	    	ret = ":" + sender.get_id() + " " + sender.get_nick() + " ";
             while (i < splitted.size())
             {
