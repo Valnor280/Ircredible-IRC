@@ -2,7 +2,7 @@
 
 #include "USER/user.hpp"
 
-user::user(): _nick(""), _username(""), _real_name(""), _mode(""), _auth(1), _registration(0)
+user::user(): _nick(""), _username(""), _real_name(""), _mode(""), _auth(1), _registration(0), _op_name("")
 {
 	// nothing here
 }
@@ -46,6 +46,11 @@ bool			user::get_auth() const
 std::string			user::get_hostname() const
 {
 	return _hostname;
+}
+
+std::string			user::get_op_name() const
+{
+	return _op_name;
 }
 
 std::string			user::get_id() const
@@ -106,6 +111,11 @@ void		user::set_status( std::string new_status )
 void		user::set_hostname( std::string new_hostname )
 {
 	this->_hostname = new_hostname;
+}
+
+void		user::set_op_name( std::string new_op_name )
+{
+	this->_op_name = new_op_name;
 }
 
 void		user::set_registration( int new_reg )
