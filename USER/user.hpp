@@ -42,6 +42,7 @@ class user
 	
 		std::string     _status;
 		std::string		_hostname;
+		std::string		_op_name;
 		int				_socket;
 
 
@@ -57,6 +58,7 @@ class user
 		bool			get_auth() const;
 		std::string		get_status() const;
 		std::string		get_hostname() const;
+		std::string		get_op_name() const;
 		std::string		get_id() const; // Permet de construire une string tel que "[nickname]![username]@[hostname]"
 		int				get_registration() const;
 		std::string		get_away_msg() const;
@@ -70,6 +72,7 @@ class user
 		void		set_auth(int i);
 		void		set_status( std::string status );
 		void		set_hostname( std::string new_hostname );
+		void		set_op_name( std::string new_op_name );
 		void		set_registration( int new_reg );
 		void		set_away_msg(std::string msg);
 		void		set_socket(int new_socket );

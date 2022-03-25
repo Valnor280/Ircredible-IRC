@@ -712,7 +712,7 @@ void		NOTICE(std::string input, int socket_client, server & my_serv)
 { 
     std::cout << "NOTICE called" << std::endl;
     
-    (void)my_serv;
+	(void)my_serv;
     std::cout << "input :[" << input << "]" << std::endl;
     std::cout << "socket :" << socket_client << std::endl;
     my_serv.get_usermap()[socket_client].print_user();
@@ -723,7 +723,30 @@ void		OPER(std::string input, int socket_client, server & my_serv)
 { 
     std::cout << "OPER called" << std::endl;
     
-    (void)my_serv;
+    user					& target = (my_serv.get_usermap())[socket_client];
+	std::vector<std::string>		splitted = ft_split(input, ' ');
+	std::string				tmp;
+
+	if (splitted.size() != 3)
+	{
+		// ERR_NEEDMOREPARAMS
+		tmp = send_reply("OPER", socket_client, my_serv, ERR_NEEDMOREPARAMS);
+		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+	}
+	// we can configure the server to not take any client as OPER and return ERR_NOOPERHOST all time
+	else if (splitted[2].substr(0, splitted[2].size() - 2) != my_serv.get_admin_pswd())
+	{
+		//ERR_PASSWDMISMATCH
+		tmp = send_reply("OPER", socket_client, my_serv, ERR_PASSWDMISMATCH);
+		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+	}
+	else
+	{
+		if (modif_mode_user(target, 'o', 2))
+			target.set_op_name(splitted[1]);
+		tmp = send_reply("OPER", socket_client, my_serv, RPL_YOUREOPER);
+		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+	}
     std::cout << "input :[" << input << "]" << std::endl;
     std::cout << "socket :" << socket_client << std::endl;
     my_serv.get_usermap()[socket_client].print_user();
