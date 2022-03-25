@@ -157,6 +157,7 @@ std::string						vector_user_to_string(std::vector<user> vect)
 	return(ret);
 }
 
+<<<<<<< HEAD
 bool find_user(std::vector<user> vect, user usr)
 {
 	for(std::vector<user>::iterator itr = vect.begin(); itr != vect.end(); itr++)
@@ -167,6 +168,52 @@ bool find_user(std::vector<user> vect, user usr)
 	return false;
 }
 
+=======
+bool							check_name_match(user & target, user & member , std::string pattern)
+{
+	(void)target;
+	if (star_name_checker(member.get_nick(), pattern))
+		return true;
+	else if (star_name_checker(member.get_hostname(), pattern))
+		return true;
+	else if (star_name_checker(member.get_username(), pattern))
+		return true;
+	else
+		return false;
+}
+
+bool						star_name_checker(std::string str, std::string pattern) // https://www.prodevelopertutorial.com/wildcard-matching-in-c/ //RIP minishell, petit ange parti trop tot
+{
+	bool bool_array [str.size()+1] [pattern.size()+1];
+
+	//initialize boolean array to false.
+	for (unsigned long i = 0; i <= str.size(); ++i)
+	{
+		for (unsigned long j = 0; j <= pattern.size(); ++j)
+		{
+			bool_array[i][j] = 0;
+		}
+	}
+
+	// base case
+	bool_array[0][0] = true;
+
+
+	for (unsigned long i = 1; i <= str.size(); i++)
+	{
+		for (unsigned long j = 1; j <= pattern.size(); j++)
+		{
+			if (str[i-1] == pattern[j-1] || pattern[j-1] == '?')
+				bool_array[i][j] = bool_array[i-1][j-1];
+
+			else if (pattern[j-1] == '*')
+				bool_array[i][j] = bool_array[i][j-1] || bool_array[i-1][j];
+		}
+	}
+
+	return bool_array[str.size()][pattern.size()];
+}
+>>>>>>> c917a790b86c6e8100596047086a2d17ed36afcd
 
 std::string send_reply(std::string input, int socket_client, server & my_serv, int code, std::string chan)
 {

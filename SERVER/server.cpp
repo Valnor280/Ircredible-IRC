@@ -189,6 +189,8 @@ void server::loop()
 				retbuff = recv(*itr, _buffer, 512, MSG_DONTWAIT);
 				if (retbuff > 0)
 				{
+					_user_map[*itr].add_mess_recv(1);
+					_user_map[*itr].add_oct_recv(retbuff);
 					_buffer[retbuff] = 0;
 					std::cout << "msg : " << _buffer << "socket :" << *itr << std::endl;
 					
