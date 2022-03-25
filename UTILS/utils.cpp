@@ -152,6 +152,7 @@ std::string						vector_user_to_string(std::vector<user> vect)
 	{
 		ret += itr->get_nick() + ", ";
 	}
+	std::cout << ret << std::endl;
 	return(ret);
 }
 
@@ -232,7 +233,7 @@ std::string send_reply(std::string input, int socket_client, server & my_serv, i
 	case 352:
 			return ret += "<channel> <user> <host> <server> <nick> ( H / G > [*] [ ( @ / + ) ] :<hopcount> <real name>\r\n";
 	case 353:
-			return ret += "=" + chan + ":" + "@" + vector_user_to_string(my_serv.get_chan_map()[chan].get_op_list()) + "*" + vector_user_to_string(my_serv.get_chan_map()[chan].get_user_list()) + "\r\n";
+			return ret += chan + ":" + "@" + vector_user_to_string(my_serv.get_chan_map()[chan].get_op_list()) + vector_user_to_string(my_serv.get_chan_map()[chan].get_user_list()) + "\r\n";
 	case 366:
 			return ret += chan + ":End of NAMES list\r\n";
 	case 367:
@@ -262,11 +263,11 @@ std::string send_reply(std::string input, int socket_client, server & my_serv, i
 	case 402:
 			return ret += input + " :No such server\r\n"; // <server name>
 	case 403:
-			return ret += input + " :No such channel\r\n"; // <channel name> :No such channel
+			return ret += chan + " :No such channel\r\n"; // <channel name> :No such channel
 	case 404:
-			return ret += input + " :Cannot send to channel\r\n"; // <channel name> 
+			return ret += chan + " :Cannot send to channel\r\n"; // <channel name> 
 	case 405:
-			return ret += input + " :You have joined too many channels\r\n"; // ''
+			return ret += chan + " :You have joined too many channels\r\n"; // ''
 	case 406:
 			return ret += input + " :There was no such nickname\r\n";
 	case 409:

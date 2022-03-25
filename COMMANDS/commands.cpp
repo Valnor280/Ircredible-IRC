@@ -146,7 +146,7 @@ void		PASS(std::string input, int socket_client, server & my_serv)
 	{
 		if (my_serv.get_usermap()[socket_client].get_auth() == 0)
 		{
-			std::string tmp = send_reply("PASS", socket_client, my_serv, ERR_ALREADYREGISTRED), "";
+			std::string tmp = send_reply("PASS", socket_client, my_serv, ERR_ALREADYREGISTRED, "");
 			send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 		}
 		else
@@ -273,7 +273,7 @@ void		INFO(std::string input, int socket_client, server & my_serv)
 		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 		tmp = send_reply("Version " + my_serv.get_version(), socket_client, my_serv, RPL_INFO, "");
 		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
-		tmp = send_reply("Don't hesitate to contact us at = addubois@student.42.fr, admadene@student.42.fr, fsacquin@student.42.fr ", socket_client, my_serv, RPL_INFO);
+		tmp = send_reply("Don't hesitate to contact us at = addubois@student.42.fr, admadene@student.42.fr, fsacquin@student.42.fr ", socket_client, my_serv, RPL_INFO, "");
 		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 	}
 	// SENDING the END_OF_INFO reply to signify we have sent everything needed
@@ -337,18 +337,20 @@ void		MODE(std::string input, int socket_client, server & my_serv)
     user				& target = (my_serv.get_usermap())[socket_client];
 	std::string			tmp;
 
-	std::vector<std::string>	args = ft_split(input, ' ');
+	std::vector<std::string>    temp = ft_split(input, '\n');
+    std::vector<std::string>    temp_2 = ft_split(temp[0], '\r');
+    std::vector<std::string>    args = ft_split(temp_2[0], ' ');
 	if (args.size() < 3)
 	{
 		// ERRNEEDMOREPARAMS
-		tmp = send_reply("MODE", socket_client, my_serv, ERR_NEEDMOREPARAMS);
+		tmp = send_reply("MODE", socket_client, my_serv, ERR_NEEDMOREPARAMS, "");
 		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 		return ;
 	}
 	else if (args[1] != target.get_nick()) // AJOUTER LA VERIFICATION DE NOM DE CHANNELS?
 	{
 		// ERR_USERSDONTMATCH
-		tmp = send_reply("MODE", socket_client, my_serv, ERR_USERSDONTMATCH);
+		tmp = send_reply("MODE", socket_client, my_serv, ERR_USERSDONTMATCH, "");
 		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 		return ;
 	}
@@ -360,7 +362,7 @@ void		MODE(std::string input, int socket_client, server & my_serv)
 		{
 			if (!(check_user_mode_input(args[i])))
 			{
-				tmp = send_reply("MODE", socket_client, my_serv, ERR_UMODEUNKNOWNFLAG);
+				tmp = send_reply("MODE", socket_client, my_serv, ERR_UMODEUNKNOWNFLAG, "");
 				send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 				return ;
 			}
@@ -378,10 +380,10 @@ void		MODE(std::string input, int socket_client, server & my_serv)
 			i++;
 		}
 	}
-	tmp = send_reply("MODE", socket_client, my_serv, RPL_UMODEIS);
+	tmp = send_reply("MODE", socket_client, my_serv, RPL_UMODEIS, "");
 	send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 
-	tmp = send_reply(my_serv.get_servername(), socket_client, my_serv, RPL_INFO);
+	tmp = send_reply(my_serv.get_servername(), socket_client, my_serv, RPL_INFO, "");
 		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 
     std::cout << "input :[" << input << "]" << std::endl;
@@ -691,13 +693,13 @@ void		AWAY(std::string input, int socket_client, server & my_serv)
 		std::string			away_message = input.substr(first_dp_pos, delimiter - first_dp_pos);
 		target.set_away_msg(away_message);
 		modif_mode_user(target, 'a', 2);
-		tmp = send_reply("AWAY", socket_client, my_serv, RPL_NOWAWAY);
+		tmp = send_reply("AWAY", socket_client, my_serv, RPL_NOWAWAY, "");
 		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 	}
 	else
 	{
 		modif_mode_user(target, 'a', 3);
-		tmp = send_reply("UNAWAY", socket_client, my_serv, RPL_UNAWAY);
+		tmp = send_reply("UNAWAY", socket_client, my_serv, RPL_UNAWAY, "");
 		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 	}
     std::cout << "input :[" << input << "]" << std::endl;

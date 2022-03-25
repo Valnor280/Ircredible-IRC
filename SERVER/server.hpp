@@ -28,6 +28,8 @@ class server;
 
 #include "../COMMANDS/commands.hpp"
 #define USERLEN 12
+#define MAXCHANUSER 10
+#define MAXCHAN 5
 
 class server
 {

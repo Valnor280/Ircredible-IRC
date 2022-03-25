@@ -14,6 +14,8 @@ class channel
 		std::string				_name;
 		std::vector<user>		_user_list;
 		std::vector<user>		_op_list;
+		std::vector<user>		_ban_list;
+		std::vector<user>		_invite_list;
 		std::string				_chan_mode;
 		std::string				_topic;
 		std::string				_key;
@@ -28,6 +30,8 @@ class channel
 		std::string				get_key() const;
 		std::vector<user>		get_user_list() const;
 		std::vector<user>		get_op_list() const;
+		std::vector<user>		get_ban_list() const;
+		std::vector<user>		get_invite_list() const;
 		std::string				get_chan_mode() const;
 
 		// SETTERS
@@ -35,7 +39,10 @@ class channel
 		void				set_topic( std::string new_topic );
 		void				set_key( std::string new_key );
 		void				add_user( const user member );
+		void				add_ban( const user member );
+		void				add_invite( const user member );
 		void				remove_user( const user member );
+		void				remove_ban( const user member );
 		void				add_op_user( const user member );
 		void				remove_op_user( const user member );
 		void				clear_user_list();

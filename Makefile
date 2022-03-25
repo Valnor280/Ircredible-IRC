@@ -12,7 +12,8 @@ SRCS =	main.cpp \
 		USER/user.cpp \
 		COMMANDS/commands.cpp \
 		UTILS/utils.cpp \
-		CHANNEL/channel.cpp
+		CHANNEL/channel.cpp \
+		COMMANDS/join.cpp 
 
 
 OBJS = $(SRCS:%.cpp=$(OBJS_DIR)/%.o)

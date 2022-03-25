@@ -204,7 +204,7 @@ void server::loop()
 						//std::cout << "str_buff '" << str_buff << "'" << std::endl;
 						if (cmd_map.find(ft_toupper(input[0])) == cmd_map.end())
 						{
-							send(*itr, send_reply(input[0], *itr, *this, 421).c_str(), send_reply(input[0], *itr, *this, 421).length(), MSG_DONTWAIT);
+							send(*itr, send_reply(input[0], *itr, *this, 421, "").c_str(), send_reply(input[0], *itr, *this, 421, "").length(), MSG_DONTWAIT);
 						}
 						else
 						{
