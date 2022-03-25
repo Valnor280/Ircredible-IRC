@@ -70,13 +70,59 @@ std::string						ft_toupper(std::string input)
 	return input;
 }
 
-bool							check_mode_input( std::string arg)
+bool							check_user_mode_input( std::string arg)
 {
-	(void)arg;
-// 	unsigned long		i = 0;
-// 	std::string			signs = "+-";
+	unsigned long		i = 1;
+	std::string			signs = "+-";
+	std::string			modes = "aiwroOs"; //RFS user modes list
+	std::string			cool_modes = "aBdDHIioOpqrRSTVWwxZz"; //Wiki user modes list
 
-	//if (arg[i] )
+	if (arg.length() < 2)
+	{
+		std::cout << "lol_1" << std::endl;
+		return false;
+	}
+	if (signs.find(arg[0]) == std::string::npos)
+	{
+		std::cout << "lol_2" << std::endl;
+		return false;
+	}
+	while (i < arg.size())
+	{
+		if (arg[i] == '\r' || arg[i] == '\n')
+			return true;
+		if (modes.find(arg[i]) == std::string::npos)
+		{
+			std::cout << "lol_3" << std::endl;
+			return false;
+		}
+		i++;
+	}
+	return true;
+}
+
+bool							modif_mode_user(user & us, char c, int u)
+{
+	if (u == -1)
+	{
+		//std::cout << "on rentre au bon endroit de modif_mode_user() avec " << c << " pour " << us.get_nick() << " de " << u << std::endl;
+		if (c == 'o' || c == 'O' || c == 'a')
+			return false;
+		else if (us.get_mode().find(c) == std::string::npos)
+		{
+			//std::cout << "what? avec '" << us.get_mode() << "'" << std::endl;
+			us.set_mode(us.get_mode() + c);
+			//us.get_mode() += c;
+			std::cout << "what? avec '" << us.get_mode() << "'" << std::endl;
+		}
+	}
+	else if (u == 1)
+	{
+		if (c == 'o' || c == 'a')
+			return false;
+		else if (us.get_mode().find(c) != std::string::npos)
+			us.set_mode(us.get_mode().erase(us.get_mode().find(c), 1));
+	}
 	return true;
 }
 
