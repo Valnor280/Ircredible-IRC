@@ -5,6 +5,11 @@
 user::user(): _nick(""), _username(""), _real_name(""), _mode(""), _auth(1), _registration(0), _op_name("")
 {
 	// nothing here
+	this->oct_recv = 0;
+	this->oct_send = 0;
+	this->mess_recv = 0;
+	this->mess_send = 0;
+
 }
 
 user::~user()
@@ -74,6 +79,31 @@ int				user::get_socket() const
 	return this->_socket;
 }
 
+long long int	user::get_connected_time() const
+{
+	struct timeval tv;
+	gettimeofday(&tv, NULL);
+	return (((tv.tv_sec * 1000000 + tv.tv_usec)) - ((this->first_connect.tv_sec * 1000000) + this->first_connect.tv_usec));
+}
+
+unsigned long	user::get_oct_recv() const
+{
+	return (this->oct_recv);
+}
+unsigned long	user::get_oct_send() const
+{
+	return (this->oct_send);
+}
+unsigned long	user::get_mess_recv() const
+{
+	return (this->mess_recv);
+}
+unsigned long	user::get_mess_send() const
+{
+	return (this->mess_send);
+}
+
+
 bool		user::set_nick( std::string new_nick )
 {
 	// add function to verify validity
@@ -131,6 +161,27 @@ void		user::set_away_msg( std::string msg )
 void		user::set_socket( int new_socket )
 {
 	this->_socket = new_socket;
+}
+void		user::set_first_connect(void)
+{
+	gettimeofday(&(this->first_connect), NULL);
+}
+
+void	user::add_oct_recv(unsigned long nb)
+{
+	this->oct_recv += nb;
+}
+void	user::add_oct_send(unsigned long nb)
+{
+	this->oct_send += nb;
+}
+void	user::add_mess_recv(unsigned long nb)
+{
+	this->mess_recv += nb;
+}
+void	user::add_mess_send(unsigned long nb)
+{
+	this->mess_send += nb;
 }
 
 void		user::print_user() const
