@@ -123,6 +123,16 @@ bool							modif_mode_user(user & us, char c, int u)
 		else if (us.get_mode().find(c) != std::string::npos)
 			us.set_mode(us.get_mode().erase(us.get_mode().find(c), 1));
 	}
+	else if (u == 2) // AWAY status
+	{
+		if (us.get_mode().find(c) == std::string::npos)
+			us.set_mode(us.get_mode() + c);
+	}
+	else if (u == 3) // UNAWAY status
+	{
+		if (us.get_mode().find(c) != std::string::npos)
+			us.set_mode(us.get_mode().erase(us.get_mode().find(c), 1));
+	}
 	return true;
 }
 
