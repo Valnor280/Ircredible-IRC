@@ -334,16 +334,23 @@ void		LUSERS(std::string input, int socket_client, server & my_serv)
 void		MODE(std::string input, int socket_client, server & my_serv) 
 { 
     std::cout << "MODE called" << std::endl;
-    user				target = (my_serv.get_usermap())[socket_client];
+    user				& target = (my_serv.get_usermap())[socket_client];
+	std::string			tmp;
 
 	std::vector<std::string>	args = ft_split(input, ' ');
 	if (args.size() < 3)
 	{
 		// ERRNEEDMOREPARAMS
+		tmp = send_reply("MODE", socket_client, my_serv, ERR_NEEDMOREPARAMS);
+		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+		return ;
 	}
 	else if (args[1] != target.get_nick()) // AJOUTER LA VERIFICATION DE NOM DE CHANNELS?
 	{
 		// ERR_USERSDONTMATCH
+		tmp = send_reply("MODE", socket_client, my_serv, ERR_USERSDONTMATCH);
+		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+		return ;
 	}
 	else
 	{
@@ -351,15 +358,31 @@ void		MODE(std::string input, int socket_client, server & my_serv)
 
 		while (i < args.size())
 		{
-			if (check_mode_input(args[i]))
+			if (!(check_user_mode_input(args[i])))
 			{
-				//ERR_UMODEUNKNOWNFLAG
+				tmp = send_reply("MODE", socket_client, my_serv, ERR_UMODEUNKNOWNFLAG);
+				send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+				return ;
 			}
-
+			int				mod = args[i][0] - 44;
+			unsigned long	j = 1;
+			while (j < args[i].length())
+			{
+				if (!(args[i][j] == '\r' || args[i][j] == '\n'))
+				{
+					std::cout << target.get_nick() << " for " << args[i][j] << " with mod " << mod << std::endl;
+					modif_mode_user(target, args[i][j], mod);
+				}
+				j++;
+			}
 			i++;
 		}
 	}
+	tmp = send_reply("MODE", socket_client, my_serv, RPL_UMODEIS);
+	send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 
+	tmp = send_reply(my_serv.get_servername(), socket_client, my_serv, RPL_INFO);
+		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 
     std::cout << "input :[" << input << "]" << std::endl;
     std::cout << "socket :" << socket_client << std::endl;
@@ -654,7 +677,29 @@ void		AWAY(std::string input, int socket_client, server & my_serv)
 { 
     std::cout << "AWAY called" << std::endl;
     
-    (void)my_serv;
+    user					& target = (my_serv.get_usermap())[socket_client];
+	std::vector<std::string>		splitted = ft_split(input, ' ');
+	std::string				tmp;
+
+	std::cout << "input :[" << input << "]" << std::endl;
+	unsigned long			cmd_pos = input.find("AWAY");
+	if (cmd_pos == 0 && splitted.size() > 1)
+	{
+		unsigned long		first_dp_pos = input.find(':');
+		unsigned long		delimiter = std::min(input.find('\r'), input.find('\n'));
+
+		std::string			away_message = input.substr(first_dp_pos, delimiter - first_dp_pos);
+		target.set_away_msg(away_message);
+		modif_mode_user(target, 'a', 2);
+		tmp = send_reply("AWAY", socket_client, my_serv, RPL_NOWAWAY);
+		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+	}
+	else
+	{
+		modif_mode_user(target, 'a', 3);
+		tmp = send_reply("UNAWAY", socket_client, my_serv, RPL_UNAWAY);
+		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+	}
     std::cout << "input :[" << input << "]" << std::endl;
     std::cout << "socket :" << socket_client << std::endl;
     my_serv.get_usermap()[socket_client].print_user();
