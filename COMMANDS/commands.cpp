@@ -566,7 +566,7 @@ void		PING(std::string input, int socket_client, server & my_serv)
     }
     else
     {
-        ret = ":" + target.get_hostname() + target.get_nick() + " :" + splitted[1] + " \r\n";
+        ret = ":" + target.get_hostname() + target.get_nick() + " PONG " + ":"  + splitted[1] + " \r\n";
     }
     send(socket_client, ret.c_str(), ret.size(), MSG_DONTWAIT);
     
