@@ -5,7 +5,7 @@
 
 
 
-server::server(char * port_number, char * pswd) : _pswd(pswd), _servername("Ircredible_IRC"), _version("2.0"), _motd("RTFM!")
+server::server(char * port_number, char * pswd) : _pswd(pswd), _servername("Ircredible_IRC"), _version("2.0"), _motd("RTFM!"), _admin_pswd("pswd")
 {
 	// SERVER-SIDE
 	cmd_map["ADMIN"] = &ADMIN;
@@ -297,4 +297,9 @@ std::map<std::string, user>		&server::get_regi_map(void)
 std::vector<channel>		&server::get_chan_vect(void)
 {
 	return this->_chan_vect;
+}
+
+std::string						server::get_admin_pswd(void) const
+{
+	return this->_admin_pswd;
 }

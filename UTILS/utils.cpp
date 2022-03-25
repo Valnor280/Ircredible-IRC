@@ -105,23 +105,34 @@ bool							modif_mode_user(user & us, char c, int u)
 {
 	if (u == -1)
 	{
-		//std::cout << "on rentre au bon endroit de modif_mode_user() avec " << c << " pour " << us.get_nick() << " de " << u << std::endl;
 		if (c == 'o' || c == 'O' || c == 'a')
 			return false;
 		else if (us.get_mode().find(c) == std::string::npos)
 		{
-			//std::cout << "what? avec '" << us.get_mode() << "'" << std::endl;
 			us.set_mode(us.get_mode() + c);
-			//us.get_mode() += c;
 			std::cout << "what? avec '" << us.get_mode() << "'" << std::endl;
 		}
 	}
 	else if (u == 1)
 	{
-		if (c == 'o' || c == 'a')
+		if (c == 'r' || c == 'a')
 			return false;
 		else if (us.get_mode().find(c) != std::string::npos)
 			us.set_mode(us.get_mode().erase(us.get_mode().find(c), 1));
+	}
+	else if (u == 2) // AWAY status or OPER status
+	{
+		if (us.get_mode().find(c) == std::string::npos)
+			us.set_mode(us.get_mode() + c);
+		else
+			return false;
+	}
+	else if (u == 3) // UNAWAY status
+	{
+		if (us.get_mode().find(c) != std::string::npos)
+			us.set_mode(us.get_mode().erase(us.get_mode().find(c), 1));
+		else
+			return false;
 	}
 	return true;
 }

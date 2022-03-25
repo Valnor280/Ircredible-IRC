@@ -50,7 +50,8 @@ class server
 		std::string						get_version(void) const;
 		std::string						get_date(void) const;
 		std::string						get_motd(void) const;
-		std::vector<channel>		&get_chan_vect(void);
+		std::vector<channel>			&get_chan_vect(void);
+		std::string						get_admin_pswd(void) const;
 
 	private:
 	    struct ConstructorException : public std::exception
@@ -75,6 +76,7 @@ class server
 		std::string 	_version; // On doit avoir une version du server mais je sais pas a quoi ca correspond donc set dans le constructeur x)
 		std::string		_dateofbirth; // explicite
 		std::string		_motd; // message of the day
+		std::string		_admin_pswd; // password to become admin with OPER command
 		time_t 			_time_struct;
 		
 		//MAP DES USERS
