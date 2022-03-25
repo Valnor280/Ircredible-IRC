@@ -787,7 +787,7 @@ void		PRIVMSG(std::string input, int socket_client, server & my_serv)
             std::cout << "ERROR no nick !" << std::endl;
 	    	ret = ":" + my_serv.get_hostname() + " 401 " + sender.get_nick() + " :" + splitted[1] + " \r\n";//bug chelou avec \r
         }
-        else if (it->second.get_mode == "a")
+        else if (it->second.get_mode().find('a') != std::string::npos)
         {
             ret = send_reply(input, it->first, my_serv, RPL_AWAY);
         }
@@ -861,10 +861,6 @@ void		NOTICE(std::string input, int socket_client, server & my_serv)
         {
             return;
         }
-        else if (it->second.get_mode == "a")
-        {
-            return;
-        }
         //else if ()// RPL_CANNOTSENDTOCHAN
         else 
         {
@@ -900,6 +896,7 @@ void		NOTICE(std::string input, int socket_client, server & my_serv)
     std::cout << "socket :" << socket_client << std::endl;
     my_serv.get_usermap()[socket_client].print_user();
     std::cout << std::endl << std::endl;
+}
 
 void		QUIT(std::string input, int socket_client, server & my_serv) 
 { 
