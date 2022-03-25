@@ -206,12 +206,16 @@ void server::loop()
 						//std::cout << "str_buff '" << str_buff << "'" << std::endl;
 						if (cmd_map.find(ft_toupper(input[0])) == cmd_map.end())
 						{
+<<<<<<< HEAD
 							retbuff = send(*itr, send_reply(input[0], *itr, *this, 421).c_str(), send_reply(input[0], *itr, *this, 421).length(), MSG_DONTWAIT);
 							if (retbuff > 0)
 							{
 								_user_map[*itr].add_mess_send(1);
 								_user_map[*itr].add_oct_send(retbuff);
 							}
+=======
+							send(*itr, send_reply(input[0], *itr, *this, 421, "").c_str(), send_reply(input[0], *itr, *this, 421, "").length(), MSG_DONTWAIT);
+>>>>>>> master
 						}
 						else
 						{
@@ -294,9 +298,9 @@ std::map<std::string, user>		&server::get_regi_map(void)
 	return this->_registered_map;
 }
 
-std::vector<channel>		&server::get_chan_vect(void)
+std::map<std::string, channel>		&server::get_chan_map(void)
 {
-	return this->_chan_vect;
+	return this->_chan_map;
 }
 
 std::string						server::get_admin_pswd(void) const
