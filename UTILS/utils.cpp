@@ -160,7 +160,9 @@ std::string						vector_user_to_string(std::vector<user> vect)
 bool							check_name_match(user & target, user & member , std::string pattern)
 {
 	(void)target;
-	if (star_name_checker(member.get_nick(), pattern))
+	if (member.get_mode().find('i') != std::string::npos)
+		return false;
+	else if (star_name_checker(member.get_nick(), pattern))
 		return true;
 	else if (star_name_checker(member.get_hostname(), pattern))
 		return true;
@@ -277,7 +279,7 @@ std::string send_reply(std::string input, int socket_client, server & my_serv, i
 	case 351:
 			return ret += "<version>.<debuglevel> <server> :<comments>\r\n"; // maybe no use for us
 	case 352:
-			return ret += "<channel> <user> <host> <server> <nick> ( H / G > [*] [ ( @ / + ) ] :<hopcount> <real name>\r\n";
+			return ret += "* " + (my_serv.get_usermap())[socket_client].get_nick() + " " + (my_serv.get_usermap())[socket_client].get_hostname() + " " + my_serv.get_servername() + " " + (my_serv.get_usermap())[socket_client].get_nick();
 	case 353:
 			return ret += chan + ":" + "@" + vector_user_to_string(my_serv.get_chan_map()[chan].get_op_list()) + vector_user_to_string(my_serv.get_chan_map()[chan].get_user_list()) + "\r\n";
 	case 366:
