@@ -146,3 +146,4 @@ void		user::print_user() const
 }
 
 bool operator==(const user& lhs, const user& rhs) { return lhs.get_socket() == rhs.get_socket();}
+bool operator!=(const user& lhs, const user& rhs) { return lhs.get_socket() != rhs.get_socket();}
