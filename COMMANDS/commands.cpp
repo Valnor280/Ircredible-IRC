@@ -790,7 +790,7 @@ void		PRIVMSG(std::string input, int socket_client, server & my_serv)
 
     size_t i = 2;
 
-    if (splitted.size() < 2 || *splitted[1].begin() == ':')//ne gere pas le multi target
+    if (splitted.size() < 2 || *splitted[1].begin() == ':')
     {
        ret = send_reply(input, socket_client, my_serv, ERR_NORECIPIENT, "");
     }
@@ -798,17 +798,19 @@ void		PRIVMSG(std::string input, int socket_client, server & my_serv)
     {
        ret = send_reply(input, socket_client, my_serv, ERR_NOTEXTTOSEND, "");
     }
-    else if (*splitted[1].begin() == '#')
+    else if (*splitted[1].begin() == '#')//channel mode !
     {
         std::map<std::string, channel>::iterator itchan = my_serv.get_chan_map().find(splitted[1]);
-        if (itchan == y_serv.get_chan_map().end())
+       
+        if (itchan == y_serv.get_chan_map().end())//channel nexiste pas 
+        {
+            ret = ":" + my_serv.get_hostname() + " 401 " + sender.get_nick() + " :" + splitted[1] + " \r\n";//bug chelou avec \r
+        }
+        else if (std::find(ichan->second.get_ban_list().begin(), ichan->second.get_ban_list().end(), sender) == ichan->second.get_ban_list().end())//sender est ban du channel
         {
            ret = send_reply(input, socket_client, my_serv, ERR_CANNOTSENDTOCHAN, splitted[1]);
         }
-        else
-        {
-            for ()
-        }
+        else if (std::find(ichan->second.get_user_list().begin(), ichan->second.get_user_list().end(), sender) != ichan->second.get_user_list().end() && itchan->second.get_chan_mode().find(''))
     }
     else
     {
