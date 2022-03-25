@@ -15,5 +15,7 @@ void							send_welcome(int socket_client, server & my_serv);
 std::string						ft_toupper(std::string input);
 bool							check_user_mode_input(std::string arg);
 bool							modif_mode_user(user & us, char c, int u);
+bool							check_name_match(user & target, user & member , std::string pattern);
+bool							star_name_checker(std::string str, std::string pattern);
 
 #endif
