@@ -543,9 +543,35 @@ void		WALLOPS(std::string input, int socket_client, server & my_serv)
 
 void		WHO(std::string input, int socket_client, server & my_serv) 
 { 
-    std::cout << "WHON called" << std::endl;
+    std::cout << "WHO called" << std::endl;
     
-    (void)my_serv;
+	std::string			tmp;
+	std::vector<std::string>    temp = ft_split(input, '\n');
+    std::vector<std::string>    temp_2 = ft_split(temp[0], '\r');
+    std::vector<std::string>    args = ft_split(temp_2[0], ' ');
+	user						& target = (my_serv.get_usermap())[socket_client];
+
+	if (args.size() == 1)
+	{
+		// voir le channel sur lequel le mec est actuellement a priori
+	}
+	else if (args.size() == 2 && args[1][0] != '#')
+	{
+		std::map<std::string, user>::iterator		it = my_serv.get_regi_map().begin();
+		std::map<std::string, user>::iterator		ite = my_serv.get_regi_map().end();
+
+		while (it != ite)
+		{
+			if (check_name_match(target, (*it).second, args[1]))
+			{
+				tmp = send_reply("USER", socket_client, my_serv, RPL_WHOREPLY, "");
+				send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+			}
+			it++;
+		}
+	}
+	tmp = send_reply("USER", socket_client, my_serv, RPL_ENDOFWHO, "");
+	send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
     std::cout << "input :[" << input << "]" << std::endl;
     std::cout << "socket :" << socket_client << std::endl;
     my_serv.get_usermap()[socket_client].print_user();
@@ -555,7 +581,7 @@ void		WHO(std::string input, int socket_client, server & my_serv)
 void		WHOIS(std::string input, int socket_client, server & my_serv) 
 { 
     std::cout << "WHOIS called" << std::endl;
-    
+
     (void)my_serv;
     std::cout << "input :[" << input << "]" << std::endl;
     std::cout << "socket :" << socket_client << std::endl;
