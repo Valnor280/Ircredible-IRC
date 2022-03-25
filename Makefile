@@ -23,8 +23,8 @@ HEADER = -I .# -I SERVER/ -I USER/
 all				: 	${NAME}
 $(NAME) 		: 	$(OBJS)	
 						@mkdir -p $(@D)
-						@$(CC) $(CC_FLAGS) $^ -o $@
 						@echo Compiling...
+						@$(CC) $(CC_FLAGS) $^ -o $@
 -include $(DEP)
 $(OBJS_DIR)/%.o	:	%.cpp
 						@mkdir -p $(@D)

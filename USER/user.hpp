@@ -3,6 +3,8 @@
 
 #include <string>
 #include <iostream>
+#include <sys/time.h>
+#include <unistd.h>
 
 class user
 {
@@ -45,6 +47,14 @@ class user
 		int				_socket;
 
 
+		//STATS
+		struct timeval	first_connect;//set dans accept connect
+		unsigned long	oct_recv;
+		unsigned long	oct_send;
+		unsigned long	mess_recv;
+		unsigned long	mess_send;
+
+
 	public:
 		user();
 		~user();
@@ -61,6 +71,11 @@ class user
 		int				get_registration() const;
 		std::string		get_away_msg() const;
 		int				get_socket() const;
+		long long int	get_connected_time() const;
+		unsigned long	get_oct_recv() const;
+		unsigned long	get_oct_send() const;
+		unsigned long	get_mess_recv() const;
+		unsigned long	get_mess_send() const;
 
 		//SETTERS
 		bool		set_nick( std::string new_nick );
@@ -73,6 +88,12 @@ class user
 		void		set_registration( int new_reg );
 		void		set_away_msg(std::string msg);
 		void		set_socket(int new_socket );
+		void		set_first_connect(void);
+		void		add_oct_recv(unsigned long nb);
+		void		add_oct_send(unsigned long nb);
+		void		add_mess_recv(unsigned long nb);
+		void		add_mess_send(unsigned long nb);
+
 
 		// UTILS
 		void		print_user() const;

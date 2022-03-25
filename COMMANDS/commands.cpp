@@ -448,6 +448,14 @@ void		STATS(std::string input, int socket_client, server & my_serv)
     std::cout << "input :[" << input << "]" << std::endl;
     std::cout << "socket :" << socket_client << std::endl;
     my_serv.get_usermap()[socket_client].print_user();
+   
+	std::cout << "connected time -> " << (my_serv.get_usermap()[socket_client].get_connected_time() / 60000000) % 60 << "min "; 
+    std::cout << (my_serv.get_usermap()[socket_client].get_connected_time() / 1000000) % 60;
+    std::cout << "." << my_serv.get_usermap()[socket_client].get_connected_time() / 100000 << "s" << std::endl;
+	std::cout << "oct_recv -> " << my_serv.get_usermap()[socket_client].get_oct_recv() << std::endl;
+	std::cout << "oct_send -> " << my_serv.get_usermap()[socket_client].get_oct_send() << std::endl;
+	std::cout << "mess_recv -> " << my_serv.get_usermap()[socket_client].get_mess_recv() << std::endl;
+	std::cout << "mess_send -> " << my_serv.get_usermap()[socket_client].get_mess_send() << std::endl;
     std::cout << std::endl << std::endl;
 };
 

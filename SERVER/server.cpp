@@ -189,6 +189,8 @@ void server::loop()
 				retbuff = recv(*itr, _buffer, 512, MSG_DONTWAIT);
 				if (retbuff > 0)
 				{
+					_user_map[*itr].add_mess_recv(1);
+					_user_map[*itr].add_oct_recv(retbuff);
 					_buffer[retbuff] = 0;
 					std::cout << "msg : " << _buffer << "socket :" << *itr << std::endl;
 					
@@ -204,7 +206,12 @@ void server::loop()
 						//std::cout << "str_buff '" << str_buff << "'" << std::endl;
 						if (cmd_map.find(ft_toupper(input[0])) == cmd_map.end())
 						{
-							send(*itr, send_reply(input[0], *itr, *this, 421).c_str(), send_reply(input[0], *itr, *this, 421).length(), MSG_DONTWAIT);
+							retbuff = send(*itr, send_reply(input[0], *itr, *this, 421).c_str(), send_reply(input[0], *itr, *this, 421).length(), MSG_DONTWAIT);
+							if (retbuff > 0)
+							{
+								_user_map[*itr].add_mess_send(1);
+								_user_map[*itr].add_oct_send(retbuff);
+							}
 						}
 						else
 						{
