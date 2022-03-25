@@ -564,7 +564,14 @@ void		WHO(std::string input, int socket_client, server & my_serv)
 		{
 			if (check_name_match(target, (*it).second, args[1]))
 			{
-				tmp = send_reply("USER", socket_client, my_serv, RPL_WHOREPLY, "");
+				tmp = send_reply("USER", (*it).second.get_socket(), my_serv, RPL_WHOREPLY, "");
+				if ((my_serv.get_regi_map())[(*it).second.get_nick()].get_mode().find('i') == std::string::npos)
+					tmp += " H ";
+				else
+					tmp += " G ";
+				if ((my_serv.get_regi_map())[(*it).second.get_nick()].get_mode().find('o') != std::string::npos)
+					tmp += " * ";
+				tmp += (my_serv.get_usermap())[socket_client].get_real_name() + "\r\n";
 				send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 			}
 			it++;
@@ -829,7 +836,7 @@ void		PRIVMSG(std::string input, int socket_client, server & my_serv)
     }
     else if (splitted.size() > 2 && *splitted[2].begin() != ':')
     {
-       ret = send_reply(input, socket_client, my_serv, ERR_NOTEXTTOSEND);
+       ret = send_reply(input, socket_client, my_serv, ERR_NOTEXTTOSEND, "");
     }
     else
     {
@@ -847,7 +854,7 @@ void		PRIVMSG(std::string input, int socket_client, server & my_serv)
         }
         else if (it->second.get_mode().find('a') != std::string::npos)
         {
-            ret = send_reply(input, it->first, my_serv, RPL_AWAY);
+            ret = send_reply(input, it->first, my_serv, RPL_AWAY, "");
         }
         //else if ()// RPL_CANNOTSENDTOCHAN
         else 
