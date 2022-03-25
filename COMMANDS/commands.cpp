@@ -334,7 +334,7 @@ void		LUSERS(std::string input, int socket_client, server & my_serv)
 void		MODE(std::string input, int socket_client, server & my_serv) 
 { 
     std::cout << "MODE called" << std::endl;
-    user				target = (my_serv.get_usermap())[socket_client];
+    user				& target = (my_serv.get_usermap())[socket_client];
 	std::string			tmp;
 
 	std::vector<std::string>	args = ft_split(input, ' ');
@@ -369,13 +369,16 @@ void		MODE(std::string input, int socket_client, server & my_serv)
 			while (j < args[i].length())
 			{
 				if (!(args[i][j] == '\r' || args[i][j] == '\n'))
+				{
+					std::cout << target.get_nick() << " for " << args[i][j] << " with mod " << mod << std::endl;
 					modif_mode_user(target, args[i][j], mod);
+				}
 				j++;
 			}
 			i++;
 		}
 	}
-	tmp = send_reply("cool", socket_client, my_serv, RPL_UMODEIS);
+	tmp = send_reply("MODE", socket_client, my_serv, RPL_UMODEIS);
 	send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 
 	tmp = send_reply(my_serv.get_servername(), socket_client, my_serv, RPL_INFO);
@@ -638,7 +641,15 @@ void		AWAY(std::string input, int socket_client, server & my_serv)
 { 
     std::cout << "AWAY called" << std::endl;
     
-    (void)my_serv;
+    // user					& target = (my_serv.get_usermap())[socket_client];
+
+	// unsigned long			cmd_pos = input.find("AWAY");
+	// if (cmd_pos == 0)
+	// {
+	// 	unsigned long		first_:_pos = input.find(':');
+	// 	unsigned long		first_:_pos = input.find(':');
+	// 	unsigned long		first_:_pos = input.find(':');
+	// }
     std::cout << "input :[" << input << "]" << std::endl;
     std::cout << "socket :" << socket_client << std::endl;
     my_serv.get_usermap()[socket_client].print_user();
