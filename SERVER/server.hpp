@@ -28,6 +28,8 @@ class server;
 
 #include "../COMMANDS/commands.hpp"
 #define USERLEN 12
+#define MAXCHANUSER 10
+#define MAXCHAN 5
 
 class server
 {
@@ -50,6 +52,7 @@ class server
 		std::string						get_version(void) const;
 		std::string						get_date(void) const;
 		std::string						get_motd(void) const;
+		std::map<std::string, channel>	&get_chan_map(void);
 		std::vector<channel>			&get_chan_vect(void);
 		std::string						get_admin_pswd(void) const;
 
@@ -89,7 +92,7 @@ class server
 		std::map<std::string, void (*)(std::string, int, server &)>				cmd_map;
 
 		//VEctor des chans
-		std::vector<channel>	_chan_vect;
+		std::map<std::string, channel>	_chan_map;
 
 		
 };
