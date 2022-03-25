@@ -709,15 +709,29 @@ void		AWAY(std::string input, int socket_client, server & my_serv)
 { 
     std::cout << "AWAY called" << std::endl;
     
-    // user					& target = (my_serv.get_usermap())[socket_client];
+    user					& target = (my_serv.get_usermap())[socket_client];
+	std::vector<std::string>		splitted = ft_split(input, ' ');
+	std::string				tmp;
 
-	// unsigned long			cmd_pos = input.find("AWAY");
-	// if (cmd_pos == 0)
-	// {
-	// 	unsigned long		first_:_pos = input.find(':');
-	// 	unsigned long		first_:_pos = input.find(':');
-	// 	unsigned long		first_:_pos = input.find(':');
-	// }
+	std::cout << "input :[" << input << "]" << std::endl;
+	unsigned long			cmd_pos = input.find("AWAY");
+	if (cmd_pos == 0 && splitted.size() > 1)
+	{
+		unsigned long		first_dp_pos = input.find(':');
+		unsigned long		delimiter = std::min(input.find('\r'), input.find('\n'));
+
+		std::string			away_message = input.substr(first_dp_pos, delimiter - first_dp_pos);
+		target.set_away_msg(away_message);
+		modif_mode_user(target, 'a', 2);
+		tmp = send_reply("AWAY", socket_client, my_serv, RPL_NOWAWAY);
+		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+	}
+	else
+	{
+		modif_mode_user(target, 'a', 3);
+		tmp = send_reply("UNAWAY", socket_client, my_serv, RPL_UNAWAY);
+		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+	}
     std::cout << "input :[" << input << "]" << std::endl;
     std::cout << "socket :" << socket_client << std::endl;
     my_serv.get_usermap()[socket_client].print_user();
