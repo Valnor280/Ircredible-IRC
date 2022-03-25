@@ -697,14 +697,46 @@ void		KNOCK(std::string input, int socket_client, server & my_serv)
     std::cout << std::endl << std::endl;
 };
  // a voir
+
 void		TOPIC(std::string input, int socket_client, server & my_serv) 
 { 
     std::cout << "TOPIC called" << std::endl;
-    
-    (void)my_serv;
-    std::cout << "input :[" << input << "]" << std::endl;
-    std::cout << "socket :" << socket_client << std::endl;
-    my_serv.get_usermap()[socket_client].print_user();
+
+	std::vector<std::string>		splitted = ft_split(input, ' ');
+	std::string				tmp;
+
+	std::cout << "size :" << splitted.size() << std::endl;
+	if(splitted.size() < 1)
+	{
+		tmp = send_reply("TOPIC", socket_client, my_serv, ERR_NEEDMOREPARAMS, "");
+		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+	}
+	else if(splitted.size() == 2)
+	{
+		tmp = send_reply("TOPIC", socket_client, my_serv, RPL_TOPIC, splitted[1]);
+		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+	}
+	else
+	{
+		if(find_user(my_serv.get_chan_map()[splitted[1]].get_op_list(), my_serv.get_usermap()[socket_client]) == true)
+		{	
+			std::cout << "TEST\n";
+			std::string str;
+			for(std::vector<std::string>::iterator itr = splitted.begin(); itr != splitted.end(); itr++)
+				str += *itr;
+			my_serv.get_chan_map()[splitted[1]].set_topic(str);
+		}
+		else if(find_user(my_serv.get_chan_map()[splitted[1]].get_user_list(), my_serv.get_usermap()[socket_client]) == true)
+		{
+			tmp = send_reply("TOPIC", socket_client, my_serv, ERR_CHANOPRIVSNEEDED, splitted[1]);
+			send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+		}
+		else
+		{
+			tmp = send_reply("TOPIC", socket_client, my_serv, ERR_NOTONCHANNEL, splitted[1]);
+			send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+		}
+	}
     std::cout << std::endl << std::endl;
 };
 
