@@ -15,19 +15,25 @@ class channel
 		std::vector<user>		_user_list;
 		std::vector<user>		_op_list;
 		std::string				_chan_mode;
+		std::string				_topic;
+		std::string				_key;
 	
 	public:
-		channel( const user creator, std::string name);
+		channel();
 		~channel();
 
 		// GETTERS
 		std::string				get_name() const;
+		std::string				get_topic() const;
+		std::string				get_key() const;
 		std::vector<user>		get_user_list() const;
 		std::vector<user>		get_op_list() const;
 		std::string				get_chan_mode() const;
 
 		// SETTERS
 		void				set_name( std::string new_name );
+		void				set_topic( std::string new_topic );
+		void				set_key( std::string new_key );
 		void				add_user( const user member );
 		void				remove_user( const user member );
 		void				add_op_user( const user member );

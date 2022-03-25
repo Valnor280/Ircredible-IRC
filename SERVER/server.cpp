@@ -287,7 +287,7 @@ std::map<std::string, user>		&server::get_regi_map(void)
 	return this->_registered_map;
 }
 
-std::vector<channel>		&server::get_chan_vect(void)
+std::map<std::string, channel>		&server::get_chan_map(void)
 {
-	return this->_chan_vect;
+	return this->_chan_map;
 }

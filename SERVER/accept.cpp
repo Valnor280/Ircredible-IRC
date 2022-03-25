@@ -16,6 +16,7 @@ int server::accept_connect(int numsock)
 			_open_sock.insert(new_client_socket);
 			std::cout << "Accepted conection\n";
 			_user_map.insert(std::make_pair(new_client_socket, user()));
+			_user_map[new_client_socket].set_socket(new_client_socket);
 		
 		}
 		else

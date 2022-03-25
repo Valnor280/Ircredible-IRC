@@ -2,10 +2,8 @@
 
 #include "CHANNEL/channel.hpp"
 
-channel::channel( const user creator, std::string name) : _name(name)
+channel::channel() : _name("")
 {
-	_user_list.push_back(creator);
-	_op_list.push_back(creator);
 }
 
 channel::~channel()
@@ -18,6 +16,15 @@ std::string			channel::get_name() const
 	return _name;
 }
 
+std::string			channel::get_topic() const
+{
+	return _topic;
+}
+
+std::string			channel::get_key() const
+{
+	return _key;
+}
 std::vector<user>	channel::get_user_list() const
 {
 	return this->_user_list;
@@ -36,6 +43,16 @@ std::string			channel::get_chan_mode() const
 void				channel::set_name( std::string new_name )
 {
 	this->_name = new_name;
+}
+
+void				channel::set_topic( std::string new_topic )
+{
+	this->_topic = new_topic;
+}
+
+void				channel::set_key( std::string new_key )
+{
+	this->_key = new_key;
 }
 
 void				channel::add_user( const user member )

@@ -82,13 +82,24 @@ bool							check_mode_input( std::string arg)
 
 void							send_welcome(int socket_client, server & my_serv)
 {
-	send(socket_client, send_reply("test", socket_client, my_serv, 1).c_str(), send_reply("test", socket_client, my_serv, 1).length(), MSG_DONTWAIT);
-	send(socket_client, send_reply("test", socket_client, my_serv, 2).c_str(), send_reply("test", socket_client, my_serv, 2).length(), MSG_DONTWAIT);
-	send(socket_client, send_reply("test", socket_client, my_serv, 3).c_str(), send_reply("test", socket_client, my_serv, 3).length(), MSG_DONTWAIT);
-	send(socket_client, send_reply("test", socket_client, my_serv, 4).c_str(), send_reply("test", socket_client, my_serv, 4).length(), MSG_DONTWAIT);
+	send(socket_client, send_reply("test", socket_client, my_serv, 1, "").c_str(), send_reply("test", socket_client, my_serv, 1, "").length(), MSG_DONTWAIT);
+	send(socket_client, send_reply("test", socket_client, my_serv, 2, "").c_str(), send_reply("test", socket_client, my_serv, 2, "").length(), MSG_DONTWAIT);
+	send(socket_client, send_reply("test", socket_client, my_serv, 3, "").c_str(), send_reply("test", socket_client, my_serv, 3, "").length(), MSG_DONTWAIT);
+	send(socket_client, send_reply("test", socket_client, my_serv, 4, "").c_str(), send_reply("test", socket_client, my_serv, 4, "").length(), MSG_DONTWAIT);
 }
 
-std::string send_reply(std::string input, int socket_client, server & my_serv, int code)
+std::string						vector_user_to_string(std::vector<user> vect)
+{
+	std::vector<user>::iterator itr;
+	std::string ret;
+	for(itr = vect.begin(); itr != vect.end(); itr++)
+	{
+		ret += itr->get_nick() + ", ";
+	}
+	return(ret);
+}
+
+std::string send_reply(std::string input, int socket_client, server & my_serv, int code, std::string chan)
 {
 	std::string true_code = ft_to_string(code);
 	if (code < 10)
@@ -155,9 +166,9 @@ std::string send_reply(std::string input, int socket_client, server & my_serv, i
 	case 324:
 			return ret += "<channel> <mode> <mode params>\r\n";
 	case 331:
-			return ret += "<channel> :No topic is set\r\n";
+			return ret += chan + " :No topic is set\r\n";
 	case 332:
-			return ret += "<channel> :<topic>\r\n";
+			return ret += chan +  " :" + my_serv.get_chan_map()[chan].get_topic() + "\r\n";
 	case 341:
 			return ret += "<channel> <nick>\r\n";
 	case 351:
@@ -165,13 +176,13 @@ std::string send_reply(std::string input, int socket_client, server & my_serv, i
 	case 352:
 			return ret += "<channel> <user> <host> <server> <nick> ( H / G > [*] [ ( @ / + ) ] :<hopcount> <real name>\r\n";
 	case 353:
-			return ret += "( = / * / @ ) <channel> :[ @ / + ] <nick> *(  [ @ / + ] <nick> )\r\n";
+			return ret += "=" + chan + ":" + "@" + vector_user_to_string(my_serv.get_chan_map()[chan].get_op_list()) + "*" + vector_user_to_string(my_serv.get_chan_map()[chan].get_user_list()) + "\r\n";
 	case 366:
-			return ret += "<channel> :End of NAMES list\r\n";
+			return ret += chan + ":End of NAMES list\r\n";
 	case 367:
 			return ret += "<channel> <banmask>\r\n";
 	case 368:
-			return ret += "<channel> :End of channel ban list\r\n";
+			return ret += chan + " :End of channel ban list\r\n";
 	case 369:
 			return ret +=  my_serv.get_usermap()[socket_client].get_nick() + " :End of WHOWAS\r\n";
 	case 371:
@@ -241,7 +252,7 @@ std::string send_reply(std::string input, int socket_client, server & my_serv, i
 	case 474:
 			return ret += input + " :Cannot join channel (+b)\r\n";
 	case 475:
-			return ret += input + " :Cannot join channel (+k)\r\n";
+			return ret += chan + " :Cannot join channel (+k)\r\n";
 	case 476:
 			return ret += input + " :Bad Channel Mask\r\n";
 	case 481:
