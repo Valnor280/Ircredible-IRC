@@ -25,7 +25,7 @@ std::string			channel::get_key() const
 {
 	return _key;
 }
-std::vector<user>	channel::get_user_list() const
+std::vector<user>	&channel::get_user_list()
 {
 	return this->_user_list;
 }

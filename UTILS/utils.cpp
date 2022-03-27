@@ -151,10 +151,20 @@ std::string						vector_user_to_string(std::vector<user> vect)
 	std::string ret;
 	for(itr = vect.begin(); itr != vect.end(); itr++)
 	{
-		ret += itr->get_nick() + ", ";
+		ret += itr->get_nick() + " ";
 	}
 	std::cout << ret << std::endl;
 	return(ret);
+}
+
+bool find_user(std::vector<user> vect, user usr)
+{
+	for(std::vector<user>::iterator itr = vect.begin(); itr != vect.end(); itr++)
+	{
+		if(*itr == usr)
+			return true;
+	}
+	return false;
 }
 
 bool							check_name_match(user & target, user & member , std::string pattern)
@@ -269,7 +279,7 @@ std::string send_reply(std::string input, int socket_client, server & my_serv, i
 	case 324:
 			return ret += "<channel> <mode> <mode params>\r\n";
 	case 331:
-			return ret += chan + " :No topic is set\r\n";
+			return ret += chan + ":No topic is set\r\n";
 	case 332:
 			return ret += chan +  " :" + my_serv.get_chan_map()[chan].get_topic() + "\r\n";
 	case 341:
@@ -335,7 +345,7 @@ std::string send_reply(std::string input, int socket_client, server & my_serv, i
 	case 441:
 			return ret += input + "<channel> :They aren't on that channel\r\n"; //nick
 	case 442:
-			return ret += input + " :You're not on that channel\r\n"; // channel
+			return ret += chan + " :You're not on that channel\r\n"; // channel
 	case 443:
 			return ret += my_serv.get_usermap()[socket_client].get_username() + "<channel> :is already on channel\r\n";
 	case 451:

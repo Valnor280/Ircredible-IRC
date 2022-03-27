@@ -105,5 +105,6 @@ class user
 };
 
 bool operator==(const user& lhs, const user& rhs);
+bool operator!=(const user& lhs, const user& rhs);
 
 #endif

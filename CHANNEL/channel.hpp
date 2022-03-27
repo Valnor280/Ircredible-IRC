@@ -28,7 +28,7 @@ class channel
 		std::string				get_name() const;
 		std::string				get_topic() const;
 		std::string				get_key() const;
-		std::vector<user>		get_user_list() const;
+		std::vector<user>		&get_user_list();
 		std::vector<user>		get_op_list() const;
 		std::vector<user>		get_ban_list() const;
 		std::vector<user>		get_invite_list() const;

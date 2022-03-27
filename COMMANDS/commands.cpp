@@ -1,6 +1,6 @@
 #include "commands.hpp"
 #include "../SERVER/server.hpp"
-
+#include "UTILS/utils.hpp"
 
 
 
@@ -697,14 +697,46 @@ void		KNOCK(std::string input, int socket_client, server & my_serv)
     std::cout << std::endl << std::endl;
 };
  // a voir
+
 void		TOPIC(std::string input, int socket_client, server & my_serv) 
 { 
     std::cout << "TOPIC called" << std::endl;
-    
-    (void)my_serv;
-    std::cout << "input :[" << input << "]" << std::endl;
-    std::cout << "socket :" << socket_client << std::endl;
-    my_serv.get_usermap()[socket_client].print_user();
+
+	std::vector<std::string>		splitted = ft_split(input, ' ');
+	std::string				tmp;
+
+	std::cout << "size :" << splitted.size() << std::endl;
+	if(splitted.size() < 1)
+	{
+		tmp = send_reply("TOPIC", socket_client, my_serv, ERR_NEEDMOREPARAMS, "");
+		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+	}
+	else if(splitted.size() == 2)
+	{
+		tmp = send_reply("TOPIC", socket_client, my_serv, RPL_TOPIC, splitted[1]);
+		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+	}
+	else
+	{
+		if(find_user(my_serv.get_chan_map()[splitted[1]].get_op_list(), my_serv.get_usermap()[socket_client]) == true)
+		{	
+			std::cout << "TEST\n";
+			std::string str;
+			for(std::vector<std::string>::iterator itr = splitted.begin(); itr != splitted.end(); itr++)
+				str += *itr;
+			my_serv.get_chan_map()[splitted[1]].set_topic(str);
+		}
+		else if(find_user(my_serv.get_chan_map()[splitted[1]].get_user_list(), my_serv.get_usermap()[socket_client]) == true)
+		{
+			tmp = send_reply("TOPIC", socket_client, my_serv, ERR_CHANOPRIVSNEEDED, splitted[1]);
+			send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+		}
+		else
+		{
+			tmp = send_reply("TOPIC", socket_client, my_serv, ERR_NOTONCHANNEL, splitted[1]);
+			send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+		}
+	}
     std::cout << std::endl << std::endl;
 };
 
@@ -798,23 +830,83 @@ void		PRIVMSG(std::string input, int socket_client, server & my_serv)
     {
        ret = send_reply(input, socket_client, my_serv, ERR_NOTEXTTOSEND, "");
     }
-    else if (*splitted[1].begin() == '#')//channel mode !
+    else if (*splitted[1].begin() == '#')//channel  !
     {
-        std::map<std::string, channel>::iterator itchan = my_serv.get_chan_map().find(splitted[1]);
-       
-        if (itchan == y_serv.get_chan_map().end())//channel nexiste pas 
+        std::cout << "message for channel -> " << splitted[1] << std::endl;
+        
+        std::map<std::string, channel>::iterator itchan = my_serv.get_chan_map().begin();
+
+        while (itchan != my_serv.get_chan_map().end())
         {
-            ret = ":" + my_serv.get_hostname() + " 401 " + sender.get_nick() + " :" + splitted[1] + " \r\n";//bug chelou avec \r
+            std::cout << itchan->first << std::endl;
+            ++itchan;
         }
-        else if (std::find(ichan->second.get_ban_list().begin(), ichan->second.get_ban_list().end(), sender) == ichan->second.get_ban_list().end())//sender est ban du channel
+        
+        itchan = my_serv.get_chan_map().begin();
+        if (itchan == my_serv.get_chan_map().end())//channel nexiste pas 
         {
-           ret = send_reply(input, socket_client, my_serv, ERR_CANNOTSENDTOCHAN, splitted[1]);
+            std::cout << "channel nexiste pas" << std::endl;
+            // ret = ":" + my_serv.get_hostname() + " 401 " + sender.get_nick() + " :" + splitted[1] + " \r\n";
+            ret = send_reply(input, socket_client, my_serv, ERR_NOSUCHCHANNEL, splitted[1]);
         }
-        else if (std::find(ichan->second.get_user_list().begin(), ichan->second.get_user_list().end(), sender) != ichan->second.get_user_list().end() && itchan->second.get_chan_mode().find(''))
+        else if (find_user(itchan->second.get_ban_list(), sender))//sender est ban du channel
+        {
+            ret = send_reply(input, socket_client, my_serv, ERR_CANNOTSENDTOCHAN, splitted[1]);
+        }
+        else if (!find_user(itchan->second.get_user_list(), sender) && itchan->second.get_chan_mode().find('n') != std::string::npos)//mode n alors que sender n'est pas dans le channel
+        {
+            ret = send_reply(input, socket_client, my_serv, ERR_CANNOTSENDTOCHAN, splitted[1]);
+        }
+        else if (itchan->second.get_chan_mode().find('v') != std::string::npos && itchan->second.get_chan_mode().find('m') != std::string::npos)//mode v + m
+        {
+            ret = send_reply(input, socket_client, my_serv, ERR_CANNOTSENDTOCHAN, splitted[1]);
+        }
+        else//tout va bien ou envoie tout sur le channel
+        {
+            std::cout << "tout est ok !" << std::endl;
+          
+            std::vector<user> vect_user = itchan->second.get_user_list();
+            std::vector<user>::iterator ituser = vect_user.begin();
+           
+            ret = ":" + sender.get_id() + " " + sender.get_nick() + " ";
+            while (i < splitted.size())
+            {
+                ret += splitted[i];
+                if (i != splitted.size() - 1)
+                    ret += " ";
+                ++i;
+            }
+           
+           
+            while (ituser != vect_user.end())
+            {
+                std::cout << "user -> " << ituser->get_nick() << std::endl;
+                ++ituser;
+            }
+            
+            ituser = vect_user.begin();
+
+            while (ituser != vect_user.end())
+            {
+                
+                std::cout << "ret '"<< ret << "'"<< std::endl;
+                std::cout << "send to socket ->" << ituser->get_socket() << std::endl;
+
+                int sendret = send(ituser->get_socket(), ret.c_str(), ret.size(), 0);
+                
+                std::cout << "sendret :" << sendret << std::endl <<std::endl;
+                ++ituser;
+            }
+            return;
+        }
+        std::cout << "ret '"<< ret << "'"<<std::endl;
+
+        send(socket_client, ret.c_str(), ret.size(), MSG_DONTWAIT);
     }
     else
     {
-
+        std::cout << "message for user -> " << splitted[1] << std::endl;
+        
         while (it != usermap.end())
         {
             if (it->second.get_nick() == splitted[1] /* || channel_name == spitted*/)// ne gere pas les channel
@@ -845,22 +937,10 @@ void		PRIVMSG(std::string input, int socket_client, server & my_serv)
             socket_client = it->first;
         }
 
-        if (splitted.size() >= 2)
-            std::cout << "split 1'" <<splitted[1]<< "'" << std::endl;
-        if (splitted.size() >= 3)
-            std::cout << "split 2'" <<splitted[2]<< "'" << std::endl;
-
         std::cout << "ret '"<< ret << "'"<<std::endl;
-        // ret.insert(ret.end() - 2, ' ');
-/*  
-        if (pas les permission du channel)
-        {
-	    	ret = ":" + sender.get_id() + " 403 " + sender.get_nick() + " :No such nick/channel\r\n";
-            "<client> 403 <channel> :No such channel"
-        }
-*/
+        send(socket_client, ret.c_str(), ret.size(), MSG_DONTWAIT);
+    
     }
-    send(socket_client, ret.c_str(), ret.size(), MSG_DONTWAIT);
 
     std::cout << "input :[" << input << "]" << std::endl;
     std::cout << "socket :" << socket_client << std::endl;
