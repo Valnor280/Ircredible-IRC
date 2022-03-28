@@ -27,7 +27,7 @@ void		join_single(int socket_client, server &my_serv, std::string chan, std::str
 		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 		tmp = send_reply("JOIN", socket_client, my_serv, RPL_ENDOFNAMES, chan); // maybe 
 		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
-	//	my_serv.get_chan_map()[chan].add_user(my_serv.get_usermap()[socket_client]);
+	
 	}
 	else
 	{
@@ -53,7 +53,6 @@ void		join_single(int socket_client, server &my_serv, std::string chan, std::str
 			send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 			return;
 		}
-		
 		std::vector<user> list = my_serv.get_chan_map()[chan].get_user_list();
 		std::string tmp;
 		std::string id = tmp_u.get_id().substr();
@@ -77,17 +76,11 @@ void		join_single(int socket_client, server &my_serv, std::string chan, std::str
 		else
 			tmp = send_reply("JOIN", socket_client, my_serv, RPL_TOPIC, chan);
 		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
-
-		for (std::vector<user>::iterator ituser = list.begin(); ituser != list.end(); ++ituser)
-		{
-			std::cout << "name reply ->" << ituser->get_nick() << std::endl;
-		}
-		
-		
 		tmp = send_reply("JOIN", socket_client, my_serv, RPL_NAMREPLY, chan);
 		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 		tmp = send_reply("JOIN", socket_client, my_serv, RPL_ENDOFNAMES, chan); // maybe 
 		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+	
 	}
 }
 

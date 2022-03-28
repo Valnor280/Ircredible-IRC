@@ -344,8 +344,12 @@ void		MODE(std::string input, int socket_client, server & my_serv)
 	if (args.size() < 3)
 	{
 		// ERRNEEDMOREPARAMS
-		tmp = send_reply("MODE", socket_client, my_serv, ERR_NEEDMOREPARAMS, "");
-		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+		// tmp = send_reply("MODE", socket_client, my_serv, ERR_NEEDMOREPARAMS, "");
+		// send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+       	tmp = send_reply("MODE", socket_client, my_serv, RPL_UMODEIS, "");
+    	send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+
+		std::cout << "ERR_NEEDMOREPARAMS" << std::endl; 
 		return ;
 	}
 	else if (args[1] != target.get_nick()) // AJOUTER LA VERIFICATION DE NOM DE CHANNELS?
@@ -353,7 +357,8 @@ void		MODE(std::string input, int socket_client, server & my_serv)
 		// ERR_USERSDONTMATCH
 		tmp = send_reply("MODE", socket_client, my_serv, ERR_USERSDONTMATCH, "");
 		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
-		return ;
+		std::cout << "ERR_USERSDONTMATCH" << std::endl; 
+        return ;
 	}
 	else
 	{
@@ -385,8 +390,9 @@ void		MODE(std::string input, int socket_client, server & my_serv)
 	send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 
 	tmp = send_reply(my_serv.get_servername(), socket_client, my_serv, RPL_INFO, "");
-		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+	send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 
+    std::cout << "ret :[" << tmp << "]" << std::endl;
     std::cout << "input :[" << input << "]" << std::endl;
     std::cout << "socket :" << socket_client << std::endl;
     my_serv.get_usermap()[socket_client].print_user();
