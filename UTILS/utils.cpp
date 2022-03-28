@@ -153,7 +153,23 @@ std::string						vector_user_to_string(std::vector<user> vect)
 	{
 		ret += itr->get_nick() + " ";
 	}
-	std::cout << ret << std::endl;
+	return(ret);
+}
+
+std::string						user_list(std::vector<user> op, std::vector<user> us)
+{
+	std::vector<user>::iterator itr;
+	std::string ret;
+	for(itr = op.begin(); itr != op.end(); itr++)
+	{
+		ret +=  "@" + itr->get_nick() + " ";
+	}
+	for(itr = us.begin(); itr != us.end(); itr++)
+	{
+		ret += itr->get_nick() + " ";
+	}
+	if( *ret.end() == ' ')
+		ret.resize(ret.length() - 1);
 	return(ret);
 }
 
@@ -283,7 +299,7 @@ std::string send_reply(std::string input, int socket_client, server & my_serv, i
 	case 324:
 			return ret += "<channel> <mode> <mode params>\r\n";
 	case 331:
-			return ret += chan + ":No topic is set\r\n";
+			return ret += chan + " :No topic is set\r\n";
 	case 332:
 			return ret += chan +  " :" + my_serv.get_chan_map()[chan].get_topic() + "\r\n";
 	case 341:
@@ -293,7 +309,7 @@ std::string send_reply(std::string input, int socket_client, server & my_serv, i
 	case 352:
 			return ret += "* " + (my_serv.get_usermap())[socket_client].get_nick() + " " + (my_serv.get_usermap())[socket_client].get_hostname() + " " + my_serv.get_servername() + " " + (my_serv.get_usermap())[socket_client].get_nick();
 	case 353:
-			return ret += chan + ":" + "@" + vector_user_to_string(my_serv.get_chan_map()[chan].get_op_list()) + vector_user_to_string(my_serv.get_chan_map()[chan].get_user_list()) + "\r\n";
+			return ret += chan + " :" + user_list(my_serv.get_chan_map()[chan].get_op_list(), my_serv.get_chan_map()[chan].get_user_list()) + "\r\n";
 	case 366:
 			return ret += chan + ":End of NAMES list\r\n";
 	case 367:
@@ -375,7 +391,7 @@ std::string send_reply(std::string input, int socket_client, server & my_serv, i
 	case 481:
 			return ret += ":Permission Denied- You're not an IRC operator\r\n";
 	case 482:
-			return ret += "<channel> :You're not channel operator\r\n";
+			return ret += chan + " :You're not channel operator\r\n";
 	case 483:
 			return ret += ":You can't kill a server!\r\n";
 	case 491:
