@@ -336,6 +336,7 @@ void		MODE(std::string input, int socket_client, server & my_serv)
 { 
     std::cout << "MODE called" << std::endl;
     user				& target = (my_serv.get_usermap())[socket_client];
+	user				& target_2 = (my_serv.get_regi_map())[target.get_nick()];
 	std::string			tmp;
 
 	std::vector<std::string>    temp = ft_split(input, '\n');
@@ -375,6 +376,7 @@ void		MODE(std::string input, int socket_client, server & my_serv)
 				{
 					std::cout << target.get_nick() << " for " << args[i][j] << " with mod " << mod << std::endl;
 					modif_mode_user(target, args[i][j], mod);
+					modif_mode_user(target_2, args[i][j], mod);
 				}
 				j++;
 			}
@@ -566,13 +568,16 @@ void		WHO(std::string input, int socket_client, server & my_serv)
 			if (check_name_match(target, (*it).second, args[1]))
 			{
 				tmp = send_reply("USER", (*it).second.get_socket(), my_serv, RPL_WHOREPLY, "");
-				std::cout << " lame user mode is : '" << (my_serv.get_regi_map())[(*it).second.get_nick()].get_mode() << "'" << std::endl;
-				if ((my_serv.get_regi_map())[(*it).second.get_nick()].get_mode().find('i') == std::string::npos)
-					tmp += " H ";
+				std::cout << "iterator nickname = " << (*it).second.get_nick() << std::endl;
+				std::cout << " lame user mode is : '" << (my_serv.get_regi_map())[(*it).second.get_nick()].get_nick() << "'" << std::endl;
+				if ((my_serv.get_regi_map())[(*it).second.get_nick()].get_mode().find('a') == std::string::npos)
+					tmp += " H";
 				else
-					tmp += " G ";
+					tmp += " G";
 				if ((my_serv.get_regi_map())[(*it).second.get_nick()].get_mode().find('o') != std::string::npos)
-					tmp += " * ";
+					tmp += "* ";
+				else
+					tmp += " ";
 				tmp += (my_serv.get_usermap())[socket_client].get_real_name() + "\r\n";
 				send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 			}
@@ -756,6 +761,7 @@ void		AWAY(std::string input, int socket_client, server & my_serv)
     std::cout << "AWAY called" << std::endl;
     
     user					& target = (my_serv.get_usermap())[socket_client];
+	user					& target_2 = (my_serv.get_regi_map())[target.get_nick()];
 	std::vector<std::string>		splitted = ft_split(input, ' ');
 	std::string				tmp;
 
@@ -769,12 +775,14 @@ void		AWAY(std::string input, int socket_client, server & my_serv)
 		std::string			away_message = input.substr(first_dp_pos, delimiter - first_dp_pos);
 		target.set_away_msg(away_message);
 		modif_mode_user(target, 'a', 2);
+		modif_mode_user(target_2, 'a', 2);
 		tmp = send_reply("AWAY", socket_client, my_serv, RPL_NOWAWAY, "");
 		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 	}
 	else
 	{
 		modif_mode_user(target, 'a', 3);
+		modif_mode_user(target_2, 'a', 3);
 		tmp = send_reply("UNAWAY", socket_client, my_serv, RPL_UNAWAY, "");
 		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 	}
@@ -790,6 +798,7 @@ void		OPER(std::string input, int socket_client, server & my_serv)
     std::cout << "OPER called" << std::endl;
     
     user					& target = (my_serv.get_usermap())[socket_client];
+	user					& target_2 = my_serv.get_regi_map()[target.get_nick()];
 	std::vector<std::string>		splitted = ft_split(input, ' ');
 	std::string				tmp;
 
@@ -810,6 +819,8 @@ void		OPER(std::string input, int socket_client, server & my_serv)
 	{
 		if (modif_mode_user(target, 'o', 2))
 			target.set_op_name(splitted[1]);
+		if (modif_mode_user(target_2, 'o', 2))
+			target_2.set_op_name(splitted[1]);
 		tmp = send_reply("OPER", socket_client, my_serv, RPL_YOUREOPER, "");
 		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 	}
