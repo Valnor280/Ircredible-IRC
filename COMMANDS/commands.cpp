@@ -642,16 +642,16 @@ void		WHO(std::string input, int socket_client, server & my_serv)
 		{
 			channel				& chan = (my_serv.get_chan_map())[args[1]];
 
-			for (unsigned long i = 0; i < chan.get_user_list().size(); i++)
+			for (unsigned long i = 0; i < chan.get_user_list(my_serv.get_usermap()).size(); i++)
 			{
-				if (check_name_match(target, (chan.get_user_list())[i], args[1]))
+				if (check_name_match(target, (chan.get_user_list(my_serv.get_usermap()))[i], args[1]))
 				{
-					tmp = send_reply("WHO", (chan.get_user_list())[i].get_socket(), my_serv, RPL_WHOREPLY, "");
-					if ((chan.get_user_list())[i].get_mode().find('a') == std::string::npos)
+					tmp = send_reply("WHO", (chan.get_user_list(my_serv.get_usermap()))[i].get_socket(), my_serv, RPL_WHOREPLY, "");
+					if ((chan.get_user_list(my_serv.get_usermap()))[i].get_mode().find('a') == std::string::npos)
 						tmp += " H";
 					else
 						tmp += " G";
-					if ((chan.get_user_list())[i].get_mode().find('o') != std::string::npos)
+					if ((chan.get_user_list(my_serv.get_usermap()))[i].get_mode().find('o') != std::string::npos)
 						tmp += "* ";
 					else
 						tmp += " ";
@@ -691,16 +691,16 @@ void		WHO(std::string input, int socket_client, server & my_serv)
 		{
 			channel				& chan = (my_serv.get_chan_map())[args[1]];
 
-			for (unsigned long i = 0; i < chan.get_user_list().size(); i++)
+			for (unsigned long i = 0; i < chan.get_user_list(my_serv.get_usermap()).size(); i++)
 			{
-				if (check_name_match(target, (chan.get_user_list())[i], args[1]) && (chan.get_user_list())[i].get_mode().find('o') != std::string::npos)
+				if (check_name_match(target, (chan.get_user_list(my_serv.get_usermap()))[i], args[1]) && (chan.get_user_list(my_serv.get_usermap()))[i].get_mode().find('o') != std::string::npos)
 				{
-					tmp = send_reply("WHO", (chan.get_user_list())[i].get_socket(), my_serv, RPL_WHOREPLY, "");
-					if ((chan.get_user_list())[i].get_mode().find('a') == std::string::npos)
+					tmp = send_reply("WHO", (chan.get_user_list(my_serv.get_usermap()))[i].get_socket(), my_serv, RPL_WHOREPLY, "");
+					if ((chan.get_user_list(my_serv.get_usermap()))[i].get_mode().find('a') == std::string::npos)
 						tmp += " H";
 					else
 						tmp += " G";
-					if ((chan.get_user_list())[i].get_mode().find('o') != std::string::npos)
+					if ((chan.get_user_list(my_serv.get_usermap()))[i].get_mode().find('o') != std::string::npos)
 						tmp += "* ";
 					else
 						tmp += " ";
