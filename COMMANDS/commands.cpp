@@ -1,5 +1,6 @@
 #include "commands.hpp"
 #include "../SERVER/server.hpp"
+#include "../CHANNEL/channel.hpp"
 
 
 
@@ -102,6 +103,10 @@ void		NICK(std::string input, int socket_client, server & my_serv)
             return;
         }
     }
+	if (my_serv.get_usermap()[socket_client].get_registration() == 3)
+	{
+		my_serv.get_regi_map().erase(my_serv.get_usermap()[socket_client].get_nick());
+	}
     my_serv.get_usermap()[socket_client].set_nick(nick);
 
 	// CHANGEMENT DE LA VALEUR DE _REGISTRATION DANS USER POUR SAVOIR OU ON EN EST DANS LA REGISTRATION
@@ -111,6 +116,10 @@ void		NICK(std::string input, int socket_client, server & my_serv)
 	{
 		my_serv.get_usermap()[socket_client].set_registration(3);
 		send_welcome(socket_client, my_serv);
+		my_serv.get_regi_map().insert(std::make_pair(my_serv.get_usermap()[socket_client].get_nick(), *(&(my_serv.get_usermap()[socket_client]))));
+	}
+	else
+	{
 		my_serv.get_regi_map().insert(std::make_pair(my_serv.get_usermap()[socket_client].get_nick(), *(&(my_serv.get_usermap()[socket_client]))));
 	}
 
@@ -598,10 +607,10 @@ void		WHO(std::string input, int socket_client, server & my_serv)
     std::vector<std::string>    args = ft_split(temp_2[0], ' ');
 	user						& target = (my_serv.get_usermap())[socket_client];
 
-	std::cout << "b user mode is : '" << (my_serv.get_regi_map()[target.get_nick()]).get_nick() << "'" << std::endl;
+	// std::cout << "b user mode is : '" << (my_serv.get_regi_map()[target.get_nick()]).get_nick() << "'" << std::endl;
 	if (args.size() == 1)
 	{
-		// voir le channel sur lequel le mec est actuellement a priori
+		// tout afficher???
 	}
 	else if (args.size() == 2 && args[1][0] != '#')
 	{
@@ -612,9 +621,7 @@ void		WHO(std::string input, int socket_client, server & my_serv)
 		{
 			if (check_name_match(target, (*it).second, args[1]))
 			{
-				tmp = send_reply("USER", (*it).second.get_socket(), my_serv, RPL_WHOREPLY, "");
-				std::cout << "iterator nickname = " << (*it).second.get_nick() << std::endl;
-				std::cout << " lame user mode is : '" << (my_serv.get_regi_map())[(*it).second.get_nick()].get_nick() << "'" << std::endl;
+				tmp = send_reply("WHO", (*it).second.get_socket(), my_serv, RPL_WHOREPLY, "");
 				if ((my_serv.get_regi_map())[(*it).second.get_nick()].get_mode().find('a') == std::string::npos)
 					tmp += " H";
 				else
@@ -623,10 +630,84 @@ void		WHO(std::string input, int socket_client, server & my_serv)
 					tmp += "* ";
 				else
 					tmp += " ";
-				tmp += (my_serv.get_usermap())[socket_client].get_real_name() + "\r\n";
+				tmp += ":0 " + (my_serv.get_usermap())[socket_client].get_real_name() + "\r\n";
 				send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 			}
 			it++;
+		}
+	}
+	else if (args.size() == 2 && args[1][0] == '#')
+	{
+		if ((my_serv.get_chan_map()).count(args[1]))
+		{
+			channel				& chan = (my_serv.get_chan_map())[args[1]];
+
+			for (unsigned long i = 0; i < chan.get_user_list().size(); i++)
+			{
+				if (check_name_match(target, (chan.get_user_list())[i], args[1]))
+				{
+					tmp = send_reply("WHO", (chan.get_user_list())[i].get_socket(), my_serv, RPL_WHOREPLY, "");
+					if ((chan.get_user_list())[i].get_mode().find('a') == std::string::npos)
+						tmp += " H";
+					else
+						tmp += " G";
+					if ((chan.get_user_list())[i].get_mode().find('o') != std::string::npos)
+						tmp += "* ";
+					else
+						tmp += " ";
+					tmp += ":0 " + (my_serv.get_usermap())[socket_client].get_real_name() + "\r\n";
+					send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+				}
+			}
+		}
+	}
+	else if (args.size() == 3 && args[1][0] != '#')
+	{
+		std::map<std::string, user>::iterator		it = my_serv.get_regi_map().begin();
+		std::map<std::string, user>::iterator		ite = my_serv.get_regi_map().end();
+
+		while (it != ite)
+		{
+			if (check_name_match(target, (*it).second, args[1]) && (*it).second.get_mode().find('o') != std::string::npos)
+			{
+				tmp = send_reply("WHO", (*it).second.get_socket(), my_serv, RPL_WHOREPLY, "");
+				if ((*it).second.get_mode().find('a') == std::string::npos)
+					tmp += " H";
+				else
+					tmp += " G";
+				if ((*it).second.get_mode().find('o') != std::string::npos)
+					tmp += "* ";
+				else
+					tmp += " ";
+				tmp += ":0 " + (my_serv.get_usermap())[socket_client].get_real_name() + "\r\n";
+				send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+			}
+			it++;
+		}
+	}
+	else if (args.size() == 3 && args[1][0] != '#')
+	{
+		if ((my_serv.get_chan_map()).count(args[1]))
+		{
+			channel				& chan = (my_serv.get_chan_map())[args[1]];
+
+			for (unsigned long i = 0; i < chan.get_user_list().size(); i++)
+			{
+				if (check_name_match(target, (chan.get_user_list())[i], args[1]) && (chan.get_user_list())[i].get_mode().find('o') != std::string::npos)
+				{
+					tmp = send_reply("WHO", (chan.get_user_list())[i].get_socket(), my_serv, RPL_WHOREPLY, "");
+					if ((chan.get_user_list())[i].get_mode().find('a') == std::string::npos)
+						tmp += " H";
+					else
+						tmp += " G";
+					if ((chan.get_user_list())[i].get_mode().find('o') != std::string::npos)
+						tmp += "* ";
+					else
+						tmp += " ";
+					tmp += ":0 " + (my_serv.get_usermap())[socket_client].get_real_name() + "\r\n";
+					send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+				}
+			}
 		}
 	}
 	tmp = send_reply("USER", socket_client, my_serv, RPL_ENDOFWHO, "");
@@ -641,7 +722,39 @@ void		WHOIS(std::string input, int socket_client, server & my_serv)
 { 
     std::cout << "WHOIS called" << std::endl;
 
-    (void)my_serv;
+    std::string			tmp;
+	std::vector<std::string>    temp = ft_split(input, '\n');
+    std::vector<std::string>    temp_2 = ft_split(temp[0], '\r');
+    std::vector<std::string>    args = ft_split(temp_2[0], ' ');
+	// user						& target = (my_serv.get_usermap())[socket_client];
+
+	if (args.size() == 1)
+	{
+		//ERR_NONICKNAMEGIVEN
+	}
+	else if (args.size() == 2 && args[1].find('#') != std::string::npos)
+	{
+		//ERR_NONICKNAMEGIVEN
+	}
+	else if (args.size() == 2 && args[1].find('#') == std::string::npos)
+	{
+		// give info on all nicknames
+	}
+	else if (args.size() == 3 && args[1][0] != '#')
+	{
+		// ERR_NOSUCHSERVER
+	}
+	else if (args.size() == 3)
+	{
+		if ((my_serv.get_chan_map()).count(args[1]))
+		{
+			// faire une boucle ou on renvoie toutes les infos des nicknames donnes
+		}
+		else
+		{
+			// ERR_NOSUCHSERVER
+		}
+	}
     std::cout << "input :[" << input << "]" << std::endl;
     std::cout << "socket :" << socket_client << std::endl;
     my_serv.get_usermap()[socket_client].print_user();
