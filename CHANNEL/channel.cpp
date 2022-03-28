@@ -25,8 +25,13 @@ std::string			channel::get_key() const
 {
 	return _key;
 }
-std::vector<user>	&channel::get_user_list()
+std::vector<user>	channel::get_user_list(std::map<int, user> umap)
 {
+	for (std::vector<user>::iterator itr = _user_list.begin(); itr != _user_list.end(); itr++)
+	{
+		if(umap[itr->get_socket()] != *itr)
+			*itr = umap[itr->get_socket()];
+	} 
 	return this->_user_list;
 }
 
@@ -35,8 +40,13 @@ std::vector<user>	channel::get_invite_list() const
 	return this->_invite_list;
 }
 
-std::vector<user>	channel::get_op_list() const
+std::vector<user>	channel::get_op_list(std::map<int, user> umap)
 {
+	for (std::vector<user>::iterator itr = _op_list.begin(); itr != _op_list.end(); itr++)
+	{
+		if(umap[itr->get_socket()] != *itr)
+			*itr = umap[itr->get_socket()];
+	} 
 	return this->_op_list;
 }
 

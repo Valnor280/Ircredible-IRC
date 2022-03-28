@@ -6,8 +6,8 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <map>
 #include "USER/user.hpp"
-
 class channel
 {
 	private:
@@ -28,8 +28,8 @@ class channel
 		std::string				get_name() const;
 		std::string				get_topic() const;
 		std::string				get_key() const;
-		std::vector<user>		&get_user_list();
-		std::vector<user>		get_op_list() const;
+		std::vector<user>		get_user_list(std::map<int, user> umap);
+		std::vector<user>		get_op_list(std::map<int, user> umap);
 		std::vector<user>		get_ban_list() const;
 		std::vector<user>		get_invite_list() const;
 		std::string				get_chan_mode() const;

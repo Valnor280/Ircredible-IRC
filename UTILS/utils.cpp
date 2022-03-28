@@ -160,15 +160,26 @@ std::string						user_list(std::vector<user> op, std::vector<user> us)
 {
 	std::vector<user>::iterator itr;
 	std::string ret;
+	std::cout << "COUCOU5\n";
 	for(itr = op.begin(); itr != op.end(); itr++)
 	{
-		ret +=  "@" + itr->get_nick() + " ";
+		std::string md = itr->get_mode();
+		std::cout << "MODE : " << md << std::endl;
+		if(md.find('i') == std::string::npos)
+		{
+			std::cout << "kiou" << std::endl;
+			ret +=  "@" + itr->get_nick() + " ";
+		}	
 	}
 	for(itr = us.begin(); itr != us.end(); itr++)
 	{
-		ret += itr->get_nick() + " ";
+		std::string md = itr->get_mode();
+		if(md.find('i') == std::string::npos)
+		{
+			ret += itr->get_nick() + " ";
+		}
 	}
-	if( *ret.end() == ' ')
+	if(*ret.end() == ' ')
 		ret.resize(ret.length() - 1);
 	return(ret);
 }
@@ -308,7 +319,7 @@ std::string send_reply(std::string input, int socket_client, server & my_serv, i
 	case 352:
 			return ret += (my_serv.get_usermap())[socket_client].get_nick() + " " + (my_serv.get_usermap())[socket_client].get_hostname() + " " + my_serv.get_servername() + " " + (my_serv.get_usermap())[socket_client].get_nick();
 	case 353:
-			return ret += chan + " :" + user_list(my_serv.get_chan_map()[chan].get_op_list(), my_serv.get_chan_map()[chan].get_user_list()) + "\r\n";
+			return ret += chan + " :" + user_list(my_serv.get_chan_map()[chan].get_op_list(my_serv.get_usermap()), my_serv.get_chan_map()[chan].get_user_list(my_serv.get_usermap())) + "\r\n";
 	case 366:
 			return ret += chan + ":End of NAMES list\r\n";
 	case 367:
