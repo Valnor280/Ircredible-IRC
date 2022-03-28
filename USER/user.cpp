@@ -196,5 +196,11 @@ void		user::print_user() const
 	std::cout << "Socket	: " << _socket << std::endl;
 }
 
-bool operator==(const user& lhs, const user& rhs) { return lhs.get_socket() == rhs.get_socket();}
-bool operator!=(const user& lhs, const user& rhs) { return lhs.get_socket() != rhs.get_socket();}
+bool operator==(const user& lhs, const user& rhs) 
+{ 
+	if(lhs.get_socket() == rhs.get_socket() && lhs.get_mode() == rhs.get_mode() && lhs.get_nick() == rhs.get_nick())
+		return true;
+	else
+		return false;
+}
+bool operator!=(const user& lhs, const user& rhs) { return !(lhs == rhs);}

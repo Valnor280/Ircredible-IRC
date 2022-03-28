@@ -19,6 +19,7 @@ bool							check_user_mode_input(std::string arg);
 bool							modif_mode_user(user & us, char c, int u);
 
 bool 							find_user(std::vector<user> vect, user user);
+std::string						user_list(std::vector<user> op, std::vector<user> us);
 
 bool							check_name_match(user & target, user & member , std::string pattern);
 bool							star_name_checker(std::string str, std::string pattern);
