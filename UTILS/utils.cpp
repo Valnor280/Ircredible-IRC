@@ -368,6 +368,8 @@ std::string send_reply(std::string input, int socket_client, server & my_serv, i
 			return ret += ":MOTD File is missing\r\n";
 	case 423:
 			return ret += my_serv.get_servername() + " :No administrative info available\r\n";
+	case 431:
+			return ret += ":No nickname given\r\n";
 	case 432:
 			return ret += input + " :Erroneous nickname\r\n"; // nick
 	case 433:
