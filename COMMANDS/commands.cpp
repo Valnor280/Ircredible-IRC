@@ -111,7 +111,7 @@ void		NICK(std::string input, int socket_client, server & my_serv)
 	{
 		my_serv.get_usermap()[socket_client].set_registration(3);
 		send_welcome(socket_client, my_serv);
-		my_serv.get_regi_map().insert(std::make_pair(my_serv.get_usermap()[socket_client].get_nick(), my_serv.get_usermap()[socket_client]));
+		my_serv.get_regi_map().insert(std::make_pair(my_serv.get_usermap()[socket_client].get_nick(), *(&(my_serv.get_usermap()[socket_client]))));
 	}
 
     std::cout << "input :[" << input << "]" << std::endl;
@@ -222,7 +222,7 @@ void		USER(std::string input, int socket_client, server & my_serv)
 	{
 		my_serv.get_usermap()[socket_client].set_registration(3);
 		send_welcome(socket_client, my_serv);
-		my_serv.get_regi_map().insert(std::make_pair(my_serv.get_usermap()[socket_client].get_nick(), my_serv.get_usermap()[socket_client]));
+		my_serv.get_regi_map().insert(std::make_pair(my_serv.get_usermap()[socket_client].get_nick(), *(&(my_serv.get_usermap()[socket_client]))));
 	}
 
 	std::cout << "username:" << username << " real name:" << realname << std::endl;
@@ -551,6 +551,7 @@ void		WHO(std::string input, int socket_client, server & my_serv)
     std::vector<std::string>    args = ft_split(temp_2[0], ' ');
 	user						& target = (my_serv.get_usermap())[socket_client];
 
+	std::cout << "b user mode is : '" << (my_serv.get_regi_map()[target.get_nick()]).get_nick() << "'" << std::endl;
 	if (args.size() == 1)
 	{
 		// voir le channel sur lequel le mec est actuellement a priori
@@ -565,6 +566,7 @@ void		WHO(std::string input, int socket_client, server & my_serv)
 			if (check_name_match(target, (*it).second, args[1]))
 			{
 				tmp = send_reply("USER", (*it).second.get_socket(), my_serv, RPL_WHOREPLY, "");
+				std::cout << " lame user mode is : '" << (my_serv.get_regi_map())[(*it).second.get_nick()].get_mode() << "'" << std::endl;
 				if ((my_serv.get_regi_map())[(*it).second.get_nick()].get_mode().find('i') == std::string::npos)
 					tmp += " H ";
 				else

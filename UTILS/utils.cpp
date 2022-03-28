@@ -157,7 +157,7 @@ std::string						vector_user_to_string(std::vector<user> vect)
 	return(ret);
 }
 
-<<<<<<< HEAD
+
 bool find_user(std::vector<user> vect, user usr)
 {
 	for(std::vector<user>::iterator itr = vect.begin(); itr != vect.end(); itr++)
@@ -168,7 +168,7 @@ bool find_user(std::vector<user> vect, user usr)
 	return false;
 }
 
-=======
+
 bool							check_name_match(user & target, user & member , std::string pattern)
 {
 	(void)target;
@@ -215,7 +215,6 @@ bool						star_name_checker(std::string str, std::string pattern) // https://www
 
 	return bool_array[str.size()][pattern.size()];
 }
->>>>>>> c917a790b86c6e8100596047086a2d17ed36afcd
 
 std::string send_reply(std::string input, int socket_client, server & my_serv, int code, std::string chan)
 {
