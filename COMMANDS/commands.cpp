@@ -630,7 +630,7 @@ void		WHO(std::string input, int socket_client, server & my_serv)
 					tmp += "* ";
 				else
 					tmp += " ";
-				tmp += ":0 " + (my_serv.get_usermap())[socket_client].get_real_name() + "\r\n";
+				tmp += ":0 " + (*it).second.get_real_name() + "\r\n";
 				send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 			}
 			it++;
@@ -679,7 +679,7 @@ void		WHO(std::string input, int socket_client, server & my_serv)
 					tmp += "* ";
 				else
 					tmp += " ";
-				tmp += ":0 " + (my_serv.get_usermap())[socket_client].get_real_name() + "\r\n";
+				tmp += ":0 " + (*it).second.get_real_name() + "\r\n";
 				send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 			}
 			it++;
@@ -710,7 +710,7 @@ void		WHO(std::string input, int socket_client, server & my_serv)
 			}
 		}
 	}
-	tmp = send_reply("USER", socket_client, my_serv, RPL_ENDOFWHO, "");
+	tmp = send_reply("WHO", socket_client, my_serv, RPL_ENDOFWHO, "");
 	send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
     std::cout << "input :[" << input << "]" << std::endl;
     std::cout << "socket :" << socket_client << std::endl;
@@ -731,29 +731,51 @@ void		WHOIS(std::string input, int socket_client, server & my_serv)
 	if (args.size() == 1)
 	{
 		//ERR_NONICKNAMEGIVEN
+		tmp = send_reply("WHOIS", socket_client, my_serv, ERR_NONICKNAMEGIVEN, "");
+		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 	}
 	else if (args.size() == 2 && args[1].find('#') != std::string::npos)
 	{
-		//ERR_NONICKNAMEGIVEN
+		//ERR_NOSUCHNICK
+		tmp = send_reply("WHOIS", socket_client, my_serv, ERR_NOSUCHNICK, "");
+		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 	}
 	else if (args.size() == 2 && args[1].find('#') == std::string::npos)
 	{
 		// give info on all nicknames
+		std::vector<std::string>	nicks = ft_split(args[1], ',');
+
+		for (unsigned long i = 0; i < nicks.size(); i++)
+		{
+			if (my_serv.get_regi_map().count(nicks[i]))
+			{
+				user		& source = my_serv.get_regi_map()[nicks[i]];
+
+				tmp = send_reply("WHOIS", source.get_socket(), my_serv, RPL_WHOISUSER, "");
+				send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+				tmp = send_reply("WHOIS", source.get_socket(), my_serv, RPL_WHOISSERVER, "");
+				send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+				if (source.get_mode().find('o') != std::string::npos)
+				{
+					tmp = send_reply("WHOIS", source.get_socket(), my_serv, RPL_WHOISOPERATOR, "");
+					send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+				}
+			}
+			else
+			{
+				// ERR_NOSUCHNICK
+				tmp = send_reply("WHOIS", socket_client, my_serv, ERR_NOSUCHNICK, "");
+				break ;
+			}
+		}
+		tmp = send_reply("WHOIS", socket_client, my_serv, RPL_ENDOFWHOIS, "");
+		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 	}
-	else if (args.size() == 3 && args[1][0] != '#')
+	else if (args.size() == 3 && args[2] != my_serv.get_servername())
 	{
 		// ERR_NOSUCHSERVER
-	}
-	else if (args.size() == 3)
-	{
-		if ((my_serv.get_chan_map()).count(args[1]))
-		{
-			// faire une boucle ou on renvoie toutes les infos des nicknames donnes
-		}
-		else
-		{
-			// ERR_NOSUCHSERVER
-		}
+		tmp = send_reply("WHOIS", socket_client, my_serv, ERR_NOSUCHSERVER, "");
+		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 	}
     std::cout << "input :[" << input << "]" << std::endl;
     std::cout << "socket :" << socket_client << std::endl;
