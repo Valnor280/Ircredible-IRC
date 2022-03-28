@@ -671,8 +671,60 @@ void		PONG(std::string input, int socket_client, server & my_serv)
 void		PART(std::string input, int socket_client, server & my_serv) 
 { 
     std::cout << "PART called" << std::endl;
-    
-    (void)my_serv;
+    std::string ret;
+
+
+    std::vector<std::string> av = ft_split(input, ' ');
+
+    if (av.size() < 2)
+    {
+        std::cout << std::endl << "ERR_NEEDMOREPARAMS" << std::endl << std::endl;
+        
+        ret = send_reply("PART", socket_client, my_serv, ERR_NEEDMOREPARAMS, "");
+        send(socket_client, ret.c_str(), ret.size(), MSG_DONTWAIT);
+        return;
+    }
+
+    std::vector<std::string> av_chan = ft_split(av[1], ',');
+    std::vector<std::string>::iterator it_chan = av_chan.begin();
+
+    while (it_chan != av_chan.end())
+    {
+        if (my_serv.get_chan_map().find(*it_chan) == my_serv.get_chan_map().end())
+        {
+            std::cout << std::endl << "ERR_NOSUCHCHANNEL" << std::endl << std::endl;
+
+            ret = send_reply("PART", socket_client, my_serv, ERR_NOSUCHCHANNEL, *it_chan);
+            send(socket_client, ret.c_str(), ret.size(), MSG_DONTWAIT);
+
+            ++it_chan;
+            continue;
+        }
+        if (!find_user(my_serv.get_chan_map()[*it_chan].get_op_list(), my_serv.get_usermap()[socket_client]) \
+        &&  !find_user(my_serv.get_chan_map()[*it_chan].get_user_list(), my_serv.get_usermap()[socket_client]))
+        {
+            std::cout << std::endl << "ERR_NOTONCHANNEL" << std::endl << std::endl;
+            ret = send_reply("PART", socket_client, my_serv, ERR_NOTONCHANNEL, *it_chan);
+            send(socket_client, ret.c_str(), ret.size(), MSG_DONTWAIT);
+            
+        }
+        if (find_user(my_serv.get_chan_map()[*it_chan].get_user_list(), my_serv.get_usermap()[socket_client]))
+        {
+            std::cout << my_serv.get_usermap()[socket_client].get_nick() << " has been remove from " << *it_chan << " has user" << std::endl;
+            my_serv.get_chan_map()[*it_chan].remove_user(my_serv.get_usermap()[socket_client]);
+        }
+        if (find_user(my_serv.get_chan_map()[*it_chan].get_op_list(), my_serv.get_usermap()[socket_client]))
+        {
+            std::cout << my_serv.get_usermap()[socket_client].get_nick() << " has been remove from " << *it_chan << " has operator" << std::endl;
+            my_serv.get_chan_map()[*it_chan].remove_op_user(my_serv.get_usermap()[socket_client]);
+        }
+
+        ++it_chan;
+    }
+
+
+
+
     std::cout << "input :[" << input << "]" << std::endl;
     std::cout << "socket :" << socket_client << std::endl;
     my_serv.get_usermap()[socket_client].print_user();
