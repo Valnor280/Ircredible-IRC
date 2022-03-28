@@ -869,14 +869,6 @@ void		PART(std::string input, int socket_client, server & my_serv)
     std::vector<std::string>::iterator it_chan = av_chan.begin();
 
 
-    std::cout << "list of chan :" << std::endl;
-    for (std::map<std::string, channel>::iterator mapit = my_serv.get_chan_map().begin() ; mapit != my_serv.get_chan_map().end(); mapit++)
-    {
-        std::cout << "chan :" << mapit->second.get_name()  << "|"<< std::endl;
-    }
-        std::cout << "itch :" << *it_chan  << "|"<< std::endl;
-
-
 
     while (it_chan != av_chan.end())
     {
@@ -894,6 +886,19 @@ void		PART(std::string input, int socket_client, server & my_serv)
             ++it_chan;
             continue;
         }
+		std::cout << "list user :" << std::endl;
+		std::vector<user> vect_user = my_serv.get_chan_map()[*it_chan].get_user_list(my_serv.get_usermap());
+		for (std::vector<user>::iterator ituser = vect_user.begin(); ituser != vect_user.end(); ituser++)
+		{
+			std::cout << ituser->get_nick() << std::endl;
+		}
+		std::cout << "list op :" << std::endl;
+		vect_user = my_serv.get_chan_map()[*it_chan].get_op_list(my_serv.get_usermap());
+		for (std::vector<user>::iterator ituser = vect_user.begin(); ituser != vect_user.end(); ituser++)
+		{
+			std::cout << ituser->get_nick() << std::endl;
+		}
+
         if (!find_user(my_serv.get_chan_map()[*it_chan].get_op_list(my_serv.get_usermap()), my_serv.get_usermap()[socket_client]) \
         &&  !find_user(my_serv.get_chan_map()[*it_chan].get_user_list(my_serv.get_usermap()), my_serv.get_usermap()[socket_client]))
         {
@@ -1140,7 +1145,9 @@ void		PRIVMSG(std::string input, int socket_client, server & my_serv)
         {
             ret = send_reply(input, socket_client, my_serv, ERR_CANNOTSENDTOCHAN, splitted[1]);
         }
-        else if (!find_user(itchan->second.get_user_list(my_serv.get_usermap()), sender) && itchan->second.get_chan_mode().find('n') != std::string::npos)//mode n alors que sender n'est pas dans le channel
+        else if (	!find_user(itchan->second.get_user_list(my_serv.get_usermap()), sender) 
+        		&&	!find_user(itchan->second.get_user_list(my_serv.get_usermap()), sender) 
+				&&	itchan->second.get_chan_mode().find('n') != std::string::npos)//mode n alors que sender n'est pas dans le channel
         {
             ret = send_reply(input, socket_client, my_serv, ERR_CANNOTSENDTOCHAN, splitted[1]);
         }
