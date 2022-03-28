@@ -800,14 +800,61 @@ void		WHOWAS(std::string input, int socket_client, server & my_serv)
     std::cout << std::endl << std::endl;
 };
 
+void list_solo(std::string chan, int socket_client, server & my_serv)
+{
+	std::cout << "ICI4\n";
+	std::string					tmp;
+	chan.erase(std::remove(chan.begin(), chan.end(), '\n'), chan.end());
+	chan.erase(std::remove(chan.begin(), chan.end(), '\r'), chan.end());
+	tmp = send_reply("LIST", socket_client, my_serv, RPL_LIST, chan);
+	send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+}
+
 void		LIST(std::string input, int socket_client, server & my_serv) 
 { 
     std::cout << "LIST called" << std::endl;
     
-    (void)my_serv;
-    std::cout << "input :[" << input << "]" << std::endl;
-    std::cout << "socket :" << socket_client << std::endl;
-    my_serv.get_usermap()[socket_client].print_user();
+	std::vector<std::string>	splitted = ft_split(input, ' ');
+	std::vector<std::string>	chan;
+	std::string					tmp;
+	int i = 0;
+	std::map<std::string, channel> chan_map = my_serv.get_chan_map();
+
+	if(splitted.size() > 2)
+	{
+		if (splitted[1].find(',') != std::string::npos)
+		{
+			std::cout << "ICI\n";
+			chan = ft_split(splitted[1], ',');
+		}
+		else
+		{
+			std::cout << "ICI1\n";
+			if(splitted[1].find_first_of('#') == 0)
+				chan.push_back(splitted[1]);
+		}
+		std::cout << "ICI2\n";
+		while (i != (int)chan.size())
+		{
+			
+			if(chan[i].find_first_of('#') == 0)
+				list_solo(chan[i], socket_client, my_serv);
+			i++;
+		}
+		
+
+	}
+	else
+	{
+		std::cout << "ICI3\n";
+		for(std::map<std::string, channel>::iterator itrmap = chan_map.begin(); itrmap != chan_map.end(); itrmap++)
+		{
+			tmp = send_reply("LIST", socket_client, my_serv, RPL_LIST, itrmap->first);
+			send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+		}
+	}
+	tmp = send_reply("LIST", socket_client, my_serv, RPL_LISTEND, "");
+	send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
     std::cout << std::endl << std::endl;
 };
 

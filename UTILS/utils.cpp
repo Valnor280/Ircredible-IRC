@@ -303,7 +303,7 @@ std::string send_reply(std::string input, int socket_client, server & my_serv, i
 	//case 319:
 		//	return ret += my_serv.get_usermap()[socket_client].get_nick() + ":*( ( "@" / "+" ) <channel> " " )\r\n";
 	case 322:
-			return ret += "<channel> <# visible> :<topic>\r\n";
+			return ret += chan + " :" + my_serv.get_chan_map()[chan].get_topic() + "\r\n";
 	case 323:
 			return ret += ":End of LIST\r\n";
 	case 324:
