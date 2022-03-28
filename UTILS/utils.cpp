@@ -317,7 +317,7 @@ std::string send_reply(std::string input, int socket_client, server & my_serv, i
 	case 351:
 			return ret += "<version>.<debuglevel> <server> :<comments>\r\n"; // maybe no use for us
 	case 352:
-			return ret += (my_serv.get_usermap())[socket_client].get_nick() + " " + (my_serv.get_usermap())[socket_client].get_hostname() + " " + my_serv.get_servername() + " " + (my_serv.get_usermap())[socket_client].get_nick();
+			return ret += "* " + (my_serv.get_usermap())[socket_client].get_nick() + " " + (my_serv.get_usermap())[socket_client].get_hostname() + " " + my_serv.get_servername() + " " + (my_serv.get_usermap())[socket_client].get_nick();
 	case 353:
 			return ret += chan + " :" + user_list(my_serv.get_chan_map()[chan].get_op_list(my_serv.get_usermap()), my_serv.get_chan_map()[chan].get_user_list(my_serv.get_usermap())) + "\r\n";
 	case 366:
