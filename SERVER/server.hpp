@@ -25,6 +25,7 @@
 #include "UTILS/utils.hpp"
 #include "CHANNEL/channel.hpp"
 class server;
+//class channel;
 
 #include "../COMMANDS/commands.hpp"
 #define USERLEN 12

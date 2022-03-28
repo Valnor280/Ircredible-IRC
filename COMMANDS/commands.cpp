@@ -423,16 +423,61 @@ void		MOTD(std::string input, int socket_client, server & my_serv)
     std::cout << std::endl << std::endl;
 };
 
+void name_solo(int socket_client, server & my_serv, std::string chan)
+{
+	std::string tmp;
+	std::string ret;
+	chan.erase(std::remove(chan.begin(), chan.end(), '\n'), chan.end());
+	chan.erase(std::remove(chan.begin(), chan.end(), '\r'), chan.end());
+	tmp = send_reply("NAMES", socket_client, my_serv, RPL_NAMREPLY, chan);
+	std::cout << "CIUIJN" << tmp << chan << std::endl;
+	send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+}
+
 void		NAMES(std::string input, int socket_client, server & my_serv) 
 { 
     std::cout << "NAMES called" << std::endl;
     
-    (void)my_serv;
-    std::cout << "input :[" << input << "]" << std::endl;
-    std::cout << "socket :" << socket_client << std::endl;
-    my_serv.get_usermap()[socket_client].print_user();
+	std::vector<std::string>	splitted = ft_split(input, ' ');
+	std::vector<std::string>	chan;
+	std::string					tmp;
+
+	if (splitted.size() == 1)
+	{
+		std::cout << "COUCOU\n";
+		return;
+	}
+	if (splitted[1].find(',') != std::string::npos)
+	{
+		std::cout << "COUCOU1\n";
+		chan = ft_split(splitted[1], ',');
+	}
+	else if(splitted[1].find_first_of('#') == 0)
+	{
+		std::cout << "COUCOU2\n";
+		chan.push_back(splitted[1]);
+	}
+
+	if(chan.size() > 1)
+	{
+		std::cout << "COUCOU3\n";
+		int i = 0;
+		while(i != (int)chan.size())
+		{
+			name_solo(socket_client, my_serv, chan[i]);
+			i++;
+		}
+	}
+	else
+	{
+		std::cout << "COUCOU4\n";
+		name_solo(socket_client, my_serv, chan[0]);
+	}
+	tmp = send_reply("NAMES", socket_client, my_serv, RPL_ENDOFNAMES, " "); // maybe 
+	send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
     std::cout << std::endl << std::endl;
 };
+
  // l'option X est chelou
 void		REHASH(std::string input, int socket_client, server & my_serv) 
 { 
@@ -732,9 +777,9 @@ void		TOPIC(std::string input, int socket_client, server & my_serv)
 	}
 	else
 	{
-		if(find_user(my_serv.get_chan_map()[splitted[1]].get_op_list(), my_serv.get_usermap()[socket_client]) == true)
+		if(find_user(my_serv.get_chan_map()[splitted[1]].get_op_list(my_serv.get_usermap()), my_serv.get_usermap()[socket_client]) == true)
 		{	
-			std::vector<user> list =  my_serv.get_chan_map()[splitted[1]].get_op_list();
+			std::vector<user> list =  my_serv.get_chan_map()[splitted[1]].get_op_list(my_serv.get_usermap());
 			std::string str;
 			for(std::vector<std::string>::iterator itr = splitted.begin() + 2; itr != splitted.end(); itr++)
 				str += *itr;
@@ -746,7 +791,7 @@ void		TOPIC(std::string input, int socket_client, server & my_serv)
 				tmp = send_reply("TOPIC", socket, my_serv, RPL_TOPIC, splitted[1]);
 				send(socket, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 			}
-			list =  my_serv.get_chan_map()[splitted[1]].get_user_list();
+			list =  my_serv.get_chan_map()[splitted[1]].get_user_list(my_serv.get_usermap());
 			for(std::vector<user>::iterator itr = list.begin(); itr != list.end(); ++itr)
 			{
 				std::cout << "test\n";
@@ -755,7 +800,7 @@ void		TOPIC(std::string input, int socket_client, server & my_serv)
 				send(socket, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 			}
 		}
-		else if(find_user(my_serv.get_chan_map()[splitted[1]].get_user_list(), my_serv.get_usermap()[socket_client]) == true)
+		else if(find_user(my_serv.get_chan_map()[splitted[1]].get_user_list(my_serv.get_usermap()), my_serv.get_usermap()[socket_client]) == true)
 		{
 			tmp = send_reply("TOPIC", socket_client, my_serv, ERR_CHANOPRIVSNEEDED, splitted[1]);
 			send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
