@@ -354,20 +354,72 @@ void		MODE(std::string input, int socket_client, server & my_serv)
 	if (args.size() < 3)
 	{
 		// ERRNEEDMOREPARAMS
-		// tmp = send_reply("MODE", socket_client, my_serv, ERR_NEEDMOREPARAMS, "");
-		// send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
-       	tmp = send_reply("MODE", socket_client, my_serv, RPL_UMODEIS, "");
-    	send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+		tmp = send_reply("MODE", socket_client, my_serv, ERR_NEEDMOREPARAMS, "");
+		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+       	// tmp = send_reply("MODE", socket_client, my_serv, RPL_UMODEIS, "");
+    	// send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 
 		std::cout << "ERR_NEEDMOREPARAMS" << std::endl; 
 		return ;
 	}
-	else if (args[1] != target.get_nick()) // AJOUTER LA VERIFICATION DE NOM DE CHANNELS?
+	else if (args[1][0] == '#')
+	{
+		if (my_serv.get_chan_map().count(args[1]))
+		{
+			channel						& chan = (my_serv.get_chan_map())[args[1]];
+			std::vector<user>			& chan_users = chan.get_user_list(my_serv.get_usermap());
+			std::vector<user>			& chan_op_users = chan.get_op_list(my_serv.get_usermap());
+
+
+			if (std::find(chan_users.begin(), chan_users.end(), target) == chan_users.end())
+			{
+				// ERR_NOTONCHANNEL
+				tmp = send_reply("MODE", socket_client, my_serv, ERR_NOTONCHANNEL, chan.get_name());
+				send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+				return ;
+			}
+			else if (std::find(chan_op_users.begin(), chan_op_users.end(), target) == chan_op_users.end())
+			{
+				//CHANOPRIVSNEEDED
+				tmp = send_reply("MODE", socket_client, my_serv, ERR_CHANOPRIVSNEEDED, chan.get_name());
+				send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+				return ;
+			}
+			unsigned long		i = 2;
+
+			while (i < args.size())
+			{
+				if (!(check_user_mode_input(args[i])))
+				{
+					tmp = send_reply("MODE", socket_client, my_serv, UNKNOWNMODE, "");
+					send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+					return ;
+				}
+				int				mod = args[i][0] - 44;
+				unsigned long	j = 1;
+				while (j < args[i].length())
+				{
+					if (!(args[i][j] == '\r' || args[i][j] == '\n'))
+					{
+						//std::cout << target.get_nick() << " for " << args[i][j] << " with mod " << mod << std::endl;
+						modif_mode_channel(target, args[i][j], mod, chan);
+					}
+					j++;
+				}
+				i++;
+			}
+		}
+		else
+		{
+			//ERR_NOSUCHCHANNEL
+		}
+	}
+	else if (args[1] != target.get_nick())
 	{
 		// ERR_USERSDONTMATCH
 		tmp = send_reply("MODE", socket_client, my_serv, ERR_USERSDONTMATCH, "");
 		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
-		std::cout << "ERR_USERSDONTMATCH" << std::endl; 
+		std::cout << "ERR_USERSDONTMATCH" << std::endl;
         return ;
 	}
 	else

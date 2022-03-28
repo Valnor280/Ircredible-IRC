@@ -38,6 +38,7 @@ class channel
 		void				set_name( std::string new_name );
 		void				set_topic( std::string new_topic );
 		void				set_key( std::string new_key );
+		void				set_chan_mode( std::string new_modes );
 		void				add_user( const user member );
 		void				add_ban( const user member );
 		void				add_invite( const user member );

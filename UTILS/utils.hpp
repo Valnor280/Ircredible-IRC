@@ -16,7 +16,9 @@ std::string 					send_reply(std::string input, int socket_client, server & my_se
 void							send_welcome(int socket_client, server & my_serv);
 std::string						ft_toupper(std::string input);
 bool							check_user_mode_input(std::string arg);
+bool							check_channel_mode_input(std::string arg);
 bool							modif_mode_user(user & us, char c, int u);
+bool							modif_mode_channel(user & us, char c, int u, channel & chan);
 
 bool 							find_user(std::vector<user> vect, user user);
 std::string						user_list(std::vector<user> op, std::vector<user> us);

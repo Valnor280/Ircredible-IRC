@@ -75,6 +75,11 @@ void				channel::set_key( std::string new_key )
 	this->_key = new_key;
 }
 
+void				set_chan_mode( std::string new_modes )
+{
+	this->_chan_mode = new_modes;
+}
+
 void				channel::add_user( const user member )
 {
 	this->_user_list.push_back(member);

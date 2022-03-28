@@ -79,12 +79,12 @@ bool							check_user_mode_input( std::string arg)
 
 	if (arg.length() < 2)
 	{
-		std::cout << "lol_1" << std::endl;
+		//std::cout << "lol_1" << std::endl;
 		return false;
 	}
 	if (signs.find(arg[0]) == std::string::npos)
 	{
-		std::cout << "lol_2" << std::endl;
+		//std::cout << "lol_2" << std::endl;
 		return false;
 	}
 	while (i < arg.size())
@@ -93,7 +93,38 @@ bool							check_user_mode_input( std::string arg)
 			return true;
 		if (modes.find(arg[i]) == std::string::npos)
 		{
-			std::cout << "lol_3" << std::endl;
+			//std::cout << "lol_3" << std::endl;
+			return false;
+		}
+		i++;
+	}
+	return true;
+}
+
+bool							check_channel_mode_input(std::string arg)
+{
+		unsigned long		i = 1;
+	std::string			signs = "+-";
+	std::string			modes = "opsitnmlbvk"; //RFS user modes list
+	std::string			cool_modes = "aBdDHIioOpqrRSTVWwxZz"; //Wiki user modes list
+
+	if (arg.length() < 2)
+	{
+		//std::cout << "lol_1" << std::endl;
+		return false;
+	}
+	if (signs.find(arg[0]) == std::string::npos)
+	{
+		//std::cout << "lol_2" << std::endl;
+		return false;
+	}
+	while (i < arg.size())
+	{
+		if (arg[i] == '\r' || arg[i] == '\n')
+			return true;
+		if (modes.find(arg[i]) == std::string::npos)
+		{
+			//std::cout << "lol_3" << std::endl;
 			return false;
 		}
 		i++;
@@ -110,7 +141,7 @@ bool							modif_mode_user(user & us, char c, int u)
 		else if (us.get_mode().find(c) == std::string::npos)
 		{
 			us.set_mode(us.get_mode() + c);
-			std::cout << "what? avec '" << us.get_mode() << "'" << std::endl;
+			//std::cout << "what? avec '" << us.get_mode() << "'" << std::endl;
 		}
 	}
 	else if (u == 1)
@@ -135,6 +166,34 @@ bool							modif_mode_user(user & us, char c, int u)
 			return false;
 	}
 	return true;
+}
+
+bool							modif_mode_channel(user & us, char c, int u, channel & chan)
+{
+	if (u == -1)
+	{
+		if (c == 'o')
+		{
+			// verifier que le nouveau op n'est pas deja dans la liste et penser a bien recuperer son nickname de l'input
+			chan.add_op_user(us);
+			return true;
+		}
+		else if (chan.get_chan_mode().find(c) == std::string::npos)
+		{
+			chan.set_mode(chan.get_mode() + c);
+			//std::cout << "what? avec '" << us.get_mode() << "'" << std::endl;
+		}
+	}
+	else if (u == 1)
+	{
+		if (c == 'o')
+		{
+			chan.remove_op_user(us);
+			return true;
+		}
+		else if (us.get_mode().find(c) != std::string::npos)
+			us.set_mode(us.get_mode().erase(us.get_mode().find(c), 1));
+	}
 }
 
 void							send_welcome(int socket_client, server & my_serv)
