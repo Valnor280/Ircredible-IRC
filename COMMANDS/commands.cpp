@@ -1131,9 +1131,11 @@ void		PRIVMSG(std::string input, int socket_client, server & my_serv)
             std::cout << "tout est ok !" << std::endl;
           
             std::vector<user> vect_user = itchan->second.get_user_list(my_serv.get_usermap());
+			std::vector<user> vect_op = itchan->second.get_op_list(my_serv.get_usermap());
             std::vector<user>::iterator ituser = vect_user.begin();
+			std::vector<user>::iterator itop = vect_op.begin();
            
-            ret = ":" + sender.get_id() + " " + sender.get_nick() + " ";
+            ret = ":" + sender.get_id() + " PRIVMSG " + itchan->first + " ";
             while (i < splitted.size())
             {
                 ret += splitted[i];
@@ -1157,10 +1159,25 @@ void		PRIVMSG(std::string input, int socket_client, server & my_serv)
                 std::cout << "ret '"<< ret << "'"<< std::endl;
                 std::cout << "send to socket ->" << ituser->get_socket() << std::endl;
 
-                int sendret = send(ituser->get_socket(), ret.c_str(), ret.size(), 0);
+				int sendret = 0;
+				if(*ituser != sender)
+                	sendret = send(ituser->get_socket(), ret.c_str(), ret.size(), 0);
                 
                 std::cout << "sendret :" << sendret << std::endl <<std::endl;
                 ++ituser;
+            }
+			while (itop != vect_op.end())
+            {
+                
+                std::cout << "ret '"<< ret << "'"<< std::endl;
+                std::cout << "send to socket ->" << itop->get_socket() << std::endl;
+
+				int sendret = 0;
+				if(*itop != sender)
+                	sendret = send(itop->get_socket(), ret.c_str(), ret.size(), 0);
+                
+                std::cout << "sendret :" << sendret << std::endl <<std::endl;
+                ++itop;
             }
             return;
         }
@@ -1191,7 +1208,7 @@ void		PRIVMSG(std::string input, int socket_client, server & my_serv)
         {
 
 
-	    	ret = ":" + sender.get_id() + " " + sender.get_nick() + " ";
+	    	ret = ":" + sender.get_id() + " PRIVMSG " + sender.get_nick() + " ";
             while (i < splitted.size())
             {
                 ret += splitted[i];
