@@ -3,11 +3,14 @@
 void		join_single(int socket_client, server &my_serv, std::string chan, std::string key)
 {
 	std::cout << "COUCOU JE PASSE PAR ICI" << std::endl;
+	chan.erase(std::remove(chan.begin(), chan.end(), '\n'), chan.end());
+	chan.erase(std::remove(chan.begin(), chan.end(), '\r'), chan.end());
 	if(my_serv.get_chan_map()[chan].get_op_list().empty() != 0)
 	{
 		std::cout << "COUCOU JE PASSE PAR OP" << std::endl;
 		if(my_serv.get_chan_map().size() == MAXCHAN)
 		{
+			std::cout << "YAUNEERREUR" << std::endl;
 			std::string tmp = send_reply("JOIN", socket_client, my_serv, ERR_TOOMANYCHANNELS, chan);
 			send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 			return;
@@ -75,12 +78,12 @@ void		join_single(int socket_client, server &my_serv, std::string chan, std::str
 			tmp = send_reply("JOIN", socket_client, my_serv, RPL_NOTOPIC, chan);
 		else
 			tmp = send_reply("JOIN", socket_client, my_serv, RPL_TOPIC, chan);
+		std::cout << "TEST" << "'" << chan << "'" << std::endl;
 		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 		tmp = send_reply("JOIN", socket_client, my_serv, RPL_NAMREPLY, chan);
 		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 		tmp = send_reply("JOIN", socket_client, my_serv, RPL_ENDOFNAMES, chan); // maybe 
 		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
-	
 	}
 }
 
