@@ -733,11 +733,25 @@ void		PART(std::string input, int socket_client, server & my_serv)
     std::vector<std::string> av_chan = ft_split(av[1], ',');
     std::vector<std::string>::iterator it_chan = av_chan.begin();
 
+
+    std::cout << "list of chan :" << std::endl;
+    for (std::map<std::string, channel>::iterator mapit = my_serv.get_chan_map().begin() ; mapit != my_serv.get_chan_map().end(); mapit++)
+    {
+        std::cout << "chan :" << mapit->second.get_name()  << "|"<< std::endl;
+    }
+        std::cout << "itch :" << *it_chan  << "|"<< std::endl;
+
+
+
     while (it_chan != av_chan.end())
     {
-        if (my_serv.get_chan_map().find(*it_chan) == my_serv.get_chan_map().end())
+        while (*(it_chan->end() - 1) == '\n' || *(it_chan->end() - 1) == '\r')
+            it_chan->erase(it_chan->end() - 1);
+
+        std::cout << "salut" << std::endl;
+        if (my_serv.get_chan_map().find(*it_chan) == my_serv.get_chan_map().end() && *it_chan != my_serv.get_chan_map().begin()->first)
         {
-            std::cout << std::endl << "ERR_NOSUCHCHANNEL" << std::endl << std::endl;
+            std::cout << std::endl << "ERR_NOSUCHCHANNEL " << *it_chan << std::endl << std::endl;
 
             ret = send_reply("PART", socket_client, my_serv, ERR_NOSUCHCHANNEL, *it_chan);
             send(socket_client, ret.c_str(), ret.size(), MSG_DONTWAIT);
@@ -745,20 +759,20 @@ void		PART(std::string input, int socket_client, server & my_serv)
             ++it_chan;
             continue;
         }
-        if (!find_user(my_serv.get_chan_map()[*it_chan].get_op_list(), my_serv.get_usermap()[socket_client]) \
-        &&  !find_user(my_serv.get_chan_map()[*it_chan].get_user_list(), my_serv.get_usermap()[socket_client]))
+        if (!find_user(my_serv.get_chan_map()[*it_chan].get_op_list(my_serv.get_usermap()), my_serv.get_usermap()[socket_client]) \
+        &&  !find_user(my_serv.get_chan_map()[*it_chan].get_user_list(my_serv.get_usermap()), my_serv.get_usermap()[socket_client]))
         {
-            std::cout << std::endl << "ERR_NOTONCHANNEL" << std::endl << std::endl;
+            std::cout << std::endl << my_serv.get_usermap()[socket_client].get_nick() << " ERR_NOTONCHANNEL" << *it_chan << std::endl << std::endl;
             ret = send_reply("PART", socket_client, my_serv, ERR_NOTONCHANNEL, *it_chan);
             send(socket_client, ret.c_str(), ret.size(), MSG_DONTWAIT);
             
         }
-        if (find_user(my_serv.get_chan_map()[*it_chan].get_user_list(), my_serv.get_usermap()[socket_client]))
+        if (find_user(my_serv.get_chan_map()[*it_chan].get_user_list(my_serv.get_usermap()), my_serv.get_usermap()[socket_client]))
         {
             std::cout << my_serv.get_usermap()[socket_client].get_nick() << " has been remove from " << *it_chan << " has user" << std::endl;
             my_serv.get_chan_map()[*it_chan].remove_user(my_serv.get_usermap()[socket_client]);
         }
-        if (find_user(my_serv.get_chan_map()[*it_chan].get_op_list(), my_serv.get_usermap()[socket_client]))
+        if (find_user(my_serv.get_chan_map()[*it_chan].get_op_list(my_serv.get_usermap()), my_serv.get_usermap()[socket_client]))
         {
             std::cout << my_serv.get_usermap()[socket_client].get_nick() << " has been remove from " << *it_chan << " has operator" << std::endl;
             my_serv.get_chan_map()[*it_chan].remove_op_user(my_serv.get_usermap()[socket_client]);
@@ -991,7 +1005,7 @@ void		PRIVMSG(std::string input, int socket_client, server & my_serv)
         {
             ret = send_reply(input, socket_client, my_serv, ERR_CANNOTSENDTOCHAN, splitted[1]);
         }
-        else if (!find_user(itchan->second.get_user_list(), sender) && itchan->second.get_chan_mode().find('n') != std::string::npos)//mode n alors que sender n'est pas dans le channel
+        else if (!find_user(itchan->second.get_user_list(my_serv.get_usermap()), sender) && itchan->second.get_chan_mode().find('n') != std::string::npos)//mode n alors que sender n'est pas dans le channel
         {
             ret = send_reply(input, socket_client, my_serv, ERR_CANNOTSENDTOCHAN, splitted[1]);
         }
@@ -1003,7 +1017,7 @@ void		PRIVMSG(std::string input, int socket_client, server & my_serv)
         {
             std::cout << "tout est ok !" << std::endl;
           
-            std::vector<user> vect_user = itchan->second.get_user_list();
+            std::vector<user> vect_user = itchan->second.get_user_list(my_serv.get_usermap());
             std::vector<user>::iterator ituser = vect_user.begin();
            
             ret = ":" + sender.get_id() + " " + sender.get_nick() + " ";
