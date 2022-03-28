@@ -729,11 +729,26 @@ void		TOPIC(std::string input, int socket_client, server & my_serv)
 	{
 		if(find_user(my_serv.get_chan_map()[splitted[1]].get_op_list(), my_serv.get_usermap()[socket_client]) == true)
 		{	
-			std::cout << "TEST\n";
+			std::vector<user> list =  my_serv.get_chan_map()[splitted[1]].get_op_list();
 			std::string str;
-			for(std::vector<std::string>::iterator itr = splitted.begin(); itr != splitted.end(); itr++)
+			for(std::vector<std::string>::iterator itr = splitted.begin() + 2; itr != splitted.end(); itr++)
 				str += *itr;
 			my_serv.get_chan_map()[splitted[1]].set_topic(str);
+			for(std::vector<user>::iterator itr = list.begin(); itr != list.end(); ++itr)
+			{
+				std::cout << "test\n";
+				int socket = itr->get_socket();
+				tmp = send_reply("TOPIC", socket, my_serv, RPL_TOPIC, splitted[1]);
+				send(socket, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+			}
+			list =  my_serv.get_chan_map()[splitted[1]].get_user_list();
+			for(std::vector<user>::iterator itr = list.begin(); itr != list.end(); ++itr)
+			{
+				std::cout << "test\n";
+				int socket = itr->get_socket();
+				tmp = send_reply("TOPIC", socket, my_serv, RPL_TOPIC, splitted[1]);
+				send(socket, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+			}
 		}
 		else if(find_user(my_serv.get_chan_map()[splitted[1]].get_user_list(), my_serv.get_usermap()[socket_client]) == true)
 		{
