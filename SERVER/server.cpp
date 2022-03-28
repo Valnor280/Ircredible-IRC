@@ -286,7 +286,7 @@ std::string				server::get_motd(void) const
 
 std::map<std::string, user>		&server::get_regi_map(void)
 {
-	return this->_registered_map;
+	return (this->_registered_map);
 }
 
 std::map<std::string, channel>		&server::get_chan_map(void)
