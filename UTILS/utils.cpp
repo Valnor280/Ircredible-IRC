@@ -483,7 +483,7 @@ std::string send_reply(std::string input, int socket_client, server & my_serv, i
 	case 332:
 			return ret += chan +  " :" + my_serv.get_chan_map()[chan].get_topic() + "\r\n";
 	case 341:
-			return ret += "<channel> <nick>\r\n";
+			return ret += chan + " " + input + "\r\n";
 	case 351:
 			return ret += "<version>.<debuglevel> <server> :<comments>\r\n"; // maybe no use for us
 	case 352:

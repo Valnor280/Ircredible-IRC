@@ -1136,6 +1136,9 @@ void		INVITE(std::string input, int socket_client, server & my_serv)
     std::string ret;
 	std::vector<std::string> splitted = ft_split(input, ' ');
 
+	if (splitted.size() > 3)
+		return;
+
 	if (splitted.size() < 3)
 	{
 	    
@@ -1188,12 +1191,21 @@ void		INVITE(std::string input, int socket_client, server & my_serv)
 		return;
 
 	}
-	std::cout << "tout vas bien !" << std::endl;
 	if (my_serv.get_regi_map()[splitted[1]].get_mode().find('a') != std::string::npos)
 	{
- 		ret = send_reply(splitted[1], socket_client, my_serv, RPL_AWAY, splitted[2]);
+		std::cout << "RPL_AWAY" << std::endl;
+		ret = send_reply(splitted[1], socket_client, my_serv, RPL_AWAY, splitted[2]);
         send(socket_client, ret.c_str(), ret.size(), MSG_DONTWAIT);
+		return;
 	}
+	std::cout << "invitation envoye !" << std::endl;
+
+	ret = send_reply(splitted[1], socket_client, my_serv, RPL_INVITING, splitted[2]);
+    send(my_serv.get_regi_map()[splitted[1]].get_socket(), ret.c_str(), ret.size(), MSG_DONTWAIT);
+	
+	my_serv.get_chan_map()[splitted[2]].add_invite(my_serv.get_regi_map()[splitted[1]]);
+
+
     std::cout << "input :[" << input << "]" << std::endl;
     std::cout << "socket :" << socket_client << std::endl;
     my_serv.get_usermap()[socket_client].print_user();
@@ -1390,9 +1402,9 @@ void		AWAY(std::string input, int socket_client, server & my_serv)
 		unsigned long		first_dp_pos = input.find(':');
 		unsigned long		delimiter = std::min(input.find('\r'), input.find('\n'));
 
-		std::string			away_message = input.substr(first_dp_pos + 1, delimiter - first_dp_pos);
+		std::string			away_message = input.substr(first_dp_pos + 1, delimiter - first_dp_pos - 1);//a revoir...
 		target.set_away_msg(away_message);
-		// std::cout << target.
+		std::cout << "|" << target.get_away_msg() << "|" << std::endl;
 		modif_mode_user(target, 'a', 2);
 		modif_mode_user(target_2, 'a', 2);
 		tmp = send_reply("AWAY", socket_client, my_serv, RPL_NOWAWAY, "");
