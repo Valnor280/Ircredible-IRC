@@ -848,7 +848,7 @@ void		WHOIS(std::string input, int socket_client, server & my_serv)
 	else if (args.size() == 2 && args[1].find('#') != std::string::npos)
 	{
 		//ERR_NOSUCHNICK
-		tmp = send_reply("WHOIS", socket_client, my_serv, ERR_NOSUCHNICK, "");
+		tmp = send_reply(args[1], socket_client, my_serv, ERR_NOSUCHNICK, "");
 		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 	}
 	else if (args.size() == 2 && args[1].find('#') == std::string::npos)
@@ -875,7 +875,7 @@ void		WHOIS(std::string input, int socket_client, server & my_serv)
 			else
 			{
 				// ERR_NOSUCHNICK
-				tmp = send_reply("WHOIS", socket_client, my_serv, ERR_NOSUCHNICK, "");
+				tmp = send_reply(args[1], socket_client, my_serv, ERR_NOSUCHNICK, "");
 				break ;
 			}
 		}
@@ -1133,8 +1133,67 @@ void		PART(std::string input, int socket_client, server & my_serv)
 void		INVITE(std::string input, int socket_client, server & my_serv) 
 { 
     std::cout << "INVITE called" << std::endl;
-    
-    (void)my_serv;
+    std::string ret;
+	std::vector<std::string> splitted = ft_split(input, ' ');
+
+	if (splitted.size() < 3)
+	{
+	    
+		std::cout << "ERR_NEEDMOREPARAMS" << std::endl;
+		ret = send_reply("INVITE", socket_client, my_serv, ERR_NEEDMOREPARAMS, splitted[2]);
+        send(socket_client, ret.c_str(), ret.size(), MSG_DONTWAIT);
+		return;
+	}
+	if (my_serv.get_regi_map().find(splitted[1]) == my_serv.get_regi_map().end() && my_serv.get_regi_map().find(splitted[1]) != my_serv.get_regi_map().begin())
+	{
+		std::cout << "ERR_NOSUCHNICK" << std::endl;
+	    ret = send_reply(splitted[1], socket_client, my_serv, ERR_NOSUCHNICK, splitted[2]);
+        send(socket_client, ret.c_str(), ret.size(), MSG_DONTWAIT);
+		return;
+	}
+	while (*(splitted[2].end() - 1) == '\n' || *(splitted[2].end() - 1) == '\r')// enleve les \r \n
+	{
+		splitted[2].erase(splitted[2].end() - 1);
+	}
+
+	if (my_serv.get_chan_map().find(splitted[2]) == my_serv.get_chan_map().end() && my_serv.get_chan_map().find(splitted[2]) != my_serv.get_chan_map().begin())
+	{
+		//le channel n'existe pas
+		std::cout << "ERROR CHANNEL NOT FOUND" << std::endl;
+		return;
+	}
+
+	std::cout << "channel ->" << splitted[2] << std::endl;
+	if (find_user(my_serv.get_chan_map()[splitted[2]].get_op_list(my_serv.get_usermap()), my_serv.get_regi_map()[splitted[1]]) \
+	||	find_user(my_serv.get_chan_map()[splitted[2]].get_user_list(my_serv.get_usermap()), my_serv.get_regi_map()[splitted[1]]))
+	{
+		std::cout << "ERR_USERONCHANNEL" << std::endl;
+ 		ret = send_reply(splitted[1], socket_client, my_serv, ERR_USERONCHANNEL, splitted[2]);
+        send(socket_client, ret.c_str(), ret.size(), MSG_DONTWAIT);
+		return;
+	}
+	if (!find_user(my_serv.get_chan_map()[splitted[2]].get_op_list(my_serv.get_usermap()), my_serv.get_usermap()[socket_client]) \
+	&&	!find_user(my_serv.get_chan_map()[splitted[2]].get_user_list(my_serv.get_usermap()), my_serv.get_usermap()[socket_client]))
+	{
+		std::cout << "ERR_NOTONCHANNEL" << std::endl;
+ 		ret = send_reply(splitted[1], socket_client, my_serv, ERR_NOTONCHANNEL, splitted[2]);
+        send(socket_client, ret.c_str(), ret.size(), MSG_DONTWAIT);
+		return;
+	}
+	if (!find_user(my_serv.get_chan_map()[splitted[2]].get_op_list(my_serv.get_usermap()), my_serv.get_usermap()[socket_client]))
+	{
+		std::cout << "ERR_CHANOPRIVSNEEDED" << std::endl;
+ 		ret = send_reply(splitted[1], socket_client, my_serv, ERR_CHANOPRIVSNEEDED, splitted[2]);
+        send(socket_client, ret.c_str(), ret.size(), MSG_DONTWAIT);
+		return;
+
+	}
+	std::cout << "tout vas bien !" << std::endl;
+	if (my_serv.get_regi_map()[splitted[1]].get_mode().find('a') != std::string::npos)
+	{
+ 		ret = send_reply(splitted[1], socket_client, my_serv, RPL_AWAY, splitted[2]);
+        send(socket_client, ret.c_str(), ret.size(), MSG_DONTWAIT);
+	}
     std::cout << "input :[" << input << "]" << std::endl;
     std::cout << "socket :" << socket_client << std::endl;
     my_serv.get_usermap()[socket_client].print_user();
@@ -1331,8 +1390,9 @@ void		AWAY(std::string input, int socket_client, server & my_serv)
 		unsigned long		first_dp_pos = input.find(':');
 		unsigned long		delimiter = std::min(input.find('\r'), input.find('\n'));
 
-		std::string			away_message = input.substr(first_dp_pos, delimiter - first_dp_pos);
+		std::string			away_message = input.substr(first_dp_pos + 1, delimiter - first_dp_pos);
 		target.set_away_msg(away_message);
+		// std::cout << target.
 		modif_mode_user(target, 'a', 2);
 		modif_mode_user(target_2, 'a', 2);
 		tmp = send_reply("AWAY", socket_client, my_serv, RPL_NOWAWAY, "");
@@ -1511,14 +1571,15 @@ void		PRIVMSG(std::string input, int socket_client, server & my_serv)
                 break;
             ++it;
         }
-        if (it == usermap.end())
+        if (it == usermap.end() || 
+		(my_serv.get_regi_map().find(splitted[1]) == my_serv.get_regi_map().end() && my_serv.get_regi_map().find(splitted[1]) != my_serv.get_regi_map().begin()))
         {
             std::cout << "ERROR no nick !" << std::endl;
 	    	ret = ":" + my_serv.get_hostname() + " 401 " + sender.get_nick() + " :" + splitted[1] + " \r\n";//bug chelou avec \r
         }
         else if (it->second.get_mode().find('a') != std::string::npos)
         {
-            ret = send_reply(input, it->first, my_serv, RPL_AWAY, "");
+            ret = send_reply(splitted[1], it->first, my_serv, RPL_AWAY, "");
         }
         else 
         {
