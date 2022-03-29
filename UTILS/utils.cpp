@@ -277,7 +277,7 @@ std::string send_reply(std::string input, int socket_client, server & my_serv, i
 	case 259:
 			return ret += ":addubois@student.42.fr, admadene@student.42.fr, fsacquin@student.42.fr\r\n";
 	case 301:
-			return ret += my_serv.get_usermap()[my_serv.get_regi_map()[input].get_socket()].get_nick() + ":" + my_serv.get_usermap()[my_serv.get_regi_map()[input].get_socket()].get_away_msg() + "\r\n";
+			return ret += my_serv.get_usermap()[my_serv.get_regi_map()[input].get_socket()].get_nick() + " :" + my_serv.get_usermap()[my_serv.get_regi_map()[input].get_socket()].get_away_msg() + "\r\n";
 	case 302:
 			return ret += input + "\r\n";  //<réponse> ::= <pseudo>['*'] '=' <'+'|'-'><hôte>
 	case 303:

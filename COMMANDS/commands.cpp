@@ -1150,8 +1150,9 @@ void		AWAY(std::string input, int socket_client, server & my_serv)
 		unsigned long		first_dp_pos = input.find(':');
 		unsigned long		delimiter = std::min(input.find('\r'), input.find('\n'));
 
-		std::string			away_message = input.substr(first_dp_pos, delimiter - first_dp_pos);
+		std::string			away_message = input.substr(first_dp_pos + 1, delimiter - first_dp_pos);
 		target.set_away_msg(away_message);
+		// std::cout << target.
 		modif_mode_user(target, 'a', 2);
 		modif_mode_user(target_2, 'a', 2);
 		tmp = send_reply("AWAY", socket_client, my_serv, RPL_NOWAWAY, "");
