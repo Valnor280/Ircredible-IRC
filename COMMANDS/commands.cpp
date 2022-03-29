@@ -679,8 +679,11 @@ void		USERS(std::string input, int socket_client, server & my_serv)
 { 
     std::cout << "USERS called" << std::endl;
     
-    (void)my_serv;
-    std::cout << "input :[" << input << "]" << std::endl;
+
+	std::string ret = ":" + my_serv.get_hostname() + " 446 " + " :USERS has been disabled" + " \r\n";
+	send(socket_client, ret.c_str(), ret.length(), MSG_DONTWAIT);
+    
+	std::cout << "input :[" << input << "]" << std::endl;
     std::cout << "socket :" << socket_client << std::endl;
     my_serv.get_usermap()[socket_client].print_user();
     std::cout << std::endl << std::endl;
