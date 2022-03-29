@@ -5,7 +5,7 @@
 
 
 
-server::server(char * port_number, char * pswd) : _pswd(pswd), _servername("Ircredible_IRC"), _version("2.0"), _motd("RTFM!"), _admin_pswd("pswd")
+server::server(char * port_number, char * pswd) : _pswd(pswd), _servername("Ircredible_IRC"), _version("2.0"), _motd("RTFM!"), _admin_pswd("pswd"), _shutdown(false)
 {
 	// SERVER-SIDE
 	cmd_map["ADMIN"] = &ADMIN;
@@ -237,6 +237,8 @@ void server::loop()
 			}
 			
 		}
+		if(_shutdown == true)
+			break;
 	}
 }
 
@@ -247,8 +249,8 @@ std::map<int, user>		&server::get_usermap(void)
 
 server::~server()
 {
-	close(_connection);
-	close(_sockfd);
+	//close(_connection);
+	//close(_sockfd);
 }
 
 char *server::get_pswd()
@@ -306,4 +308,9 @@ void server::fd_erase(int socket)
 std::set<int>		&server::get_open_sock(void)
 {
 	return this->_open_sock;
+}
+
+void							server::set_shutdown(bool shu)
+{
+	this->_shutdown = shu;
 }
