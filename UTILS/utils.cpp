@@ -168,32 +168,143 @@ bool							modif_mode_user(user & us, char c, int u)
 	return true;
 }
 
-bool							modif_mode_channel(user & us, char c, int u, channel & chan)
+bool							is_nick_op_channel(std::string target, channel & chan, server & my_serv)
 {
-	if (u == -1)
+	bool								o = false;
+	unsigned long						i = 0;
+
+	while (i < chan.get_op_list(my_serv.get_usermap()).size())
+	{
+		if ((chan.get_op_list(my_serv.get_usermap())[i]).get_nick() == target)
+		{
+			o = true;
+			break ;
+		}
+		i++;
+	}
+	return o;
+}
+
+bool							modif_mode_channel(user & us, char c, int u, channel & chan, std::string target, server & my_serv)
+{
+	(void)us;
+	if (u == -1)/////////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		if (c == 'o')
 		{
-			// verifier que le nouveau op n'est pas deja dans la liste et penser a bien recuperer son nickname de l'input
-			chan.add_op_user(us);
-			return true;
+			unsigned long						i = 0;
+			bool								u = false;
+			while (i < chan.get_user_list(my_serv.get_usermap()).size())
+			{
+				if ((chan.get_user_list(my_serv.get_usermap())[i]).get_nick() == target)
+				{
+					u = true;
+					break;
+				}
+				i++;
+			}
+
+			if (u && !(is_nick_op_channel(target, chan, my_serv)))
+			{
+				chan.add_op_user(chan.get_user_list(my_serv.get_usermap())[i]);
+				return true;
+			}
+			return false;
+		}
+		else if (c == 'l')
+		{
+			std::stringstream		ss;
+			ss << target;
+			int		limit;
+			ss >> limit;
+			if (limit > MAXCHANUSER)
+				return false;
+			chan.set_user_limit(limit);
+			chan.set_chan_mode(chan.get_chan_mode() + c);
+		}
+		else if (c == 'v')
+		{
+			unsigned long						i = 0;
+			bool								u = false;
+			while (i < chan.get_user_list(my_serv.get_usermap()).size())
+			{
+				if ((chan.get_user_list(my_serv.get_usermap())[i]).get_nick() == target)
+				{
+					u = true;
+					break;
+				}
+				i++;
+			}
+
+			if (!(is_nick_op_channel(target, chan, my_serv)) && u)
+			{
+				chan.remove_mute(chan.get_user_list(my_serv.get_usermap())[i]);
+			}
+		}
+		else if (c == 'k')
+		{
+			chan.set_key(target);
+			chan.set_chan_mode(chan.get_chan_mode() + c);
 		}
 		else if (chan.get_chan_mode().find(c) == std::string::npos)
 		{
-			chan.set_mode(chan.get_mode() + c);
+			chan.set_chan_mode(chan.get_chan_mode() + c);
 			//std::cout << "what? avec '" << us.get_mode() << "'" << std::endl;
 		}
 	}
-	else if (u == 1)
+	else if (u == 1)/////////////////////////////////////////////////////////////////////////////////////////////
 	{
 		if (c == 'o')
 		{
-			chan.remove_op_user(us);
+			unsigned long						i = 0;
+			bool								u = false;
+			while (i < chan.get_op_list(my_serv.get_usermap()).size())
+			{
+				if ((chan.get_op_list(my_serv.get_usermap())[i]).get_nick() == target)
+				{
+					u = true;
+					break;
+				}
+				i++;
+			}
+
+			if (u)
+				chan.remove_op_user(chan.get_op_list(my_serv.get_usermap())[i]);
 			return true;
 		}
-		else if (us.get_mode().find(c) != std::string::npos)
-			us.set_mode(us.get_mode().erase(us.get_mode().find(c), 1));
+		else if (c == 'v')
+		{
+			unsigned long						i = 0;
+			bool								u = false;
+			while (i < chan.get_user_list(my_serv.get_usermap()).size())
+			{
+				if ((chan.get_user_list(my_serv.get_usermap())[i]).get_nick() == target)
+				{
+					u = true;
+					break;
+				}
+				i++;
+			}
+
+			if (u && !(is_nick_op_channel(target, chan, my_serv)))
+			{
+				chan.add_mute(chan.get_user_list(my_serv.get_usermap())[i]);
+			}
+		}
+		else if (c == 'k' && chan.get_chan_mode().find('k') != std::string::npos)
+		{
+			chan.set_key("");
+			chan.set_chan_mode(chan.get_chan_mode().erase(chan.get_chan_mode().find(c), 1));
+		}
+		else if (c == 'm' && chan.get_chan_mode().find('m') != std::string::npos)
+		{
+			chan.clear_mute_list();
+			chan.set_chan_mode(chan.get_chan_mode().erase(chan.get_chan_mode().find(c), 1));
+		}
+		else if(chan.get_chan_mode().find(c) != std::string::npos)
+			chan.set_chan_mode(chan.get_chan_mode().erase(chan.get_chan_mode().find(c), 1));
 	}
+	return true;
 }
 
 void							send_welcome(int socket_client, server & my_serv)
@@ -447,6 +558,8 @@ std::string send_reply(std::string input, int socket_client, server & my_serv, i
 			return ret += ":Unauthorized command (already registered)\r\n";
 	case 464:
 			return ret += ":Password incorrect\r\n";
+	case 467:
+			return ret += chan + ":Channel key is already set\r\n";
 	case 471:
 			return ret += input + " :Cannot join channel (+l)\r\n";
 	case 472:
