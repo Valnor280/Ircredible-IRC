@@ -45,6 +45,7 @@ class server
 		int accept_connect(int numsock);
 
 		char *get_pswd();
+		void fd_erase(int socket);
 
 		std::string						get_servername() const;
 		std::map<int, user>				&get_usermap(void);
@@ -55,6 +56,7 @@ class server
 		std::string						get_motd(void) const;
 		std::map<std::string, channel>	&get_chan_map(void);
 		std::vector<channel>			&get_chan_vect(void);
+		std::set<int>					&get_open_sock(void);
 		std::string						get_admin_pswd(void) const;
 
 	private:

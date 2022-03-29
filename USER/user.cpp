@@ -2,7 +2,7 @@
 
 #include "USER/user.hpp"
 
-user::user(): _nick(""), _username(""), _real_name(""), _mode(""), _auth(1), _registration(0), _op_name("")
+user::user(): _nick(""), _username(""), _real_name(""), _mode(""), _auth(1), _registration(0), _quit(false), _op_name("")
 {
 	// nothing here
 	this->oct_recv = 0;
@@ -146,6 +146,16 @@ void		user::set_hostname( std::string new_hostname )
 void		user::set_op_name( std::string new_op_name )
 {
 	this->_op_name = new_op_name;
+}
+
+void		user::set_quit( int quit )
+{
+	this->_quit = quit;
+}
+
+bool			user::get_quit() const
+{
+	return this->_quit;
 }
 
 void		user::set_registration( int new_reg )

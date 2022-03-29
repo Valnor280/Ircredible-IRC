@@ -1738,10 +1738,85 @@ void		QUIT(std::string input, int socket_client, server & my_serv)
 { 
     std::cout << "QUIT called" << std::endl;
     
-    (void)my_serv;
-    std::cout << "input :[" << input << "]" << std::endl;
-    std::cout << "socket :" << socket_client << std::endl;
-    my_serv.get_usermap()[socket_client].print_user();
+    std::string tmp;
+	std::string quit_msg;
+	std::string msg;
+	std::vector<std::string> splitted = ft_split(input, ' ');
+	user user_quit =  my_serv.get_usermap()[socket_client];
+
+	if (splitted.size() > 1)
+	{
+		int i = 1;
+		while(i < (int)splitted.size())
+		{
+			quit_msg += splitted[i];
+			i++;
+		}
+	}
+	else
+		quit_msg = "left";
+
+	tmp = ":" + my_serv.get_usermap()[socket_client].get_id() + " QUIT " + quit_msg;
+	send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+	for(std::map<std::string, channel>::iterator itr_chan = my_serv.get_chan_map().begin(); itr_chan != my_serv.get_chan_map().end(); itr_chan++)
+	{
+		if(find_user(itr_chan->second.get_user_list(my_serv.get_usermap()), my_serv.get_usermap()[socket_client]) == true)
+		{
+			msg = ":" + my_serv.get_usermap()[socket_client].get_id() + " PART " + itr_chan->first + " " + quit_msg + "\r\n";
+			std::cout << "kick msg :" << msg << std::endl;
+			itr_chan->second.remove_user(user_quit);
+			tmp = ":" + my_serv.get_usermap()[socket_client].get_id() + " QUIT " + quit_msg + "\r\n";
+			std::cout << "msg : " << msg << std::endl;
+			std::vector<user> list = my_serv.get_chan_map()[itr_chan->first].get_user_list(my_serv.get_usermap());
+			for(std::vector<user>::iterator itr = list.begin(); itr != list.end(); ++itr)
+			{
+				int socket = itr->get_socket();
+				send(socket, msg.c_str(), msg.length(), MSG_DONTWAIT);
+				send(socket, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+			}
+			list = my_serv.get_chan_map()[itr_chan->first].get_op_list(my_serv.get_usermap());
+			for(std::vector<user>::iterator itr = list.begin(); itr != list.end(); ++itr)
+			{
+				int socket = itr->get_socket();
+				send(socket, msg.c_str(), msg.length(), MSG_DONTWAIT);
+				send(socket, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+			}
+		}
+		else if(find_user(itr_chan->second.get_op_list(my_serv.get_usermap()), my_serv.get_usermap()[socket_client]) == true)
+		{
+			msg = ":" + my_serv.get_usermap()[socket_client].get_id() + " PART " + itr_chan->first + " " + quit_msg + "\r\n";
+			PART(msg, socket_client, my_serv);
+			itr_chan->second.remove_op_user(user_quit);
+			tmp = ":" + my_serv.get_usermap()[socket_client].get_id() + " QUIT " + quit_msg + "\r\n";
+			std::cout << "msg : " << msg << std::endl;
+			std::vector<user> list = my_serv.get_chan_map()[itr_chan->first].get_user_list(my_serv.get_usermap());
+			for(std::vector<user>::iterator itr = list.begin(); itr != list.end(); ++itr)
+			{
+				int socket = itr->get_socket();
+				send(socket, msg.c_str(), msg.length(), MSG_DONTWAIT);
+				send(socket, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+			}
+			list = my_serv.get_chan_map()[itr_chan->first].get_op_list(my_serv.get_usermap());
+			for(std::vector<user>::iterator itr = list.begin(); itr != list.end(); ++itr)
+			{
+				int socket = itr->get_socket();
+				send(socket, msg.c_str(), msg.length(), MSG_DONTWAIT);
+				send(socket, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+			}
+
+		}
+
+		if(find_user(itr_chan->second.get_ban_list(my_serv.get_usermap()), my_serv.get_usermap()[socket_client]) == true)
+			itr_chan->second.remove_ban(user_quit);
+		if(find_user(itr_chan->second.get_mute_list(my_serv.get_usermap()), my_serv.get_usermap()[socket_client]) == true)
+			itr_chan->second.remove_mute(user_quit);
+		if(find_user(itr_chan->second.get_invite_list(my_serv.get_usermap()), my_serv.get_usermap()[socket_client]) == true)
+			itr_chan->second.remove_invite(user_quit);
+	}
+	my_serv.get_usermap()[socket_client].set_quit(true);
+	close(socket_client);
+	my_serv.fd_erase(socket_client);
+	my_serv.get_usermap().erase(socket_client);
     std::cout << std::endl << std::endl;
 };
 

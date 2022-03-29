@@ -161,7 +161,7 @@ void server::loop()
 		timeval time;
 
 		time.tv_sec = 0;
-		time.tv_usec= 50;
+		time.tv_usec= 10;
 		numsock = select(max_fd + 1, &_sock_ready, NULL, NULL, &time);
 		if(numsock == -1)
 		{
@@ -223,12 +223,12 @@ void server::loop()
 				else if(retbuff == 0)
 				{
 					std::cout << "\nsocket n'" << *itr << " is closed on client side.\n";
-					close(*itr);
+					if(_user_map[*itr].get_quit() == false)
+						QUIT("QUIT", *itr, *this);
 					if (_user_map[*itr].get_registration() == 3)
 						_registered_map.erase(_user_map[*itr].get_nick());
-            		FD_CLR(*itr, &_sock_client);
-					_user_map.erase(*itr);
 					_open_sock.erase(*itr);
+
 					if (_open_sock.empty() == 0)
 						break;
 				}
@@ -295,4 +295,15 @@ std::map<std::string, channel>		&server::get_chan_map(void)
 std::string						server::get_admin_pswd(void) const
 {
 	return this->_admin_pswd;
+}
+
+void server::fd_erase(int socket)
+{
+	FD_CLR(socket, &_sock_client);
+	return ;
+}
+
+std::set<int>		&server::get_open_sock(void)
+{
+	return this->_open_sock;
 }
