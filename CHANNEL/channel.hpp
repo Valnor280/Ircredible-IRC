@@ -51,6 +51,7 @@ class channel
 		void				remove_user( const user member );
 		void				remove_ban( const user member );
 		void				remove_mute( const user member );
+		void				remove_invite( const user member );
 		void				add_op_user( const user member );
 		void				remove_op_user( const user member );
 		void				clear_user_list();

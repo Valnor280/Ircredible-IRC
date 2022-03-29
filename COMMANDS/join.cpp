@@ -5,7 +5,7 @@ void		join_single(int socket_client, server &my_serv, std::string chan, std::str
 	std::cout << "COUCOU JE PASSE PAR ICI" << std::endl;
 	chan.erase(std::remove(chan.begin(), chan.end(), '\n'), chan.end());
 	chan.erase(std::remove(chan.begin(), chan.end(), '\r'), chan.end());
-	if(my_serv.get_chan_map()[chan].get_op_list(my_serv.get_usermap()).empty() != 0)
+	if(my_serv.get_chan_map()[chan].get_op_list(my_serv.get_usermap()).empty() != 0 && my_serv.get_chan_map()[chan].get_user_list(my_serv.get_usermap()).empty() != 0)
 	{
 		std::cout << "COUCOU JE PASSE PAR OP" << std::endl;
 		if(my_serv.get_chan_map().size() == MAXCHAN)
@@ -35,7 +35,10 @@ void		join_single(int socket_client, server &my_serv, std::string chan, std::str
 	{
 		std::cout << "COUCOU JE PASSE PAR LA PLEBEs" << std::endl;
 		if(find(my_serv.get_chan_map()[chan].get_ban_list(my_serv.get_usermap()).begin(), my_serv.get_chan_map()[chan].get_ban_list(my_serv.get_usermap()).end(), my_serv.get_usermap()[socket_client]) == my_serv.get_chan_map()[chan].get_ban_list(my_serv.get_usermap()).end() || my_serv.get_chan_map()[chan].get_ban_list(my_serv.get_usermap()).empty() == 1)
-			my_serv.get_chan_map()[chan].add_user(my_serv.get_usermap()[socket_client]);
+		{
+			if(find_user(my_serv.get_chan_map()[chan].get_user_list(my_serv.get_usermap()), my_serv.get_usermap()[socket_client]) != true)
+				my_serv.get_chan_map()[chan].add_user(my_serv.get_usermap()[socket_client]);
+		}
 		else
 		{
 			std::string tmp = send_reply("JOIN", socket_client, my_serv, ERR_BANNEDFROMCHAN, chan);
