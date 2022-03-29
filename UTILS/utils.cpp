@@ -23,7 +23,7 @@ std::vector<std::string>		ft_split(std::string buffer, char sep)
 			ret.push_back(sub_str);
 			start_index = end_index + 1;
 		}
-		else if ( i == buffer.length() - 1 && i != start_index)
+		else if ( i == buffer.length() - 1 && i + 1 != start_index)
 		{
 			end_index = i + 1;
 			std::string		sub_str = buffer.substr(start_index, end_index - start_index);
@@ -207,6 +207,7 @@ bool							modif_mode_channel(user & us, char c, int u, channel & chan, std::str
 			if (u && !(is_nick_op_channel(target, chan, my_serv)))
 			{
 				chan.add_op_user(chan.get_user_list(my_serv.get_usermap())[i]);
+				chan.remove_user(chan.get_user_list(my_serv.get_usermap())[i]);
 				return true;
 			}
 			return false;
@@ -222,7 +223,7 @@ bool							modif_mode_channel(user & us, char c, int u, channel & chan, std::str
 			chan.set_user_limit(limit);
 			chan.set_chan_mode(chan.get_chan_mode() + c);
 		}
-		else if (c == 'v')
+		else if (c == 'v' && chan.get_chan_mode().find('m') == std::string::npos)
 		{
 			unsigned long						i = 0;
 			bool								u = false;
@@ -269,10 +270,13 @@ bool							modif_mode_channel(user & us, char c, int u, channel & chan, std::str
 			}
 
 			if (u)
+			{
+				chan.add_user(chan.get_op_list(my_serv.get_usermap())[i]);
 				chan.remove_op_user(chan.get_op_list(my_serv.get_usermap())[i]);
-			return true;
+				return true;
+			}
 		}
-		else if (c == 'v')
+		else if (c == 'v' && chan.get_chan_mode().find('m') == std::string::npos)
 		{
 			unsigned long						i = 0;
 			bool								u = false;
@@ -290,6 +294,11 @@ bool							modif_mode_channel(user & us, char c, int u, channel & chan, std::str
 			{
 				chan.add_mute(chan.get_user_list(my_serv.get_usermap())[i]);
 			}
+		}
+		else if (c == 'l' && chan.get_chan_mode().find('l') != std::string::npos)
+		{
+			std::cout << "else if du l" << std::endl;
+			chan.set_chan_mode(chan.get_chan_mode().erase(chan.get_chan_mode().find(c), 1));
 		}
 		else if (c == 'k' && chan.get_chan_mode().find('k') != std::string::npos)
 		{
@@ -368,7 +377,9 @@ bool find_user(std::vector<user> vect, user usr)
 bool							check_name_match(user & target, user & member , std::string pattern)
 {
 	(void)target;
-	if (member.get_mode().find('i') != std::string::npos)
+	if (pattern == "0" || pattern == "*")
+		return true;
+	else if (member.get_mode().find('i') != std::string::npos)
 		return false;
 	else if (star_name_checker(member.get_nick(), pattern))
 		return true;
@@ -477,13 +488,13 @@ std::string send_reply(std::string input, int socket_client, server & my_serv, i
 	case 323:
 			return ret += ":End of LIST\r\n";
 	case 324:
-			return ret += "<channel> <mode> <mode params>\r\n";
+			return ret += my_serv.get_chan_map()[chan].get_name() + " " +  my_serv.get_chan_map()[chan].get_chan_mode() + " <mode params>\r\n";
 	case 331:
 			return ret += chan + " :No topic is set\r\n";
 	case 332:
 			return ret += chan +  " :" + my_serv.get_chan_map()[chan].get_topic() + "\r\n";
 	case 341:
-			return ret += "<channel> <nick>\r\n";
+			return ret += chan + " " + input + "\r\n";
 	case 351:
 			return ret += "<version>.<debuglevel> <server> :<comments>\r\n"; // maybe no use for us
 	case 352:
