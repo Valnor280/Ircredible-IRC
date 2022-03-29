@@ -252,17 +252,6 @@ void		DIE(std::string input, int socket_client, server & my_serv)
     std::cout << std::endl << std::endl;
 };
 
-void		HELP(std::string input, int socket_client, server & my_serv) 
-{ 
-    std::cout << "HELP called" << std::endl;
-    
-    (void)my_serv;
-    std::cout << "input :[" << input << "]" << std::endl;
-    std::cout << "socket :" << socket_client << std::endl;
-    my_serv.get_usermap()[socket_client].print_user();
-    std::cout << std::endl << std::endl;
-};
-
 void		INFO(std::string input, int socket_client, server & my_serv) 
 { 
     std::cout << "INFO called" << std::endl;
@@ -899,6 +888,8 @@ void		PART(std::string input, int socket_client, server & my_serv)
 { 
     std::cout << "PART called" << std::endl;
     std::string ret;
+	std::string tmp;
+	std::string msg_tmp;
 
 
     std::vector<std::string> av = ft_split(input, ' ');
@@ -911,11 +902,24 @@ void		PART(std::string input, int socket_client, server & my_serv)
         send(socket_client, ret.c_str(), ret.size(), MSG_DONTWAIT);
         return;
     }
-
+	if(av.size() >= 2)
+	{
+		int i = 2;
+		while(i < (int)av.size())
+		{
+			msg_tmp += av[i] + " ";
+			i++;
+		}
+	}
+	else
+	{
+		msg_tmp = my_serv.get_usermap()[socket_client].get_nick() + " Left the chat";
+	}
+	std::cout << "MSG : " << msg_tmp << std::endl;
     std::vector<std::string> av_chan = ft_split(av[1], ',');
     std::vector<std::string>::iterator it_chan = av_chan.begin();
 
-
+	
 
     while (it_chan != av_chan.end())
     {
@@ -958,11 +962,41 @@ void		PART(std::string input, int socket_client, server & my_serv)
         {
             std::cout << my_serv.get_usermap()[socket_client].get_nick() << " has been remove from " << *it_chan << " has user" << std::endl;
             my_serv.get_chan_map()[*it_chan].remove_user(my_serv.get_usermap()[socket_client]);
+			std::vector<user> list = my_serv.get_chan_map()[*it_chan].get_user_list(my_serv.get_usermap());
+			tmp = ":" + my_serv.get_usermap()[socket_client].get_id() + " PART " + *it_chan + "\r\n";
+			send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+			tmp = ":" + my_serv.get_usermap()[socket_client].get_id() + " PART " + *it_chan + msg_tmp + "\r\n";
+			for(std::vector<user>::iterator itr = list.begin(); itr != list.end(); ++itr)
+			{
+				int socket = itr->get_socket();
+				send(socket, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+			}
+			list = my_serv.get_chan_map()[*it_chan].get_op_list(my_serv.get_usermap());
+			for(std::vector<user>::iterator itr = list.begin(); itr != list.end(); ++itr)
+			{
+				int socket = itr->get_socket();
+				send(socket, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+			}
         }
         if (find_user(my_serv.get_chan_map()[*it_chan].get_op_list(my_serv.get_usermap()), my_serv.get_usermap()[socket_client]))
         {
             std::cout << my_serv.get_usermap()[socket_client].get_nick() << " has been remove from " << *it_chan << " has operator" << std::endl;
             my_serv.get_chan_map()[*it_chan].remove_op_user(my_serv.get_usermap()[socket_client]);
+			tmp = ":" + my_serv.get_usermap()[socket_client].get_id() + " PART " + *it_chan + "\r\n";
+			send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+			tmp = ":" + my_serv.get_usermap()[socket_client].get_id() + " PART " + *it_chan + msg_tmp + "\r\n";
+			std::vector<user> list = my_serv.get_chan_map()[*it_chan].get_user_list(my_serv.get_usermap());
+			for(std::vector<user>::iterator itr = list.begin(); itr != list.end(); ++itr)
+			{
+				int socket = itr->get_socket();
+				send(socket, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+			}
+			list = my_serv.get_chan_map()[*it_chan].get_op_list(my_serv.get_usermap());
+			for(std::vector<user>::iterator itr = list.begin(); itr != list.end(); ++itr)
+			{
+				int socket = itr->get_socket();
+				send(socket, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+			}
         }
 
         ++it_chan;
@@ -996,24 +1030,114 @@ void		INVITE(std::string input, int socket_client, server & my_serv)
 void		KICK(std::string input, int socket_client, server & my_serv) 
 { 
     std::cout << "KICK called" << std::endl;
-    
-    (void)my_serv;
-    std::cout << "input :[" << input << "]" << std::endl;
-    std::cout << "socket :" << socket_client << std::endl;
-    my_serv.get_usermap()[socket_client].print_user();
+    std::vector<std::string>		splitted = ft_split(input, ' ');
+	std::string tmp;
+	std::string msg_tmp;
+	std::string msg;
+
+	if(splitted.size() >= 3)
+	{
+		std::vector<std::string> chan = ft_split(splitted[1], ',');
+		std::vector<std::string> user = ft_split(splitted[2], ',');
+		if(chan.size() > 1 && user.size() != chan.size())
+		{
+			tmp = send_reply("KICK", socket_client, my_serv, ERR_NEEDMOREPARAMS, "");
+			send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+			return ;
+		}
+		else
+		{
+			if (splitted.size() >= 3)
+			{
+				int i = 3;
+				while(i < (int)splitted.size())
+				{
+					msg_tmp += splitted[i] + " ";
+					i++;
+				}
+			}
+			else
+			{
+				msg_tmp = "Kicked from chan";
+			}
+			if(chan.size() == 1)
+			{
+				chan[0].erase(std::remove(chan[0].begin(), chan[0].end(), '\n'), chan[0].end());
+				chan[0].erase(std::remove(chan[0].begin(), chan[0].end(), '\r'), chan[0].end());
+				if(my_serv.get_chan_map()[chan[0]].get_op_list(my_serv.get_usermap()).empty() == true && my_serv.get_chan_map()[chan[0]].get_user_list(my_serv.get_usermap()).empty() == true)
+				{
+					tmp = send_reply("KICK", socket_client, my_serv, ERR_NOSUCHCHANNEL, chan[0]);
+					send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+					return ;
+				}
+				if(find_user(my_serv.get_chan_map()[chan[0]].get_op_list(my_serv.get_usermap()), my_serv.get_usermap()[socket_client]) == true)
+				{
+					for(std::vector<std::string>::iterator itr = user.begin(); itr != user.end(); itr++)
+					{
+						std::cout << "User :" << *itr << "kicked" << std::endl;
+						itr->erase(std::remove(itr->begin(), itr->end(), '\n'), itr->end());
+						itr->erase(std::remove(itr->begin(), itr->end(), '\r'), itr->end());
+						msg = "PART " + chan[0] + " " + msg_tmp;
+						std::cout << "kick msg :" << msg << std::endl;
+						PART(msg, my_serv.get_regi_map()[*itr].get_socket(), my_serv);
+						msg = ":" + my_serv.get_usermap()[socket_client].get_id() + " KICK " + chan[0] + " " + my_serv.get_regi_map()[*itr].get_nick() + " " + msg_tmp + "\r\n";
+						send(my_serv.get_regi_map()[*itr].get_socket(), msg.c_str(), msg.length(), MSG_DONTWAIT);
+					}
+				}
+				else
+				{
+					tmp = send_reply("KICK", socket_client, my_serv, ERR_CHANOPRIVSNEEDED, chan[0]);
+					send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+					return ;
+				}
+			}
+			else
+			{
+				int i = 0;
+				for(std::vector<std::string>::iterator itr = chan.begin(); itr != chan.end(); itr++)
+				{
+					itr->erase(std::remove(itr->begin(), itr->end(), '\n'), itr->end());
+					itr->erase(std::remove(itr->begin(), itr->end(), '\r'), itr->end());
+					if(my_serv.get_chan_map()[*itr].get_op_list(my_serv.get_usermap()).empty() == true && my_serv.get_chan_map()[*itr].get_user_list(my_serv.get_usermap()).empty() == true)
+					{
+						tmp = send_reply("KICK", socket_client, my_serv, ERR_NOSUCHCHANNEL, *itr);
+						send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+						return ;
+					}
+					if(find_user(my_serv.get_chan_map()[*itr].get_op_list(my_serv.get_usermap()), my_serv.get_usermap()[socket_client]) == true)
+					{	
+						std::cout << "Chan :" << *itr << std::endl;
+
+						user[i].erase(std::remove(user[i].begin(), user[i].end(), '\n'), user[i].end());
+						user[i].erase(std::remove(user[i].begin(), user[i].end(), '\r'), user[i].end());
+						std::cout << "User : " << user[i] << " kicked" << std::endl;
+						msg = "PART " + *itr + " " + msg_tmp;
+						PART(msg, my_serv.get_regi_map()[user[i]].get_socket(), my_serv);
+						msg = ":" + my_serv.get_usermap()[socket_client].get_id() + " KICK " + *itr + " " + my_serv.get_regi_map()[user[i]].get_nick() + " " + msg_tmp + "\r\n";
+						send(my_serv.get_regi_map()[user[i]].get_socket(), msg.c_str(), msg.length(), MSG_DONTWAIT);
+						i++;
+					}
+					else
+					{
+						tmp = send_reply("KICK", socket_client, my_serv, ERR_CHANOPRIVSNEEDED, *itr);
+						send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+						return ;
+					}
+
+				}
+			}
+		}
+	}
+	else
+	{
+		tmp = send_reply("KICK", socket_client, my_serv, ERR_NEEDMOREPARAMS, "");
+		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+		return ;
+	}
+
     std::cout << std::endl << std::endl;
 };
 
-void		KNOCK(std::string input, int socket_client, server & my_serv) 
-{ 
-    std::cout << "KNOCK called" << std::endl;
-    
-    (void)my_serv;
-    std::cout << "input :[" << input << "]" << std::endl;
-    std::cout << "socket :" << socket_client << std::endl;
-    my_serv.get_usermap()[socket_client].print_user();
-    std::cout << std::endl << std::endl;
-};
  // a voir
 
 void		TOPIC(std::string input, int socket_client, server & my_serv) 

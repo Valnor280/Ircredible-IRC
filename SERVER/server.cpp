@@ -14,7 +14,6 @@ server::server(char * port_number, char * pswd) : _pswd(pswd), _servername("Ircr
 	cmd_map["PASS"] = &PASS;
 	cmd_map["USER"] = &USER;
 	cmd_map["DIE"] = &DIE;
-	cmd_map["HELP"] = &HELP;
 	cmd_map["INFO"] = &INFO;
 	cmd_map["ISON"] = &ISON;
 	cmd_map["KILL"] = &KILL;
@@ -42,7 +41,6 @@ server::server(char * port_number, char * pswd) : _pswd(pswd), _servername("Ircr
 	cmd_map["INVITE"] = &INVITE;
 	cmd_map["JOIN"] = &JOIN;
 	cmd_map["KICK"] = &KICK;
-	cmd_map["KNOCK"] = &KNOCK;
 	cmd_map["TOPIC"] = &TOPIC;
 
 	// USER-SIDE
