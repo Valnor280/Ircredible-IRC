@@ -340,6 +340,16 @@ void		MODE(std::string input, int socket_client, server & my_serv)
 	std::vector<std::string>    temp = ft_split(input, '\n');
     std::vector<std::string>    temp_2 = ft_split(temp[0], '\r');
     std::vector<std::string>    args = ft_split(temp_2[0], ' ');
+
+	for (unsigned long i = 0; i < temp_2.size(); i++)
+	{
+		std::cout << "temp_2[" << i << "] = '" << temp_2[i] << "'" << std::endl;
+	}
+	for (unsigned long i = 0; i < args.size(); i++)
+	{
+		std::cout << "args[" << i << "] = '" << args[i] << "'" << std::endl;
+	}
+
 	if (args.size() < 3)
 	{
 		// ERRNEEDMOREPARAMS
@@ -357,15 +367,14 @@ void		MODE(std::string input, int socket_client, server & my_serv)
 		{
 			channel						& chan = (my_serv.get_chan_map())[args[1]];
 
-
-			if (std::find(chan.get_user_list(my_serv.get_usermap()).begin(), chan.get_user_list(my_serv.get_usermap()).end(), target) == chan.get_user_list(my_serv.get_usermap()).end())
+			if (find_user(chan.get_user_list(my_serv.get_usermap()), target) == false && find_user(chan.get_op_list(my_serv.get_usermap()), target) == false)
 			{
 				// ERR_NOTONCHANNEL
 				tmp = send_reply("MODE", socket_client, my_serv, ERR_NOTONCHANNEL, chan.get_name());
 				send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 				return ;
 			}
-			else if (std::find(chan.get_op_list(my_serv.get_usermap()).begin(), chan.get_op_list(my_serv.get_usermap()).end(), target) == chan.get_op_list(my_serv.get_usermap()).end())
+			else if (find_user(chan.get_op_list(my_serv.get_usermap()), target) == false)
 			{
 				//CHANOPRIVSNEEDED
 				tmp = send_reply("MODE", socket_client, my_serv, ERR_CHANOPRIVSNEEDED, chan.get_name());
@@ -376,7 +385,8 @@ void		MODE(std::string input, int socket_client, server & my_serv)
 
 			while (i < args.size())
 			{
-				if (!(check_user_mode_input(args[i])))
+				std::cout << "args[i] a l'entree = " << args[i] << std::endl;
+				if (!(check_channel_mode_input(args[i])))
 				{
 					tmp = send_reply("MODE", socket_client, my_serv, ERR_UNKNOWNMODE, "");
 					send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
@@ -386,13 +396,20 @@ void		MODE(std::string input, int socket_client, server & my_serv)
 				unsigned long	j = 1;
 				while (j < args[i].length())
 				{
+					std::cout << "[2] args[i] a l'entree = " << args[i][j]<< std::endl;
 					if (!(args[i][j] == '\r' || args[i][j] == '\n'))
 					{
 						//std::cout << target.get_nick() << " for " << args[i][j] << " with mod " << mod << std::endl;
 						if (args[i][j] == 'o')
 						{
-							unsigned long		k = j;
-							while (k < args[k].length())
+							unsigned long		k = i;
+							if (k == args.size() - 1)
+							{
+								tmp = send_reply("MODE", socket_client, my_serv, ERR_NEEDMOREPARAMS, "");
+								send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+								return ;
+							}
+							while (k < args.size())
 							{
 								if (args[k][0] != '-' && args[k][0] != '+' && !(isdigit(args[k][0])))
 								{
@@ -404,23 +421,38 @@ void		MODE(std::string input, int socket_client, server & my_serv)
 						}
 						else if (args[i][j] == 'l' && mod == -1)
 						{
-							unsigned long		k = j;
-							while (k < args[k].length())
+							unsigned long		k = i;
+							if (k == args.size() - 1)
 							{
+								tmp = send_reply("MODE", socket_client, my_serv, ERR_NEEDMOREPARAMS, "");
+								send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+								return ;
+							}
+							while (k < args.size())
+							{
+								std::cout << "[3] args[k] = " << args[k] << std::endl;
 								if (isdigit(args[k][0]))
 								{
+									std::cout << "jusqu'ici c'est bon avec mod = " << mod << " et la lettre = " << args[i][j] << std::endl;
 									modif_mode_channel(target, args[i][j], mod, chan, args[k], my_serv);
 									args.erase(args.begin() + k);
 								}
 								k++;
 							}
+							// std::cout << "args[k]: " << args[k] << std::endl;
 						}
 						else if (args[i][j] == 'v')
 						{
 							if (chan.get_chan_mode().find('m') != std::string::npos)
 							{
-								unsigned long		k = j;
-								while (k < args[k].length())
+								unsigned long		k = i;
+								if (k == args.size() - 1)
+								{
+									tmp = send_reply("MODE", socket_client, my_serv, ERR_NEEDMOREPARAMS, "");
+									send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+									return ;
+								}
+								while (k < args.size())
 								{
 									if (args[k][0] != '-' && args[k][0] != '+')
 									{
@@ -433,7 +465,8 @@ void		MODE(std::string input, int socket_client, server & my_serv)
 						}
 						else if (args[i][j] == 'k' && mod == -1)
 						{
-							if (chan.get_key().empty())
+							std::cout << "nou voici" << std::endl;
+							if (chan.get_key() != "")
 							{
 								//ERR_KEY_SET
 								tmp = send_reply("MODE", socket_client, my_serv, ERR_KEYSET, chan.get_name());
@@ -442,8 +475,14 @@ void		MODE(std::string input, int socket_client, server & my_serv)
 							}
 							else
 							{
-								unsigned long		k = j;
-								while (k < args[k].length())
+								unsigned long		k = i;
+								if (k == args.size() - 1)
+								{
+									tmp = send_reply("MODE", socket_client, my_serv, ERR_NEEDMOREPARAMS, "");
+									send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+									return ;
+								}
+								while (k < args.size())
 								{
 									if (args[k][0] != '-' && args[k][0] != '+')
 									{
@@ -461,10 +500,16 @@ void		MODE(std::string input, int socket_client, server & my_serv)
 				}
 				i++;
 			}
+			tmp = send_reply("MODE", socket_client, my_serv, RPL_CHANNELMODEIS, chan.get_name());
+			send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+			return ;
 		}
 		else
 		{
 			//ERR_NOSUCHCHANNEL
+			tmp = send_reply("MODE", socket_client, my_serv, ERR_NOSUCHCHANNEL, args[1]);
+			send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+			return ;
 		}
 	}
 	else if (args[1] != target.get_nick())
