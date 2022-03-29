@@ -58,6 +58,7 @@ class server
 		std::vector<channel>			&get_chan_vect(void);
 		std::set<int>					&get_open_sock(void);
 		std::string						get_admin_pswd(void) const;
+		void							set_shutdown(bool shu);
 
 	private:
 	    struct ConstructorException : public std::exception
@@ -84,6 +85,7 @@ class server
 		std::string		_motd; // message of the day
 		std::string		_admin_pswd; // password to become admin with OPER command
 		time_t 			_time_struct;
+		bool			_shutdown;
 		
 		//MAP DES USERS
 		std::map<int, user> 													_user_map; // map generale avec socket_client en clé

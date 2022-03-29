@@ -243,12 +243,24 @@ void		USER(std::string input, int socket_client, server & my_serv)
 
 void		DIE(std::string input, int socket_client, server & my_serv) 
 { 
-    std::cout << "DIEN called" << std::endl;
-    
-    (void)my_serv;
-    std::cout << "input :[" << input << "]" << std::endl;
-    std::cout << "socket :" << socket_client << std::endl;
-    my_serv.get_usermap()[socket_client].print_user();
+    std::cout << "DIE called" << std::endl;
+	std::string tmp;
+	(void)input;
+	if(my_serv.get_usermap()[socket_client].get_mode().find('o') != std::string::npos)
+	{
+		std::map<int, user> tmp_map = std::map<int, user>(my_serv.get_usermap());
+		for(std::map<int, user>::iterator itr = tmp_map.begin(); itr != tmp_map.end(); itr++)
+		{
+			QUIT("QUIT server shutdown", itr->first, my_serv);
+		}
+		my_serv.set_shutdown(true);
+	}
+	else
+	{
+		tmp = send_reply("DIE", socket_client, my_serv, ERR_NOPRIVILEGES, "");
+		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+		std::cout << "WHAT WERE YOU TRYING TO DO YOU IGNORANT FOOL !" << std::endl;
+	}
     std::cout << std::endl << std::endl;
 };
 
