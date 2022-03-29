@@ -34,7 +34,7 @@ void		join_single(int socket_client, server &my_serv, std::string chan, std::str
 	else
 	{
 		std::cout << "COUCOU JE PASSE PAR LA PLEBEs" << std::endl;
-		if(find(my_serv.get_chan_map()[chan].get_ban_list().begin(), my_serv.get_chan_map()[chan].get_ban_list().end(), my_serv.get_usermap()[socket_client]) == my_serv.get_chan_map()[chan].get_ban_list().end() || my_serv.get_chan_map()[chan].get_ban_list().empty() == 1)
+		if(find(my_serv.get_chan_map()[chan].get_ban_list(my_serv.get_usermap()).begin(), my_serv.get_chan_map()[chan].get_ban_list(my_serv.get_usermap()).end(), my_serv.get_usermap()[socket_client]) == my_serv.get_chan_map()[chan].get_ban_list(my_serv.get_usermap()).end() || my_serv.get_chan_map()[chan].get_ban_list(my_serv.get_usermap()).empty() == 1)
 			my_serv.get_chan_map()[chan].add_user(my_serv.get_usermap()[socket_client]);
 		else
 		{
@@ -42,7 +42,7 @@ void		join_single(int socket_client, server &my_serv, std::string chan, std::str
 			send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 			return;
 		}
-		if(my_serv.get_chan_map()[chan].get_chan_mode().find('I') != std::string::npos && find(my_serv.get_chan_map()[chan].get_invite_list().begin(), my_serv.get_chan_map()[chan].get_invite_list().end(), my_serv.get_usermap()[socket_client]) == my_serv.get_chan_map()[chan].get_invite_list().end())
+		if(my_serv.get_chan_map()[chan].get_chan_mode().find('I') != std::string::npos && find(my_serv.get_chan_map()[chan].get_invite_list(my_serv.get_usermap()).begin(), my_serv.get_chan_map()[chan].get_invite_list(my_serv.get_usermap()).end(), my_serv.get_usermap()[socket_client]) == my_serv.get_chan_map()[chan].get_invite_list(my_serv.get_usermap()).end())
 		{
 			std::string tmp = send_reply("JOIN", socket_client, my_serv, ERR_INVITEONLYCHAN, chan);
 			send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
