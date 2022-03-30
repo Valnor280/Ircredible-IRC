@@ -51,7 +51,6 @@ void		ADMIN(std::string input, int socket_client, server & my_serv)
 		tmp = send_reply("ADMIN", socket_client, my_serv, RPL_ADMINEMAIL, "");
 		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 	}
-
     // std::cout << "input :[" << input << "]" << std::endl;
     // std::cout << "socket :" << socket_client << std::endl;
     // my_serv.get_usermap()[socket_client].print_user();
@@ -844,7 +843,7 @@ void		WHO(std::string input, int socket_client, server & my_serv)
 
 		while (it != ite)
 		{
-			if (check_name_match(target, (*it).second, args[1]))
+			if (check_name_match(target, (*it).second, args[1]) && (*it).second.get_mode().find('i') == std::string::npos)
 			{
 				tmp = send_reply("WHO", (*it).second.get_socket(), my_serv, RPL_WHOREPLY, "");
 				if ((my_serv.get_regi_map())[(*it).second.get_nick()].get_mode().find('a') == std::string::npos)
@@ -877,17 +876,20 @@ void		WHO(std::string input, int socket_client, server & my_serv)
 				for (unsigned long i = 0; i < chan.get_user_list(my_serv.get_usermap()).size(); i++)
 				{
 					std::cout << "on est dans la boucle avec i = " << i << std::endl;
-					tmp = send_reply("WHO", (chan.get_user_list(my_serv.get_usermap()))[i].get_socket(), my_serv, RPL_WHOREPLY, "");
-					if ((chan.get_user_list(my_serv.get_usermap()))[i].get_mode().find('a') == std::string::npos)
-						tmp += " H";
-					else
-						tmp += " G";
-					if ((chan.get_user_list(my_serv.get_usermap()))[i].get_mode().find('o') != std::string::npos)
-						tmp += "* ";
-					else
-						tmp += " ";
-					tmp += ":0 " + (my_serv.get_usermap())[socket_client].get_real_name() + "\r\n";
-					send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+					if ((chan.get_user_list(my_serv.get_usermap())[i]).get_mode().find('i') == std::string::npos)
+					{
+						tmp = send_reply("WHO", (chan.get_user_list(my_serv.get_usermap()))[i].get_socket(), my_serv, RPL_WHOREPLY, "");
+						if ((chan.get_user_list(my_serv.get_usermap()))[i].get_mode().find('a') == std::string::npos)
+							tmp += " H";
+						else
+							tmp += " G";
+						if ((chan.get_user_list(my_serv.get_usermap()))[i].get_mode().find('o') != std::string::npos)
+							tmp += "* ";
+						else
+							tmp += " ";
+						tmp += ":0 " + (my_serv.get_usermap())[socket_client].get_real_name() + "\r\n";
+						send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+					}
 				}
 			}
 		}
@@ -899,7 +901,7 @@ void		WHO(std::string input, int socket_client, server & my_serv)
 
 		while (it != ite)
 		{
-			if (check_name_match(target, (*it).second, args[1]) && (*it).second.get_mode().find('o') != std::string::npos)
+			if (check_name_match(target, (*it).second, args[1]) && (*it).second.get_mode().find('o') != std::string::npos && (*it).second.get_mode().find('i') == std::string::npos)
 			{
 				tmp = send_reply("WHO", (*it).second.get_socket(), my_serv, RPL_WHOREPLY, "");
 				if ((*it).second.get_mode().find('a') == std::string::npos)
@@ -932,17 +934,20 @@ void		WHO(std::string input, int socket_client, server & my_serv)
 				for (unsigned long i = 0; i < chan.get_op_list(my_serv.get_usermap()).size(); i++)
 				{
 					std::cout << "on est dans la boucle avec i = " << i << std::endl;
-					tmp = send_reply("WHO", (chan.get_user_list(my_serv.get_usermap()))[i].get_socket(), my_serv, RPL_WHOREPLY, "");
-					if ((chan.get_op_list(my_serv.get_usermap()))[i].get_mode().find('a') == std::string::npos)
-						tmp += " H";
-					else
-						tmp += " G";
-					if ((chan.get_op_list(my_serv.get_usermap()))[i].get_mode().find('o') != std::string::npos)
-						tmp += "* ";
-					else
-						tmp += " ";
-					tmp += ":0 " + (my_serv.get_usermap())[socket_client].get_real_name() + "\r\n";
-					send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+					if ((chan.get_user_list(my_serv.get_usermap())[i]).get_mode().find('i') == std::string::npos)
+					{
+						tmp = send_reply("WHO", (chan.get_user_list(my_serv.get_usermap()))[i].get_socket(), my_serv, RPL_WHOREPLY, "");
+						if ((chan.get_op_list(my_serv.get_usermap()))[i].get_mode().find('a') == std::string::npos)
+							tmp += " H";
+						else
+							tmp += " G";
+						if ((chan.get_op_list(my_serv.get_usermap()))[i].get_mode().find('o') != std::string::npos)
+							tmp += "* ";
+						else
+							tmp += " ";
+						tmp += ":0 " + (my_serv.get_usermap())[socket_client].get_real_name() + "\r\n";
+						send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+					}
 				}
 			}
 		}
