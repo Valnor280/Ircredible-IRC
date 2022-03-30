@@ -146,6 +146,7 @@ void server::loop()
 {
 	int numsock;
 	long int retbuff = 0;
+	long int real_ret = 0;
 	int t;
 	int max_fd;
 	
@@ -168,15 +169,9 @@ void server::loop()
 			std::cout << "error select" << std::endl;
 			break;
 		}
-		/*else if(numsock == 0)
-		{
-			std::cout << "time out : " << time.tv_sec << " sec" << std::endl;
-		}*/
 		else
 		{
 			t = accept_connect(numsock);
-			/*if(t != 0)
-			 	user_read(numsock, t);*/
 		}
 		for(std::set<int>::iterator itr = _open_sock.begin(); itr != _open_sock.end(); itr++)
 		{
@@ -184,39 +179,47 @@ void server::loop()
 			{
 				//		std::cout << "before recv" << std::endl;
 
+				bzero(_buffer, 512);
 				retbuff = recv(*itr, _buffer, 512, MSG_DONTWAIT);
 				if (retbuff > 0)
 				{
 					_user_map[*itr].add_mess_recv(1);
 					_user_map[*itr].add_oct_recv((unsigned long)retbuff);
-					_buffer[retbuff] = 0;
+					//_buffer[retbuff] = 0;
 					std::cout << "msg : " << _buffer << "socket :" << *itr << std::endl;
 					
 					user_itr = _user_map.find(*itr);
 				
 					//parse message
-					str_buff = _buffer;
-					while (!str_buff.empty())
+					_user_map[*itr].set_buff(_buffer);
+					std::cout << "cmd : " << _user_map[*itr].get_buff() << std::endl;
+					real_ret += retbuff;
+					str_buff = _user_map[*itr].get_buff();
+					if(str_buff.find('\r') != std::string::npos && str_buff.find('\n') != std::string::npos )
 					{
-						std::vector<std::string>		input_temp = ft_split(str_buff, '\n');
-						std::vector<std::string>		input_temp_2 = ft_split(input_temp[0], '\r');
-						std::vector<std::string>		input = ft_split(input_temp_2[0], ' ');
-						//std::cout << "str_buff '" << str_buff << "'" << std::endl;
-						if (cmd_map.find(ft_toupper(input[0])) == cmd_map.end())
+						std::cout << "je passe par la\n";
+						int ivc = 0;
+						while (!str_buff.empty() && ivc < 5)
 						{
-							send(*itr, send_reply(input[0], *itr, *this, 421, "").c_str(), send_reply(input[0], *itr, *this, 421, "").length(), MSG_DONTWAIT);
+							std::vector<std::string>		input_temp = ft_split(str_buff, '\n');
+							std::vector<std::string>		input_temp_2 = ft_split(input_temp[0], '\r');
+							std::vector<std::string>		input = ft_split(input_temp_2[0], ' ');
+							std::cout << "str_buff '" << str_buff << "'" << std::endl;
+							if (cmd_map.find(ft_toupper(input[0])) == cmd_map.end())
+							{
+								send(*itr, send_reply(input[0], *itr, *this, 421, "").c_str(), send_reply(input[0], *itr, *this, 421, "").length(), MSG_DONTWAIT);
+							}
+							else
+							{
+								cmd_map[ft_toupper(input[0])](input_temp_2[0], user_itr->first, *this);
+							}
+							
+							str_index = str_buff.find('\n');
+							str_buff.erase(0, str_index + 1);
+							ivc++;
 						}
-						else
-						{
-							cmd_map[ft_toupper(input[0])](str_buff, user_itr->first, *this);
-						}
-						
-						str_index = str_buff.find('\n');
-						str_buff.erase(0, str_index + 1);
+						_user_map[*itr].clear_buff();
 					}
-					/*for (int k = 0; k < FD_SETSIZE; ++k)
-						if (k != *itr && FD_ISSET(k, &_sock_client))
-						send(k, _buffer, retbuff, 0);*/
 
 				
 				}

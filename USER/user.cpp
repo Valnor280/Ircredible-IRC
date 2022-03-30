@@ -74,6 +74,26 @@ std::string		user::get_away_msg() const
 	return this->_away_msg;
 }
 
+std::string		user::get_buff()
+{
+	return this->_tmp_buff;
+}
+
+void	user::set_buff(std::string buff)
+{
+	_tmp_buff += buff;
+}
+
+void	user::erase_buff(int i, int y)
+{
+	_tmp_buff.erase(i, y);
+}
+
+void	user::clear_buff()
+{
+	_tmp_buff.clear();
+}
+
 int				user::get_socket() const
 {
 	return this->_socket;
