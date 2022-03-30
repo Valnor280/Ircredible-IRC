@@ -17,7 +17,7 @@ void		CAP(std::string input, int socket_client, server & my_serv)
     std::cout << "socket :" << socket_client << std::endl;
     my_serv.get_usermap()[socket_client].print_user();
     std::cout << std::endl << std::endl;
-}
+};
 
 
 void		ADMIN(std::string input, int socket_client, server & my_serv) 
@@ -48,7 +48,7 @@ void		ADMIN(std::string input, int socket_client, server & my_serv)
     // std::cout << "socket :" << socket_client << std::endl;
     // my_serv.get_usermap()[socket_client].print_user();
     std::cout << std::endl << std::endl;
-}
+};
 
 void		NICK(std::string input, int socket_client, server & my_serv) 
 { 
@@ -127,7 +127,7 @@ void		NICK(std::string input, int socket_client, server & my_serv)
     std::cout << "socket :" << socket_client << std::endl;
     my_serv.get_usermap()[socket_client].print_user();
     std::cout << std::endl << std::endl;
-}
+};
 
 void		PASS(std::string input, int socket_client, server & my_serv) 
 { 
@@ -239,7 +239,7 @@ void		USER(std::string input, int socket_client, server & my_serv)
     std::cout << "socket :" << socket_client << std::endl;
     my_serv.get_usermap()[socket_client].print_user();
     std::cout << std::endl << std::endl;
-}
+};
 
 void		DIE(std::string input, int socket_client, server & my_serv) 
 { 
@@ -262,7 +262,7 @@ void		DIE(std::string input, int socket_client, server & my_serv)
 		std::cout << "WHAT WERE YOU TRYING TO DO YOU IGNORANT FOOL !" << std::endl;
 	}
     std::cout << std::endl << std::endl;
-}
+};
 
 void		INFO(std::string input, int socket_client, server & my_serv) 
 { 
@@ -294,7 +294,7 @@ void		INFO(std::string input, int socket_client, server & my_serv)
     // std::cout << "socket :" << socket_client << std::endl;
     // my_serv.get_usermap()[socket_client].print_user();
     std::cout << std::endl << std::endl;
-}
+};
 
 void		ISON(std::string input, int socket_client, server & my_serv) 
 { 
@@ -305,7 +305,7 @@ void		ISON(std::string input, int socket_client, server & my_serv)
     std::cout << "socket :" << socket_client << std::endl;
     my_serv.get_usermap()[socket_client].print_user();
     std::cout << std::endl << std::endl;
-}
+};
 
 void		KILL(std::string input, int socket_client, server & my_serv) 
 {
@@ -329,7 +329,7 @@ void		KILL(std::string input, int socket_client, server & my_serv)
     // std::cout << "socket :" << socket_client << std::endl;
     // my_serv.get_usermap()[socket_client].print_user();
     std::cout << std::endl << std::endl;
-}
+};
 
 void		LUSERS(std::string input, int socket_client, server & my_serv) 
 { 
@@ -340,7 +340,7 @@ void		LUSERS(std::string input, int socket_client, server & my_serv)
     std::cout << "socket :" << socket_client << std::endl;
     my_serv.get_usermap()[socket_client].print_user();
     std::cout << std::endl << std::endl;
-}
+};
 
 void		MODE(std::string input, int socket_client, server & my_serv) 
 { 
@@ -606,9 +606,8 @@ void		MODE(std::string input, int socket_client, server & my_serv)
     std::cout << "socket :" << socket_client << std::endl;
     my_serv.get_usermap()[socket_client].print_user();
     std::cout << std::endl << std::endl;
-}
+};
 
-//maybe has to be oper ?
 void		MOTD(std::string input, int socket_client, server & my_serv) 
 { 
     std::cout << "MOTD called" << std::endl;
@@ -635,7 +634,7 @@ void		MOTD(std::string input, int socket_client, server & my_serv)
 	}
 
     std::cout << std::endl << std::endl;
-}
+};
 
 void name_solo(int socket_client, server & my_serv, std::string chan)
 {
@@ -690,7 +689,7 @@ void		NAMES(std::string input, int socket_client, server & my_serv)
 	tmp = send_reply("NAMES", socket_client, my_serv, RPL_ENDOFNAMES, " "); // maybe 
 	send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
     std::cout << std::endl << std::endl;
-}
+};
 
  // l'option X est chelou
 void		REHASH(std::string input, int socket_client, server & my_serv) 
@@ -702,7 +701,7 @@ void		REHASH(std::string input, int socket_client, server & my_serv)
     std::cout << "socket :" << socket_client << std::endl;
     my_serv.get_usermap()[socket_client].print_user();
     std::cout << std::endl << std::endl;
-}
+};
  // a voir
 void		STATS(std::string input, int socket_client, server & my_serv) 
 { 
@@ -721,7 +720,7 @@ void		STATS(std::string input, int socket_client, server & my_serv)
 	std::cout << "mess_recv -> " << my_serv.get_usermap()[socket_client].get_mess_recv() << std::endl;
 	std::cout << "mess_send -> " << my_serv.get_usermap()[socket_client].get_mess_send() << std::endl;
     std::cout << std::endl << std::endl;
-}
+};
 
 void		SUMMON(std::string input, int socket_client, server & my_serv) 
 { 
@@ -732,7 +731,7 @@ void		SUMMON(std::string input, int socket_client, server & my_serv)
     std::cout << "socket :" << socket_client << std::endl;
     my_serv.get_usermap()[socket_client].print_user();
     std::cout << std::endl << std::endl;
-}
+};
 
 void		TIME(std::string input, int socket_client, server & my_serv) 
 { 
@@ -756,7 +755,7 @@ void		TIME(std::string input, int socket_client, server & my_serv)
 		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 	}
     std::cout << std::endl << std::endl;
-}
+};
 
 void		USERHOST(std::string input, int socket_client, server & my_serv) 
 { 
@@ -767,7 +766,7 @@ void		USERHOST(std::string input, int socket_client, server & my_serv)
     std::cout << "socket :" << socket_client << std::endl;
     my_serv.get_usermap()[socket_client].print_user();
     std::cout << std::endl << std::endl;
-}
+};
 
 void		USERS(std::string input, int socket_client, server & my_serv) 
 { 
@@ -778,7 +777,7 @@ void		USERS(std::string input, int socket_client, server & my_serv)
     std::cout << "socket :" << socket_client << std::endl;
     my_serv.get_usermap()[socket_client].print_user();
     std::cout << std::endl << std::endl;
-}
+};
  // a voir
 void		VERSION(std::string input, int socket_client, server & my_serv) 
 { 
@@ -789,7 +788,7 @@ void		VERSION(std::string input, int socket_client, server & my_serv)
     std::cout << "socket :" << socket_client << std::endl;
     my_serv.get_usermap()[socket_client].print_user();
     std::cout << std::endl << std::endl;
-}
+};
  // a voir
 void		WALLOPS(std::string input, int socket_client, server & my_serv) 
 { 
@@ -800,7 +799,7 @@ void		WALLOPS(std::string input, int socket_client, server & my_serv)
     std::cout << "socket :" << socket_client << std::endl;
     my_serv.get_usermap()[socket_client].print_user();
     std::cout << std::endl << std::endl;
-}
+};
 
 void		WHO(std::string input, int socket_client, server & my_serv) 
 { 
@@ -847,10 +846,16 @@ void		WHO(std::string input, int socket_client, server & my_serv)
 		{
 			channel				& chan = (my_serv.get_chan_map())[args[1]];
 
-			for (unsigned long i = 0; i < chan.get_user_list(my_serv.get_usermap()).size(); i++)
+			if ((!(find_user(chan.get_user_list(my_serv.get_usermap()), target) || find_user(chan.get_op_list(my_serv.get_usermap()), target))) && (chan.get_chan_mode().find('s') != std::string::npos || chan.get_chan_mode().find('p') != std::string::npos)) //is user part of the channel
 			{
-				if (check_name_match(target, (chan.get_user_list(my_serv.get_usermap()))[i], args[1]))
+				// do nothing
+			}
+			else
+			{
+				std::cout << "on a passe la securite" << std::endl;
+				for (unsigned long i = 0; i < chan.get_user_list(my_serv.get_usermap()).size(); i++)
 				{
+					std::cout << "on est dans la boucle avec i = " << i << std::endl;
 					tmp = send_reply("WHO", (chan.get_user_list(my_serv.get_usermap()))[i].get_socket(), my_serv, RPL_WHOREPLY, "");
 					if ((chan.get_user_list(my_serv.get_usermap()))[i].get_mode().find('a') == std::string::npos)
 						tmp += " H";
@@ -890,22 +895,28 @@ void		WHO(std::string input, int socket_client, server & my_serv)
 			it++;
 		}
 	}
-	else if (args.size() == 3 && args[1][0] != '#')
+	else if (args.size() == 3 && args[1][0] == '#')
 	{
 		if ((my_serv.get_chan_map()).count(args[1]))
 		{
 			channel				& chan = (my_serv.get_chan_map())[args[1]];
 
-			for (unsigned long i = 0; i < chan.get_user_list(my_serv.get_usermap()).size(); i++)
+			if ((!(find_user(chan.get_user_list(my_serv.get_usermap()), target) || find_user(chan.get_op_list(my_serv.get_usermap()), target))) && (chan.get_chan_mode().find('s') != std::string::npos || chan.get_chan_mode().find('p') != std::string::npos)) //if user not part of channel AND channel has mode p or s
 			{
-				if (check_name_match(target, (chan.get_user_list(my_serv.get_usermap()))[i], args[1]) && (chan.get_user_list(my_serv.get_usermap()))[i].get_mode().find('o') != std::string::npos)
+				// do nothing;
+			}
+			else
+			{
+				std::cout << "on a passe la securite" << std::endl;
+				for (unsigned long i = 0; i < chan.get_op_list(my_serv.get_usermap()).size(); i++)
 				{
+					std::cout << "on est dans la boucle avec i = " << i << std::endl;
 					tmp = send_reply("WHO", (chan.get_user_list(my_serv.get_usermap()))[i].get_socket(), my_serv, RPL_WHOREPLY, "");
-					if ((chan.get_user_list(my_serv.get_usermap()))[i].get_mode().find('a') == std::string::npos)
+					if ((chan.get_op_list(my_serv.get_usermap()))[i].get_mode().find('a') == std::string::npos)
 						tmp += " H";
 					else
 						tmp += " G";
-					if ((chan.get_user_list(my_serv.get_usermap()))[i].get_mode().find('o') != std::string::npos)
+					if ((chan.get_op_list(my_serv.get_usermap()))[i].get_mode().find('o') != std::string::npos)
 						tmp += "* ";
 					else
 						tmp += " ";
@@ -921,7 +932,7 @@ void		WHO(std::string input, int socket_client, server & my_serv)
     std::cout << "socket :" << socket_client << std::endl;
     my_serv.get_usermap()[socket_client].print_user();
     std::cout << std::endl << std::endl;
-}
+};
 
 void		WHOIS(std::string input, int socket_client, server & my_serv) 
 { 
@@ -931,7 +942,7 @@ void		WHOIS(std::string input, int socket_client, server & my_serv)
 	std::vector<std::string>    temp = ft_split(input, '\n');
     std::vector<std::string>    temp_2 = ft_split(temp[0], '\r');
     std::vector<std::string>    args = ft_split(temp_2[0], ' ');
-	// user						& target = (my_serv.get_usermap())[socket_client];
+	user						& target = (my_serv.get_usermap())[socket_client];
 
 	if (args.size() == 1)
 	{
@@ -964,6 +975,14 @@ void		WHOIS(std::string input, int socket_client, server & my_serv)
 				{
 					tmp = send_reply("WHOIS", source.get_socket(), my_serv, RPL_WHOISOPERATOR, "");
 					send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+				}
+				for (std::map<std::string, channel>::iterator it = my_serv.get_chan_map().begin(); it != my_serv.get_chan_map().end(); it++)
+				{
+					if (find_user((*it).second.get_user_list(my_serv.get_usermap()), source) || find_user((*it).second.get_op_list(my_serv.get_usermap()), source))
+					{
+						tmp = send_reply("WHOIS", source.get_socket(), my_serv, RPL_WHOISCHANNEL, "");
+						send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+					}
 				}
 			}
 			else
@@ -1005,11 +1024,8 @@ void list_solo(std::string chan, int socket_client, server & my_serv)
 	std::string					tmp;
 	chan.erase(std::remove(chan.begin(), chan.end(), '\n'), chan.end());
 	chan.erase(std::remove(chan.begin(), chan.end(), '\r'), chan.end());
-	if(my_serv.get_chan_map()[chan].get_chan_mode().find('s') == std::string::npos)
-	{
-		tmp = send_reply("LIST", socket_client, my_serv, RPL_LIST, chan);
-		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
-	}
+	tmp = send_reply("LIST", socket_client, my_serv, RPL_LIST, chan);
+	send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 }
 
 void		LIST(std::string input, int socket_client, server & my_serv) 
@@ -1051,17 +1067,14 @@ void		LIST(std::string input, int socket_client, server & my_serv)
 		std::cout << "ICI3\n";
 		for(std::map<std::string, channel>::iterator itrmap = chan_map.begin(); itrmap != chan_map.end(); itrmap++)
 		{
-			if(my_serv.get_chan_map()[itrmap->first].get_chan_mode().find('s') == std::string::npos)
-			{
-				tmp = send_reply("LIST", socket_client, my_serv, RPL_LIST, itrmap->first);
-				send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
-			}
+			tmp = send_reply("LIST", socket_client, my_serv, RPL_LIST, itrmap->first);
+			send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 		}
 	}
 	tmp = send_reply("LIST", socket_client, my_serv, RPL_LISTEND, "");
 	send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
     std::cout << std::endl << std::endl;
-}
+};
 
 void		PING(std::string input, int socket_client, server & my_serv)
 { 
@@ -1087,7 +1100,7 @@ void		PING(std::string input, int socket_client, server & my_serv)
     my_serv.get_usermap()[socket_client].print_user();
     
     std::cout << std::endl << std::endl;
-}
+};
 
 void		PONG(std::string input, int socket_client, server & my_serv) 
 { 
@@ -1098,7 +1111,7 @@ void		PONG(std::string input, int socket_client, server & my_serv)
     std::cout << "socket :" << socket_client << std::endl;
     my_serv.get_usermap()[socket_client].print_user();
     std::cout << std::endl << std::endl;
-}
+};
 
 void		PART(std::string input, int socket_client, server & my_serv) 
 { 
@@ -1225,7 +1238,7 @@ void		PART(std::string input, int socket_client, server & my_serv)
     std::cout << "socket :" << socket_client << std::endl;
     my_serv.get_usermap()[socket_client].print_user();
     std::cout << std::endl << std::endl;
-}
+};
 
 
 
@@ -1310,7 +1323,7 @@ void		INVITE(std::string input, int socket_client, server & my_serv)
     std::cout << "socket :" << socket_client << std::endl;
     my_serv.get_usermap()[socket_client].print_user();
     std::cout << std::endl << std::endl;
-}
+};
 
 
 
@@ -1423,7 +1436,7 @@ void		KICK(std::string input, int socket_client, server & my_serv)
 	}
 
     std::cout << std::endl << std::endl;
-}
+};
 
  // a voir
 
@@ -1447,7 +1460,7 @@ void		TOPIC(std::string input, int socket_client, server & my_serv)
 	}
 	else
 	{
-		if(find_user(my_serv.get_chan_map()[splitted[1]].get_op_list(my_serv.get_usermap()), my_serv.get_usermap()[socket_client]) == true || my_serv.get_chan_map()[splitted[1]].get_chan_mode().find('t') == std::string::npos)
+		if(find_user(my_serv.get_chan_map()[splitted[1]].get_op_list(my_serv.get_usermap()), my_serv.get_usermap()[socket_client]) == true)
 		{	
 			std::vector<user> list =  my_serv.get_chan_map()[splitted[1]].get_op_list(my_serv.get_usermap());
 			std::string str;
@@ -1482,7 +1495,7 @@ void		TOPIC(std::string input, int socket_client, server & my_serv)
 		}
 	}
     std::cout << std::endl << std::endl;
-}
+};
 
 
 // LISTE DE COMMANDES USER SIDE
@@ -1521,7 +1534,7 @@ void		AWAY(std::string input, int socket_client, server & my_serv)
     std::cout << "socket :" << socket_client << std::endl;
     my_serv.get_usermap()[socket_client].print_user();
     std::cout << std::endl << std::endl;
-}
+};
 
 
 void		OPER(std::string input, int socket_client, server & my_serv) 
@@ -1559,7 +1572,7 @@ void		OPER(std::string input, int socket_client, server & my_serv)
     std::cout << "socket :" << socket_client << std::endl;
     my_serv.get_usermap()[socket_client].print_user();
     std::cout << std::endl << std::endl;
-}
+};
 
 void		PRIVMSG(std::string input, int socket_client, server & my_serv) 
 { 
@@ -1610,7 +1623,7 @@ void		PRIVMSG(std::string input, int socket_client, server & my_serv)
         {
             ret = send_reply(input, socket_client, my_serv, ERR_CANNOTSENDTOCHAN, splitted[1]);
         }
-        else if (itchan->second.get_chan_mode().find('m') != std::string::npos && find_user(itchan->second.get_mute_list(my_serv.get_usermap()), sender) == true)//mode v + m
+        else if (itchan->second.get_chan_mode().find('v') != std::string::npos && itchan->second.get_chan_mode().find('m') != std::string::npos)//mode v + m
         {
             ret = send_reply(input, socket_client, my_serv, ERR_CANNOTSENDTOCHAN, splitted[1]);
         }
@@ -1717,7 +1730,7 @@ void		PRIVMSG(std::string input, int socket_client, server & my_serv)
     std::cout << "socket :" << socket_client << std::endl;
     my_serv.get_usermap()[socket_client].print_user();
     std::cout << std::endl << std::endl;
-}
+};
 
 void		NOTICE(std::string input, int socket_client, server & my_serv) 
 { 
@@ -1873,7 +1886,7 @@ void		QUIT(std::string input, int socket_client, server & my_serv)
 	my_serv.fd_erase(socket_client);
 	my_serv.get_usermap().erase(socket_client);
     std::cout << std::endl << std::endl;
-}
+};
 
 void		SETNAME(std::string input, int socket_client, server & my_serv) 
 { 
@@ -1884,7 +1897,7 @@ void		SETNAME(std::string input, int socket_client, server & my_serv)
     std::cout << "socket :" << socket_client << std::endl;
     my_serv.get_usermap()[socket_client].print_user();
     std::cout << std::endl << std::endl;
-}
+};
 
 void		USERIP(std::string input, int socket_client, server & my_serv) 
 { 
@@ -1895,5 +1908,5 @@ void		USERIP(std::string input, int socket_client, server & my_serv)
     std::cout << "socket :" << socket_client << std::endl;
     my_serv.get_usermap()[socket_client].print_user();
     std::cout << std::endl << std::endl;
-}
+};
 
