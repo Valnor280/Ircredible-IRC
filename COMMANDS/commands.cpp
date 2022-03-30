@@ -1409,9 +1409,12 @@ void		KICK(std::string input, int socket_client, server & my_serv)
 						itr->erase(std::remove(itr->begin(), itr->end(), '\r'), itr->end());
 						msg = "PART " + chan[0] + " " + msg_tmp;
 						std::cout << "kick msg :" << msg << std::endl;
-						PART(msg, my_serv.get_regi_map()[*itr].get_socket(), my_serv);
-						msg = ":" + my_serv.get_usermap()[socket_client].get_id() + " KICK " + chan[0] + " " + my_serv.get_regi_map()[*itr].get_nick() + " " + msg_tmp + "\r\n";
-						send(my_serv.get_regi_map()[*itr].get_socket(), msg.c_str(), msg.length(), MSG_DONTWAIT);
+						if(find_user(my_serv.get_chan_map()[chan[0]].get_op_list(my_serv.get_usermap()), my_serv.get_regi_map()[*itr]) == false)
+						{
+							PART(msg, my_serv.get_regi_map()[*itr].get_socket(), my_serv);
+							msg = ":" + my_serv.get_usermap()[socket_client].get_id() + " KICK " + chan[0] + " " + my_serv.get_regi_map()[*itr].get_nick() + " " + msg_tmp + "\r\n";
+							send(my_serv.get_regi_map()[*itr].get_socket(), msg.c_str(), msg.length(), MSG_DONTWAIT);
+						}
 					}
 				}
 				else
@@ -1442,9 +1445,12 @@ void		KICK(std::string input, int socket_client, server & my_serv)
 						user[i].erase(std::remove(user[i].begin(), user[i].end(), '\r'), user[i].end());
 						std::cout << "User : " << user[i] << " kicked" << std::endl;
 						msg = "PART " + *itr + " " + msg_tmp;
-						PART(msg, my_serv.get_regi_map()[user[i]].get_socket(), my_serv);
-						msg = ":" + my_serv.get_usermap()[socket_client].get_id() + " KICK " + *itr + " " + my_serv.get_regi_map()[user[i]].get_nick() + " " + msg_tmp + "\r\n";
-						send(my_serv.get_regi_map()[user[i]].get_socket(), msg.c_str(), msg.length(), MSG_DONTWAIT);
+						if(find_user(my_serv.get_chan_map()[chan[0]].get_op_list(my_serv.get_usermap()), my_serv.get_regi_map()[*itr]) == false)
+						{
+							PART(msg, my_serv.get_regi_map()[user[i]].get_socket(), my_serv);
+							msg = ":" + my_serv.get_usermap()[socket_client].get_id() + " KICK " + *itr + " " + my_serv.get_regi_map()[user[i]].get_nick() + " " + msg_tmp + "\r\n";
+							send(my_serv.get_regi_map()[user[i]].get_socket(), msg.c_str(), msg.length(), MSG_DONTWAIT);
+						}
 						i++;
 					}
 					else
@@ -1675,7 +1681,7 @@ void		PRIVMSG(std::string input, int socket_client, server & my_serv)
                 ++i;
             }
            
-           
+           ret += "\r\n";
             while (ituser != vect_user.end())
             {
                 std::cout << "user -> " << ituser->get_nick() << std::endl;
@@ -1749,6 +1755,7 @@ void		PRIVMSG(std::string input, int socket_client, server & my_serv)
                 ++i;
             }
             socket_client = it->first;
+			ret += "\r\n";
         }
 
         std::cout << "ret '"<< ret << "'"<<std::endl;
@@ -1824,7 +1831,7 @@ void		NOTICE(std::string input, int socket_client, server & my_serv)
             std::vector<user>::iterator ituser = vect_user.begin();
 			std::vector<user>::iterator itop = vect_op.begin();
            
-            ret = ":" + sender.get_id() + " PRIVMSG " + itchan->first + " ";
+            ret = ":" + sender.get_id() + " NOTICE " + itchan->first + " ";
             while (i < splitted.size())
             {
                 ret += splitted[i];
@@ -1833,7 +1840,7 @@ void		NOTICE(std::string input, int socket_client, server & my_serv)
                 ++i;
             }
            
-           
+            ret += "\r\n";
             while (ituser != vect_user.end())
             {
                 std::cout << "user -> " << ituser->get_nick() << std::endl;
@@ -1898,7 +1905,7 @@ void		NOTICE(std::string input, int socket_client, server & my_serv)
         {
 
 
-	    	ret = ":" + sender.get_id() + " PRIVMSG " + sender.get_nick() + " ";
+	    	ret = ":" + sender.get_id() + " NOTICE " + sender.get_nick() + " ";
             while (i < splitted.size())
             {
                 ret += splitted[i];
@@ -1907,6 +1914,7 @@ void		NOTICE(std::string input, int socket_client, server & my_serv)
                 ++i;
             }
             socket_client = it->first;
+			ret += "\r\n";
         }
 
         std::cout << "ret '"<< ret << "'"<<std::endl;
@@ -1942,7 +1950,7 @@ void		QUIT(std::string input, int socket_client, server & my_serv)
 	else
 		quit_msg = "left";
 
-	tmp = ":" + my_serv.get_usermap()[socket_client].get_id() + " QUIT " + quit_msg;
+	tmp = ":" + my_serv.get_usermap()[socket_client].get_id() + " QUIT " + quit_msg + "\r\n";
 	send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 	for(std::map<std::string, channel>::iterator itr_chan = my_serv.get_chan_map().begin(); itr_chan != my_serv.get_chan_map().end(); itr_chan++)
 	{

@@ -47,6 +47,7 @@ class user
 		std::string		_hostname;
 		std::string		_op_name;
 		int				_socket;
+		std::string		_tmp_buff;
 
 
 		//STATS
@@ -80,6 +81,7 @@ class user
 		unsigned long	get_oct_send() const;
 		unsigned long	get_mess_recv() const;
 		unsigned long	get_mess_send() const;
+		std::string		get_buff();
 
 		//SETTERS
 		bool		set_nick( std::string new_nick );
@@ -99,6 +101,9 @@ class user
 		void		add_oct_send(unsigned long nb);
 		void		add_mess_recv(unsigned long nb);
 		void		add_mess_send(unsigned long nb);
+		void		set_buff(std::string buff);
+		void		clear_buff(void);
+		void		erase_buff(int i, int y);
 
 
 		// UTILS
