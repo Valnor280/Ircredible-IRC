@@ -514,7 +514,7 @@ std::string send_reply(std::string input, int socket_client, server & my_serv, i
 	case 318:
 			return ret += my_serv.get_usermap()[socket_client].get_nick() + " :End of WHOIS list\r\n";
 	case 319:
-			return ret += my_serv.get_usermap()[socket_client].get_nick() + ":*( ( "@" / "+" ) <channel> " " )\r\n";
+			return ret += my_serv.get_usermap()[socket_client].get_nick() + " :" + input + chan + "\r\n";
 	case 322:
 			return ret += chan + " :" + my_serv.get_chan_map()[chan].get_topic() + "\r\n";
 	case 323:

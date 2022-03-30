@@ -942,7 +942,7 @@ void		WHOIS(std::string input, int socket_client, server & my_serv)
 	std::vector<std::string>    temp = ft_split(input, '\n');
     std::vector<std::string>    temp_2 = ft_split(temp[0], '\r');
     std::vector<std::string>    args = ft_split(temp_2[0], ' ');
-	user						& target = (my_serv.get_usermap())[socket_client];
+	// user						& target = (my_serv.get_usermap())[socket_client];
 
 	if (args.size() == 1)
 	{
@@ -978,10 +978,21 @@ void		WHOIS(std::string input, int socket_client, server & my_serv)
 				}
 				for (std::map<std::string, channel>::iterator it = my_serv.get_chan_map().begin(); it != my_serv.get_chan_map().end(); it++)
 				{
-					if (find_user((*it).second.get_user_list(my_serv.get_usermap()), source) || find_user((*it).second.get_op_list(my_serv.get_usermap()), source))
+					if ((*it).second.get_chan_mode().find('s') == std::string::npos)
 					{
-						tmp = send_reply("WHOIS", source.get_socket(), my_serv, RPL_WHOISCHANNEL, "");
-						send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+						if (find_user((*it).second.get_user_list(my_serv.get_usermap()), source))
+						{
+							if ((*it).second.get_chan_mode().find('m') != std::string::npos && (!(find_user((*it).second.get_mute_list(my_serv.get_usermap()), source))))
+								tmp = send_reply("+", source.get_socket(), my_serv, RPL_WHOISCHANNELS, (*it).second.get_name());
+							else
+								tmp = send_reply("", source.get_socket(), my_serv, RPL_WHOISCHANNELS, (*it).second.get_name());
+							send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+						}
+						else if(find_user((*it).second.get_op_list(my_serv.get_usermap()), source))
+						{
+							tmp = send_reply("@+", source.get_socket(), my_serv, RPL_WHOISCHANNELS, (*it).second.get_name());
+							send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+						}
 					}
 				}
 			}
