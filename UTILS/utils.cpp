@@ -319,6 +319,10 @@ bool							modif_mode_channel(user & us, char c, int u, channel & chan, std::str
 			chan.set_key("");
 			chan.set_chan_mode(chan.get_chan_mode().erase(chan.get_chan_mode().find(c), 1));
 		}
+		else if (c == 'b' && std::find(chan.get_ban_list().begin(), chan.get_ban_list().end(), target) != chan.get_ban_list().end())
+		{
+			chan.remove_ban(target);
+		}
 		else if (c == 'm' && chan.get_chan_mode().find('m') != std::string::npos)
 		{
 			chan.clear_mute_list();
