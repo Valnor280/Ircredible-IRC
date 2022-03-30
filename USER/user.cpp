@@ -79,7 +79,7 @@ int				user::get_socket() const
 	return this->_socket;
 }
 
-long long int	user::get_connected_time() const
+long int	user::get_connected_time() const
 {
 	struct timeval tv;
 	gettimeofday(&tv, NULL);

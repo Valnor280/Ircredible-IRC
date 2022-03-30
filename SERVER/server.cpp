@@ -145,7 +145,7 @@ server::server(char * port_number, char * pswd) : _pswd(pswd), _servername("Ircr
 void server::loop()
 {
 	int numsock;
-	int retbuff = 0;
+	long int retbuff = 0;
 	int t;
 	int max_fd;
 	
@@ -188,7 +188,7 @@ void server::loop()
 				if (retbuff > 0)
 				{
 					_user_map[*itr].add_mess_recv(1);
-					_user_map[*itr].add_oct_recv(retbuff);
+					_user_map[*itr].add_oct_recv((unsigned long)retbuff);
 					_buffer[retbuff] = 0;
 					std::cout << "msg : " << _buffer << "socket :" << *itr << std::endl;
 					

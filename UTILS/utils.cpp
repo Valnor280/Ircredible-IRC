@@ -223,7 +223,7 @@ bool							modif_mode_channel(user & us, char c, int u, channel & chan, std::str
 			chan.set_user_limit(limit);
 			chan.set_chan_mode(chan.get_chan_mode() + c);
 		}
-		else if (c == 'v' && chan.get_chan_mode().find('m') == std::string::npos)
+		else if (c == 'v' && chan.get_chan_mode().find('m') != std::string::npos)
 		{
 			unsigned long						i = 0;
 			bool								u = false;
@@ -290,7 +290,7 @@ bool							modif_mode_channel(user & us, char c, int u, channel & chan, std::str
 				return true;
 			}
 		}
-		else if (c == 'v' && chan.get_chan_mode().find('m') == std::string::npos)
+		else if (c == 'v' && chan.get_chan_mode().find('m') != std::string::npos)
 		{
 			unsigned long						i = 0;
 			bool								u = false;
@@ -526,7 +526,7 @@ std::string send_reply(std::string input, int socket_client, server & my_serv, i
 	case 332:
 			return ret += chan +  " :" + my_serv.get_chan_map()[chan].get_topic() + "\r\n";
 	case 341:
-			return ret += chan + " " + input + "\r\n";
+			return ret += input + " " + chan + "\r\n";
 	case 351:
 			return ret += "<version>.<debuglevel> <server> :<comments>\r\n"; // maybe no use for us
 	case 352:
@@ -604,13 +604,13 @@ std::string send_reply(std::string input, int socket_client, server & my_serv, i
 	case 467:
 			return ret += chan + ":Channel key is already set\r\n";
 	case 471:
-			return ret += input + " :Cannot join channel (+l)\r\n";
+			return ret += chan + " :Cannot join channel (+l)\r\n";
 	case 472:
 			return ret += input + " :is unknown mode char to me for <channel>\r\n";
 	case 473:
-			return ret += input + " :Cannot join channel (+i)\r\n";
+			return ret += chan + " :Cannot join channel (+i)\r\n";
 	case 474:
-			return ret += input + " :Cannot join channel (+b)\r\n";
+			return ret += chan + " :Cannot join channel (+b)\r\n";
 	case 475:
 			return ret += chan + " :Cannot join channel (+k)\r\n";
 	case 476:

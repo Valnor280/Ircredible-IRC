@@ -127,7 +127,7 @@ void				channel::remove_user( const user member )
 
 void				channel::remove_invite( const user member )
 {
-	this->_user_list.erase(find(_invite_list.begin(), _invite_list.end(), member));
+	this->_invite_list.erase(find(_invite_list.begin(), _invite_list.end(), member));
 }
 
 void				channel::add_op_user( const user member )

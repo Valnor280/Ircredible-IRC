@@ -2,7 +2,7 @@ NAME = Ircredible
 
 CC = c++
 DEBUG_FLAG = -g -Wfatal-errors -Wpedantic -Wconversion -Wshadow
-CC_FLAGS = -Wall -Wextra -Werror -std=c++98 # ${DEBUG_FLAG}
+CC_FLAGS = -Wall -Wextra -Werror -std=c++98 -g #${DEBUG_FLAG}
 
 
 SRCS =	main.cpp \
