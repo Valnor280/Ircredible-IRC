@@ -15,27 +15,19 @@ server::server(char * port_number, char * pswd) : _pswd(pswd), _servername("Ircr
 	cmd_map["USER"] = &USER;
 	cmd_map["DIE"] = &DIE;
 	cmd_map["INFO"] = &INFO;
-	cmd_map["ISON"] = &ISON;
 	cmd_map["KILL"] = &KILL;
 	cmd_map["LIST"] = &LIST;
-	cmd_map["LUSERS"] = &LUSERS;
 	cmd_map["MODE"] = &MODE;
 	cmd_map["MOTD"] = &MOTD;
 	cmd_map["NAMES"] = &NAMES;
 	cmd_map["PART"] = &PART;
 	cmd_map["PING"] = &PING;
 	cmd_map["PONG"] = &PONG;
-	cmd_map["REHASH"] = &REHASH;
 	cmd_map["STATS"] = &STATS;
-	cmd_map["SUMMON"] = &SUMMON;
 	cmd_map["TIME"] = &TIME;
-	cmd_map["USERHOST"] = &USERHOST;
-	cmd_map["USERS"] = &USERS;
 	cmd_map["VERSION"] = &VERSION;
-	cmd_map["WALLOPS"] = &WALLOPS;
 	cmd_map["WHO"] = &WHO;
 	cmd_map["WHOIS"] = &WHOIS;
-	cmd_map["WHOWAS"] = &WHOWAS;
 
 	// CHANNEL-SIDE
 	cmd_map["INVITE"] = &INVITE;
@@ -49,8 +41,6 @@ server::server(char * port_number, char * pswd) : _pswd(pswd), _servername("Ircr
 	cmd_map["OPER"] = &OPER;
 	cmd_map["PRIVMSG"] = &PRIVMSG;
 	cmd_map["QUIT"] = &QUIT;
-	cmd_map["SETNAME"] = &SETNAME;
-	cmd_map["USERIP"] = &USERIP;
 
    	_time_struct = time(0);
 	// std::vector<std::string>		test = ft_split("PING 0.0.0.0\r\n", ' ');
