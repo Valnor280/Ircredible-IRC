@@ -225,6 +225,7 @@ void server::loop()
 					if (_open_sock.empty() == 0)
 						break;
 				}
+				rm_empty_map(*this);
 				//	std::cout << "after recv" << std::endl;
 				//FD_CLR(*itr, &_sock_client);
 			}

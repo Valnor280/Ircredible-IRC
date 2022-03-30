@@ -106,16 +106,21 @@ void		JOIN(std::string input, int socket_client, server & my_serv)
 	std::vector<std::string>	chan;
 	std::vector<std::string>	key;
 	std::string					tmp;
-	if (splitted[1].find(',') > 0)
+	if (splitted[1].find(',') != std::string::npos)
 	{
 		chan = ft_split(splitted[1], ',');
 	}
 	else
 	{
-		if(splitted[1].find_first_of('#') == 0)
+		if(splitted[1].find_first_of('#') == 0 && isalpha(splitted[1][1]))
 			chan.push_back(splitted[1]);
-		else 
+		else
+		{
+			std::cout << "cbug3\n";
+			tmp = send_reply("JOIN", socket_client, my_serv, ERR_NOSUCHCHANNEL, splitted[1]);
+			send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 			return;
+		}
 	}
 	if (splitted.size() > 2)
 	{
@@ -142,8 +147,13 @@ void		JOIN(std::string input, int socket_client, server & my_serv)
 			int y = 0;
 			while (i != (int)chan.size())
 			{
-				if(chan[i].find_first_of('#') != 0)
+				if(chan[i].find_first_of('#') != 0 && !(isalpha(chan[i][1])))
+				{
+					std::cout << "cbug2\n";
+					tmp = send_reply("JOIN", socket_client, my_serv, ERR_NOSUCHCHANNEL, chan[i]);
+					send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 					return;
+				}
 				if(key[y].compare(my_serv.get_chan_map()[chan[i]].get_key()) == 0 || my_serv.get_chan_map()[chan[i]].get_key().empty() == 1)
 					join_single(socket_client, my_serv, chan[i], key[y]);
 				else
@@ -162,14 +172,20 @@ void		JOIN(std::string input, int socket_client, server & my_serv)
 	{
 		for(std::map<std::string, channel>::iterator itr = my_serv.get_chan_map().begin(); itr != my_serv.get_chan_map().end(); itr++)
 		{
-			itr->second.remove_op_user(my_serv.get_usermap()[socket_client]);
-			itr->second.remove_user(my_serv.get_usermap()[socket_client]);
+			PART("PART " + itr->second.get_name(), socket_client, my_serv);
+			//itr->second.remove_op_user(my_serv.get_usermap()[socket_client]);
+			//itr->second.remove_user(my_serv.get_usermap()[socket_client]);
 		}
 	}
 	else
 	{			
-		if(chan[0].find_first_of('#') != 0)
+		if(chan[0].find_first_of('#') != 0 && !(isalpha(chan[0][1])))
+		{
+			std::cout << "cbug1\n";
+			tmp = send_reply("JOIN", socket_client, my_serv, ERR_NOSUCHCHANNEL, chan[0]);
+			send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 			return;
+		}
 		join_single(socket_client, my_serv, chan[0], "");
 	}
     std::cout << std::endl << std::endl;
