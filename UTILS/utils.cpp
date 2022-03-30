@@ -247,6 +247,20 @@ bool							modif_mode_channel(user & us, char c, int u, channel & chan, std::str
 			chan.set_key(target);
 			chan.set_chan_mode(chan.get_chan_mode() + c);
 		}
+		else if (c == 'b')
+		{
+			chan.add_ban(target);
+		}
+		else if (c == 's' && chan.get_chan_mode().find('p') != std::string::npos)
+		{
+			chan.set_chan_mode(chan.get_chan_mode().erase(chan.get_chan_mode().find('p'), 1));
+			chan.set_chan_mode(chan.get_chan_mode() + c);
+		}
+		else if (c == 'p' && chan.get_chan_mode().find('s') != std::string::npos)
+		{
+			chan.set_chan_mode(chan.get_chan_mode().erase(chan.get_chan_mode().find('s'), 1));
+			chan.set_chan_mode(chan.get_chan_mode() + c);
+		}
 		else if (chan.get_chan_mode().find(c) == std::string::npos)
 		{
 			chan.set_chan_mode(chan.get_chan_mode() + c);
@@ -310,6 +324,10 @@ bool							modif_mode_channel(user & us, char c, int u, channel & chan, std::str
 			chan.clear_mute_list();
 			chan.set_chan_mode(chan.get_chan_mode().erase(chan.get_chan_mode().find(c), 1));
 		}
+		else if (c == 'm' && std::find(chan.get_ban_list().begin(), chan.get_ban_list().end(), target) != chan.get_ban_list().end())
+		{
+			chan.remove_ban(target);
+		}
 		else if(chan.get_chan_mode().find(c) != std::string::npos)
 			chan.set_chan_mode(chan.get_chan_mode().erase(chan.get_chan_mode().find(c), 1));
 	}
@@ -369,6 +387,16 @@ bool find_user(std::vector<user> vect, user usr)
 	for(std::vector<user>::iterator itr = vect.begin(); itr != vect.end(); itr++)
 	{
 		if(*itr == usr)
+			return true;
+	}
+	return false;
+}
+
+bool							find_ban_user(std::vector<std::string> vec, std::string id)
+{
+	for (std::vector<std::string>::iterator itr = vec.begin(); itr != vec.end(); itr++)
+	{
+		if (star_name_checker(*itr, id))
 			return true;
 	}
 	return false;
@@ -504,7 +532,7 @@ std::string send_reply(std::string input, int socket_client, server & my_serv, i
 	case 366:
 			return ret += chan + ":End of NAMES list\r\n";
 	case 367:
-			return ret += "<channel> <banmask>\r\n";
+			return ret += chan + " " + input + "\r\n";
 	case 368:
 			return ret += chan + " :End of channel ban list\r\n";
 	case 369:
