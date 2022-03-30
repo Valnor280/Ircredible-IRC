@@ -397,7 +397,7 @@ void		MODE(std::string input, int socket_client, server & my_serv)
 
 			while (i < args.size())
 			{
-				std::cout << "args[i] a l'entree = " << args[i] << std::endl;
+				//std::cout << "args[i] a l'entree = " << args[i] << std::endl;
 				if (!(check_channel_mode_input(args[i])))
 				{
 					tmp = send_reply("MODE", socket_client, my_serv, ERR_UNKNOWNMODE, "");
@@ -408,7 +408,7 @@ void		MODE(std::string input, int socket_client, server & my_serv)
 				unsigned long	j = 1;
 				while (j < args[i].length())
 				{
-					std::cout << "[2] args[i] a l'entree = " << args[i][j]<< std::endl;
+					//std::cout << "[2] args[i] a l'entree = " << args[i][j]<< std::endl;
 					if (!(args[i][j] == '\r' || args[i][j] == '\n'))
 					{
 						//std::cout << target.get_nick() << " for " << args[i][j] << " with mod " << mod << std::endl;
@@ -442,10 +442,10 @@ void		MODE(std::string input, int socket_client, server & my_serv)
 							}
 							while (k < args.size())
 							{
-								std::cout << "[3] args[k] = " << args[k] << std::endl;
+								//std::cout << "[3] args[k] = " << args[k] << std::endl;
 								if (isdigit(args[k][0]))
 								{
-									std::cout << "jusqu'ici c'est bon avec mod = " << mod << " et la lettre = " << args[i][j] << std::endl;
+									//std::cout << "jusqu'ici c'est bon avec mod = " << mod << " et la lettre = " << args[i][j] << std::endl;
 									modif_mode_channel(target, args[i][j], mod, chan, args[k], my_serv);
 									args.erase(args.begin() + k);
 								}
@@ -477,7 +477,7 @@ void		MODE(std::string input, int socket_client, server & my_serv)
 						}
 						else if (args[i][j] == 'k' && mod == -1)
 						{
-							std::cout << "nou voici" << std::endl;
+							//std::cout << "nous voici" << std::endl;
 							if (chan.get_key() != "")
 							{
 								//ERR_KEY_SET
@@ -498,6 +498,42 @@ void		MODE(std::string input, int socket_client, server & my_serv)
 								{
 									if (args[k][0] != '-' && args[k][0] != '+')
 									{
+										modif_mode_channel(target, args[i][j], mod, chan, args[k], my_serv);
+										args.erase(args.begin() + k);
+									}
+									k++;
+								}
+							}
+						}
+						else if (args[i][j] == 'b')
+						{
+							unsigned long		k = i;
+							if (k == args.size() - 1 && mod == -1)
+							{
+								unsigned long	s = 0;
+								while (s < chan.get_ban_list().size())
+								{
+									tmp = send_reply((chan.get_ban_list())[s], socket_client, my_serv, RPL_BANLIST, chan.get_name());
+									send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+									s++;
+								}
+								tmp = send_reply("MODE", socket_client, my_serv, RPL_ENDOFBANLIST, chan.get_name());
+								send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+							}
+							else if (k == args.size() - 1)
+							{
+								tmp = send_reply("MODE", socket_client, my_serv, ERR_NEEDMOREPARAMS, "");
+								send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+								return ;
+							}
+							else
+							{
+								while (k < args.size())
+								{
+									//std::cout << "[3] args[k] = " << args[k] << std::endl;
+									if (args[k][0] != '-' && args[k][0] != '+')
+									{
+										//std::cout << "jusqu'ici c'est bon avec mod = " << mod << " et la lettre = " << args[i][j] << std::endl;
 										modif_mode_channel(target, args[i][j], mod, chan, args[k], my_serv);
 										args.erase(args.begin() + k);
 									}
@@ -550,7 +586,7 @@ void		MODE(std::string input, int socket_client, server & my_serv)
 			{
 				if (!(args[i][j] == '\r' || args[i][j] == '\n'))
 				{
-					std::cout << target.get_nick() << " for " << args[i][j] << " with mod " << mod << std::endl;
+					//std::cout << target.get_nick() << " for " << args[i][j] << " with mod " << mod << std::endl;
 					modif_mode_user(target, args[i][j], mod);
 					modif_mode_user(target_2, args[i][j], mod);
 				}
@@ -1564,7 +1600,7 @@ void		PRIVMSG(std::string input, int socket_client, server & my_serv)
             // ret = ":" + my_serv.get_hostname() + " 401 " + sender.get_nick() + " :" + splitted[1] + " \r\n";
             ret = send_reply(input, socket_client, my_serv, ERR_NOSUCHCHANNEL, splitted[1]);
         }
-        else if (find_user(itchan->second.get_ban_list(my_serv.get_usermap()), sender))//sender est ban du channel
+        else if (find_ban_user(itchan->second.get_ban_list(), sender.get_id()))//sender est ban du channel
         {
             ret = send_reply(input, socket_client, my_serv, ERR_CANNOTSENDTOCHAN, splitted[1]);
         }
@@ -1825,8 +1861,8 @@ void		QUIT(std::string input, int socket_client, server & my_serv)
 
 		}
 
-		if(find_user(itr_chan->second.get_ban_list(my_serv.get_usermap()), my_serv.get_usermap()[socket_client]) == true)
-			itr_chan->second.remove_ban(user_quit);
+		if(find_ban_user(itr_chan->second.get_ban_list(), (my_serv.get_usermap()[socket_client]).get_id()) == true)
+			itr_chan->second.remove_ban(user_quit.get_id());
 		if(find_user(itr_chan->second.get_mute_list(my_serv.get_usermap()), my_serv.get_usermap()[socket_client]) == true)
 			itr_chan->second.remove_mute(user_quit);
 		if(find_user(itr_chan->second.get_invite_list(my_serv.get_usermap()), my_serv.get_usermap()[socket_client]) == true)

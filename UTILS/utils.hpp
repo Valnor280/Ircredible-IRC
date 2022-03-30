@@ -25,6 +25,7 @@ bool							is_nick_op_channel(std::string target, channel & chan, server & my_se
 
 bool 							find_user(std::vector<user> vect, user user);
 std::string						user_list(std::vector<user> op, std::vector<user> us);
+bool							find_ban_user(std::vector<std::string> vec, std::string id);
 
 bool							check_name_match(user & target, user & member , std::string pattern);
 bool							star_name_checker(std::string str, std::string pattern);
