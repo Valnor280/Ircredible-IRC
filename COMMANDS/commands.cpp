@@ -1324,7 +1324,6 @@ void		PART(std::string input, int socket_client, server & my_serv)
 				send(socket, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 			}
         }
-
         ++it_chan;
     }
 
@@ -1698,7 +1697,7 @@ void		OPER(std::string input, int socket_client, server & my_serv)
 		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 	}
 	// we can configure the server to not take any client as OPER and return ERR_NOOPERHOST all time
-	else if (splitted[2].substr(0, splitted[2].size() - 2) != my_serv.get_admin_pswd())
+	else if (splitted[2] != my_serv.get_admin_pswd())
 	{
 		//ERR_PASSWDMISMATCH
 		tmp = send_reply("OPER", socket_client, my_serv, ERR_PASSWDMISMATCH, "");
@@ -1766,18 +1765,21 @@ void		PRIVMSG(std::string input, int socket_client, server & my_serv)
             // ret = ":" + my_serv.get_hostname() + " 401 " + sender.get_nick() + " :" + splitted[1] + " \r\n";
             ret = send_reply(input, socket_client, my_serv, ERR_NOSUCHCHANNEL, splitted[1]);
         }
-        else if (find_ban_user(itchan->second.get_ban_list(), sender.get_id()) == false)//sender est ban du channel
+        else if (find_ban_user(itchan->second.get_ban_list(), sender.get_id()) != false)//sender est ban du channel
         {
+			std::cout << "ICI1" << std::endl;
             ret = send_reply(input, socket_client, my_serv, ERR_CANNOTSENDTOCHAN, splitted[1]);
         }
         else if (	!find_user(itchan->second.get_user_list(my_serv.get_usermap()), sender) 
         		&&	!find_user(itchan->second.get_user_list(my_serv.get_usermap()), sender) 
 				&&	itchan->second.get_chan_mode().find('n') != std::string::npos)//mode n alors que sender n'est pas dans le channel
         {
+			std::cout << "ICI2" << std::endl;
             ret = send_reply(input, socket_client, my_serv, ERR_CANNOTSENDTOCHAN, splitted[1]);
         }
         else if (itchan->second.get_chan_mode().find('m') != std::string::npos && find_user(itchan->second.get_mute_list(my_serv.get_usermap()), sender) == true)//mode v + m
         {
+			std::cout << "ICI3" << std::endl;
             ret = send_reply(input, socket_client, my_serv, ERR_CANNOTSENDTOCHAN, splitted[1]);
         }
         else//tout va bien ou envoie tout sur le channel
@@ -2090,7 +2092,7 @@ void		QUIT(std::string input, int socket_client, server & my_serv)
 		if(find_user(itr_chan->second.get_user_list(my_serv.get_usermap()), my_serv.get_usermap()[socket_client]) == true)
 		{
 			msg = ":" + my_serv.get_usermap()[socket_client].get_id() + " PART " + itr_chan->first + " " + quit_msg + "\r\n";
-			std::cout << "kick msg :" << msg << std::endl;
+			std::cout << "quit msg :" << msg << std::endl;
 			itr_chan->second.remove_user(user_quit);
 			tmp = ":" + my_serv.get_usermap()[socket_client].get_id() + " QUIT " + quit_msg + "\r\n";
 			std::cout << "msg : " << msg << std::endl;
@@ -2112,7 +2114,6 @@ void		QUIT(std::string input, int socket_client, server & my_serv)
 		else if(find_user(itr_chan->second.get_op_list(my_serv.get_usermap()), my_serv.get_usermap()[socket_client]) == true)
 		{
 			msg = ":" + my_serv.get_usermap()[socket_client].get_id() + " PART " + itr_chan->first + " " + quit_msg + "\r\n";
-			PART(msg, socket_client, my_serv);
 			itr_chan->second.remove_op_user(user_quit);
 			tmp = ":" + my_serv.get_usermap()[socket_client].get_id() + " QUIT " + quit_msg + "\r\n";
 			std::cout << "msg : " << msg << std::endl;

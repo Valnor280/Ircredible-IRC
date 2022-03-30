@@ -455,6 +455,30 @@ bool						star_name_checker(std::string str, std::string pattern) // https://www
 	return bool_array[str.size()][pattern.size()];
 }
 
+void rm_chan(std::string chan, server &my_serv)
+{
+	std::cout << "chan : " << chan << " is empty" << std::endl;
+	std::cout << "Erasing : " << chan << std::endl;
+	my_serv.get_chan_map()[chan].clear_mute_list();
+	my_serv.get_chan_map()[chan].clear_op_list();
+	my_serv.get_chan_map()[chan].clear_user_list();
+	my_serv.get_chan_map()[chan].clear_invite_list();
+	my_serv.get_chan_map().erase(chan);
+}
+
+void rm_empty_map(server & my_serv)
+{
+	std::map<std::string, channel> tmp = std::map<std::string, channel>(my_serv.get_chan_map());
+
+	std::map<std::string, channel>::iterator map_it;
+
+	for(map_it = tmp.begin(); map_it != tmp.end(); map_it++)
+	{
+		if(map_it->second.get_op_list(my_serv.get_usermap()).empty() == true && map_it->second.get_user_list(my_serv.get_usermap()).empty() == true)
+			rm_chan(map_it->first, my_serv);
+	}
+}
+
 std::string send_reply(std::string input, int socket_client, server & my_serv, int code, std::string chan)
 {
 	std::string true_code = ft_to_string(code);

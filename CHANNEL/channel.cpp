@@ -170,6 +170,11 @@ void				channel::clear_mute_list()
 	this->_mute_list.clear();
 }
 
+void				channel::clear_invite_list()
+{
+	this->_invite_list.clear();
+}
+
 bool operator==(const channel& lhs, const channel& rhs)
 {
 	return lhs.get_name() == rhs.get_name();

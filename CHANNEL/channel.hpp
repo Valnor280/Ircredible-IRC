@@ -57,6 +57,7 @@ class channel
 		void				clear_user_list();
 		void				clear_op_list();
 		void				clear_mute_list();
+		void				clear_invite_list();
 };
 
 bool operator==(const channel& lhs, const channel& rhs);
