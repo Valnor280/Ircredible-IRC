@@ -223,7 +223,7 @@ bool							modif_mode_channel(user & us, char c, int u, channel & chan, std::str
 			chan.set_user_limit(limit);
 			chan.set_chan_mode(chan.get_chan_mode() + c);
 		}
-		else if (c == 'v' && chan.get_chan_mode().find('m') == std::string::npos)
+		else if (c == 'v' && chan.get_chan_mode().find('m') != std::string::npos)
 		{
 			unsigned long						i = 0;
 			bool								u = false;
@@ -276,7 +276,7 @@ bool							modif_mode_channel(user & us, char c, int u, channel & chan, std::str
 				return true;
 			}
 		}
-		else if (c == 'v' && chan.get_chan_mode().find('m') == std::string::npos)
+		else if (c == 'v' && chan.get_chan_mode().find('m') != std::string::npos)
 		{
 			unsigned long						i = 0;
 			bool								u = false;

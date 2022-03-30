@@ -34,7 +34,20 @@ void		join_single(int socket_client, server &my_serv, std::string chan, std::str
 	else
 	{
 		std::cout << "COUCOU JE PASSE PAR LA PLEBEs" << std::endl;
-		if(find(my_serv.get_chan_map()[chan].get_ban_list(my_serv.get_usermap()).begin(), my_serv.get_chan_map()[chan].get_ban_list(my_serv.get_usermap()).end(), my_serv.get_usermap()[socket_client]) == my_serv.get_chan_map()[chan].get_ban_list(my_serv.get_usermap()).end() || my_serv.get_chan_map()[chan].get_ban_list(my_serv.get_usermap()).empty() == 1)
+		int size = my_serv.get_chan_map()[chan].get_user_list(my_serv.get_usermap()).size() + my_serv.get_chan_map()[chan].get_op_list(my_serv.get_usermap()).size();
+		if(my_serv.get_chan_map()[chan].get_chan_mode().find('l') != std::string::npos && size >= my_serv.get_chan_map()[chan].get_user_limit())
+		{
+			std::string tmp = send_reply("JOIN", socket_client, my_serv, ERR_CHANNELISFULL, chan);
+			send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+			return;
+		}
+		else if(my_serv.get_chan_map()[chan].get_chan_mode().find('i') != std::string::npos && find_user(my_serv.get_chan_map()[chan].get_invite_list(my_serv.get_usermap()), my_serv.get_usermap()[socket_client]) == false)
+		{
+			std::string tmp = send_reply("JOIN", socket_client, my_serv, ERR_INVITEONLYCHAN, chan);
+			send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+			return;
+		}
+		else if(find(my_serv.get_chan_map()[chan].get_ban_list(my_serv.get_usermap()).begin(), my_serv.get_chan_map()[chan].get_ban_list(my_serv.get_usermap()).end(), my_serv.get_usermap()[socket_client]) == my_serv.get_chan_map()[chan].get_ban_list(my_serv.get_usermap()).end() || my_serv.get_chan_map()[chan].get_ban_list(my_serv.get_usermap()).empty() == 1)
 		{
 			if(find_user(my_serv.get_chan_map()[chan].get_user_list(my_serv.get_usermap()), my_serv.get_usermap()[socket_client]) != true)
 				my_serv.get_chan_map()[chan].add_user(my_serv.get_usermap()[socket_client]);
@@ -42,12 +55,6 @@ void		join_single(int socket_client, server &my_serv, std::string chan, std::str
 		else
 		{
 			std::string tmp = send_reply("JOIN", socket_client, my_serv, ERR_BANNEDFROMCHAN, chan);
-			send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
-			return;
-		}
-		if(my_serv.get_chan_map()[chan].get_chan_mode().find('I') != std::string::npos && find(my_serv.get_chan_map()[chan].get_invite_list(my_serv.get_usermap()).begin(), my_serv.get_chan_map()[chan].get_invite_list(my_serv.get_usermap()).end(), my_serv.get_usermap()[socket_client]) == my_serv.get_chan_map()[chan].get_invite_list(my_serv.get_usermap()).end())
-		{
-			std::string tmp = send_reply("JOIN", socket_client, my_serv, ERR_INVITEONLYCHAN, chan);
 			send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 			return;
 		}

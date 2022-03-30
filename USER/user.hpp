@@ -75,7 +75,7 @@ class user
 		int				get_registration() const;
 		std::string		get_away_msg() const;
 		int				get_socket() const;
-		long long int	get_connected_time() const;
+		long int	get_connected_time() const;
 		unsigned long	get_oct_recv() const;
 		unsigned long	get_oct_send() const;
 		unsigned long	get_mess_recv() const;
