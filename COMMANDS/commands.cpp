@@ -2180,7 +2180,7 @@ void		QUIT(std::string input, int socket_client, server & my_serv)
 		int i = 1;
 		while(i < (int)splitted.size())
 		{
-			quit_msg += splitted[i];
+			quit_msg += splitted[i] + " ";
 			i++;
 		}
 	}
