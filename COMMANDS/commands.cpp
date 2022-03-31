@@ -122,6 +122,7 @@ void		NICK(std::string input, int socket_client, server & my_serv)
 		my_serv.get_regi_map().erase(my_serv.get_usermap()[socket_client].get_nick());
 	}
     my_serv.get_usermap()[socket_client].set_nick(nick);
+	my_serv.get_regi_map()[nick] = my_serv.get_usermap()[socket_client];
 
 	// CHANGEMENT DE LA VALEUR DE _REGISTRATION DANS USER POUR SAVOIR OU ON EN EST DANS LA REGISTRATION
 	if (my_serv.get_usermap()[socket_client].get_registration() == 0)
@@ -193,7 +194,7 @@ void		USER(std::string input, int socket_client, server & my_serv)
 		std::cout << tmp << std::endl;
 		return;
 	}
-	if (my_serv.get_usermap()[socket_client].get_username().empty() == 0)
+	if (my_serv.get_usermap()[socket_client].get_username().empty() == false)
 	{
 		std::string tmp = send_reply("USER", socket_client, my_serv, ERR_ALREADYREGISTRED, "");
 		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
@@ -235,6 +236,19 @@ void		USER(std::string input, int socket_client, server & my_serv)
 	std::string realname = input.substr(begsub + 1, endsub - begsub - 1);
 	if(username.length() > USERLEN)
 		username.resize(USERLEN);
+	// int i = 0;
+	// std::string tmp_username;
+	// for(std::map<int, user>::iterator itr = my_serv.get_usermap().begin(); itr != my_serv.get_usermap().end(); itr++)
+	// {
+	// 	if(itr->second.get_username() == username)
+	// 	{
+	// 		tmp_username = username + ft_to_string(i);
+	// 		i++;
+	// 	}
+	// }
+	// username = tmp_username;
+	// std::string tmp = "username already taken and was changed to : " + username + "\r\n";
+	//send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 	my_serv.get_usermap()[socket_client].set_username(username);
 	my_serv.get_usermap()[socket_client].set_real_name(realname);
 
@@ -1778,7 +1792,7 @@ void		PRIVMSG(std::string input, int socket_client, server & my_serv)
             // ret = ":" + my_serv.get_hostname() + " 401 " + sender.get_nick() + " :" + splitted[1] + " \r\n";
             ret = send_reply(input, socket_client, my_serv, ERR_NOSUCHCHANNEL, splitted[1]);
         }
-        else if (find_ban_user(itchan->second.get_ban_list(), sender.get_id()) != false)//sender est ban du channel
+        else if (find_ban_user(itchan->second.get_ban_list(), sender.get_id()) == true)//sender est ban du channel
         {
 			std::cout << "ICI1" << std::endl;
             ret = send_reply(input, socket_client, my_serv, ERR_CANNOTSENDTOCHAN, splitted[1]);
