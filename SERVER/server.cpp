@@ -219,7 +219,10 @@ void server::loop()
 					if(_user_map[*itr].get_quit() == false)
 						QUIT("QUIT", *itr, *this);
 					if (_user_map[*itr].get_registration() == 3)
+					{
+						std::cout << "suppression regi_map" << std::endl;
 						_registered_map.erase(_user_map[*itr].get_nick());
+					}
 					_open_sock.erase(*itr);
 
 					if (_open_sock.empty() == 0)

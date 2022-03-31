@@ -117,8 +117,11 @@ void		NICK(std::string input, int socket_client, server & my_serv)
             return;
         }
     }
-	if (my_serv.get_usermap()[socket_client].get_registration() == 3)
+	//std::cout << "On passe juste avnt le bon if a cet endroit la" << std::endl;
+	//std::cout << "registration du peon = " << (my_serv.get_usermap()[socket_client]).get_registration() << std::endl;
+	if ((my_serv.get_usermap()[socket_client]).get_registration() == 3)
 	{
+		//std::cout << "YOOOOOOOOOOOOOOOOOOOOOOO" << std::endl;
 		my_serv.get_regi_map().erase(my_serv.get_usermap()[socket_client].get_nick());
 	}
     my_serv.get_usermap()[socket_client].set_nick(nick);
@@ -129,7 +132,8 @@ void		NICK(std::string input, int socket_client, server & my_serv)
 		my_serv.get_usermap()[socket_client].set_registration(1);
 	else if (my_serv.get_usermap()[socket_client].get_registration() == 2)
 	{
-		my_serv.get_usermap()[socket_client].set_registration(3);
+		//std::cout << "ON FINIT LA REGISTRATION DANS NICK" << std::endl;
+		(my_serv.get_usermap()[socket_client]).set_registration(3);
 		send_welcome(socket_client, my_serv);
 		my_serv.get_regi_map().insert(std::make_pair(my_serv.get_usermap()[socket_client].get_nick(), *(&(my_serv.get_usermap()[socket_client]))));
 	}
@@ -257,7 +261,8 @@ void		USER(std::string input, int socket_client, server & my_serv)
 		my_serv.get_usermap()[socket_client].set_registration(2);
 	else if (my_serv.get_usermap()[socket_client].get_registration() == 1)
 	{
-		my_serv.get_usermap()[socket_client].set_registration(3);
+		//std::cout << "ON FINIT LA REGISTRATION DANS USER" << std::endl;
+		(my_serv.get_usermap()[socket_client]).set_registration(3);
 		send_welcome(socket_client, my_serv);
 		my_serv.get_regi_map().insert(std::make_pair(my_serv.get_usermap()[socket_client].get_nick(), *(&(my_serv.get_usermap()[socket_client]))));
 	}
@@ -938,7 +943,7 @@ void		WHO(std::string input, int socket_client, server & my_serv)
 		{
 			channel				& chan = (my_serv.get_chan_map())[args[1]];
 
-			if ((!(find_user(chan.get_user_list(my_serv.get_usermap()), target) || find_user(chan.get_op_list(my_serv.get_usermap()), target))) && (chan.get_chan_mode().find('s') != std::string::npos || chan.get_chan_mode().find('p') != std::string::npos)) //if user not part of channel AND channel has mode p or s
+			if ((!(find_user(chan.get_user_list(my_serv.get_usermap()), target) || find_user(chan.get_op_list(my_serv.get_usermap()), target))) && (chan.get_chan_mode().find('s') != std::string::npos || chan.get_chan_mode().find('p') != std::string::npos)) //if user not member of channel AND channel has mode p or s
 			{
 				// do nothing;
 			}
@@ -2171,6 +2176,7 @@ void		QUIT(std::string input, int socket_client, server & my_serv)
 	my_serv.get_usermap()[socket_client].set_quit(true);
 	close(socket_client);
 	my_serv.fd_erase(socket_client);
+	my_serv.get_regi_map().erase((my_serv.get_usermap()[socket_client]).get_nick());
 	my_serv.get_usermap().erase(socket_client);
     std::cout << std::endl << std::endl;
 }
