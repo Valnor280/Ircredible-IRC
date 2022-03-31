@@ -180,7 +180,7 @@ bool			user::get_quit() const
 
 void		user::set_registration( int new_reg )
 {
-	if (new_reg >= 0 && new_reg <= 2)
+	if (new_reg >= 0 && new_reg <= 3)
 		this->_registration = new_reg;
 }
 
@@ -222,6 +222,7 @@ void		user::print_user() const
 	std::cout << "Real name : " << _real_name << std::endl;
 	std::cout << "Mode      : " << _mode << std::endl;
 	std::cout << "Status    : " << _status << std::endl;
+	std::cout << "Regis_num : " << _registration << std::endl;
 	std::cout << "Hostname  : " << _hostname << std::endl;
 	std::cout << "Socket	: " << _socket << std::endl;
 }
