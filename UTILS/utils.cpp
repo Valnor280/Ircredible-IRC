@@ -9,7 +9,7 @@ bool    isspecial(char c)
 
 bool    isforbidenchan(char c)
 {
-    if (c == '\0' || c == '\a' || c == '\r' || c == '\n' || c == ' ' || c == ',' || c == ':')
+    if (c == '\0' || c == '\a' || c == '\r' || c == '\n' || c == ' ' || c == ',' || c == ':' || c == '*' || c == '?')
         return (true);
     return (false);
 }
