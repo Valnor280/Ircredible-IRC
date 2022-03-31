@@ -1478,6 +1478,7 @@ void		KICK(std::string input, int socket_client, server & my_serv)
 				chan[0].erase(std::remove(chan[0].begin(), chan[0].end(), '\r'), chan[0].end());
 				if(my_serv.get_chan_map()[chan[0]].get_op_list(my_serv.get_usermap()).empty() == true && my_serv.get_chan_map()[chan[0]].get_user_list(my_serv.get_usermap()).empty() == true)
 				{
+					//std::cout << "Absolutely mental" << std::endl;
 					tmp = send_reply("KICK", socket_client, my_serv, ERR_NOSUCHCHANNEL, chan[0]);
 					send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 					return ;
@@ -1491,11 +1492,17 @@ void		KICK(std::string input, int socket_client, server & my_serv)
 						itr->erase(std::remove(itr->begin(), itr->end(), '\r'), itr->end());
 						msg = "PART " + chan[0] + " " + msg_tmp;
 						std::cout << "kick msg :" << msg << std::endl;
-						if(find_user(my_serv.get_chan_map()[chan[0]].get_op_list(my_serv.get_usermap()), my_serv.get_regi_map()[*itr]) == false)
+						if(find_user(my_serv.get_chan_map()[chan[0]].get_op_list(my_serv.get_usermap()), my_serv.get_regi_map()[*itr]) == false && find_user(my_serv.get_chan_map()[chan[0]].get_user_list(my_serv.get_usermap()), my_serv.get_regi_map()[*itr]))
 						{
 							PART(msg, my_serv.get_regi_map()[*itr].get_socket(), my_serv);
 							msg = ":" + my_serv.get_usermap()[socket_client].get_id() + " KICK " + chan[0] + " " + my_serv.get_regi_map()[*itr].get_nick() + " " + msg_tmp + "\r\n";
 							send(my_serv.get_regi_map()[*itr].get_socket(), msg.c_str(), msg.length(), MSG_DONTWAIT);
+						}
+						else if (!(find_user(my_serv.get_chan_map()[chan[0]].get_user_list(my_serv.get_usermap()), my_serv.get_regi_map()[*itr])))
+						{
+							//ERR_USERNOTONCHANNEL
+							msg = send_reply((my_serv.get_regi_map()[*itr]).get_nick(), socket_client, my_serv, ERR_USERNOTINCHANNEL, chan[0]);
+							send(socket_client, msg.c_str(), msg.length(), MSG_DONTWAIT);
 						}
 					}
 				}
@@ -1527,11 +1534,17 @@ void		KICK(std::string input, int socket_client, server & my_serv)
 						user[i].erase(std::remove(user[i].begin(), user[i].end(), '\r'), user[i].end());
 						std::cout << "User : " << user[i] << " kicked" << std::endl;
 						msg = "PART " + *itr + " " + msg_tmp;
-						if(find_user(my_serv.get_chan_map()[chan[0]].get_op_list(my_serv.get_usermap()), my_serv.get_regi_map()[*itr]) == false)
+						if(find_user(my_serv.get_chan_map()[chan[0]].get_op_list(my_serv.get_usermap()), my_serv.get_regi_map()[*itr]) == false && find_user(my_serv.get_chan_map()[chan[0]].get_user_list(my_serv.get_usermap()), my_serv.get_regi_map()[*itr]))
 						{
 							PART(msg, my_serv.get_regi_map()[user[i]].get_socket(), my_serv);
 							msg = ":" + my_serv.get_usermap()[socket_client].get_id() + " KICK " + *itr + " " + my_serv.get_regi_map()[user[i]].get_nick() + " " + msg_tmp + "\r\n";
 							send(my_serv.get_regi_map()[user[i]].get_socket(), msg.c_str(), msg.length(), MSG_DONTWAIT);
+						}
+						else if (!(find_user(my_serv.get_chan_map()[chan[0]].get_user_list(my_serv.get_usermap()), my_serv.get_regi_map()[*itr])))
+						{
+							//ERR_USERNOTONCHANNEL
+							msg = send_reply((my_serv.get_regi_map()[*itr]).get_nick(), socket_client, my_serv, ERR_USERNOTINCHANNEL, chan[0]);
+							send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 						}
 						i++;
 					}

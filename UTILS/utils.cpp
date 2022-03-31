@@ -619,7 +619,7 @@ std::string send_reply(std::string input, int socket_client, server & my_serv, i
 	case 433:
 			return ret += input + " :Nickname is already in use\r\n"; // nick
 	case 441:
-			return ret += input + "<channel> :They aren't on that channel\r\n"; //nick
+			return ret += input + " " + chan + " :They aren't on that channel\r\n"; //nick
 	case 442:
 			return ret += chan + " :You're not on that channel\r\n"; // channel
 	case 443:
