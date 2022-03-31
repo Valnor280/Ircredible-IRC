@@ -54,7 +54,7 @@ void		join_single(int socket_client, server &my_serv, std::string chan, std::str
 			send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 			return;
 		}
-		else if(find(my_serv.get_chan_map()[chan].get_ban_list().begin(), my_serv.get_chan_map()[chan].get_ban_list().end(), (my_serv.get_usermap()[socket_client]).get_id()) != my_serv.get_chan_map()[chan].get_ban_list().end())
+		else if(find_ban_user(my_serv.get_chan_map()[chan].get_ban_list(), my_serv.get_usermap()[socket_client].get_id()) == true)
 		{
 			std::string tmp = send_reply("JOIN", socket_client, my_serv, ERR_BANNEDFROMCHAN, chan);
 			send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);

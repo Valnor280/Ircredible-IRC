@@ -407,8 +407,10 @@ bool							find_ban_user(std::vector<std::string> vec, std::string id)
 {
 	for (std::vector<std::string>::iterator itr = vec.begin(); itr != vec.end(); itr++)
 	{
-		if (star_name_checker(*itr, id))
+		if (star_name_checker(id, *itr))
+		{
 			return true;
+		}
 	}
 	return false;
 }
