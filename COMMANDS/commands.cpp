@@ -979,6 +979,17 @@ void		WHO(std::string input, int socket_client, server & my_serv)
     std::cout << std::endl << std::endl;
 }
 
+
+void		WHOWAS(std::string input, int socket_client, server & my_serv)
+{
+    std::cout << "WHOWAS called" << std::endl;
+    std::cout << "WHOWAS wiil always return nosuchnick error !" << std::endl;
+	(void)input;
+	std::string tmp = send_reply("WHOIS", socket_client, my_serv, ERR_NOSUCHNICK, "");
+	send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+
+} 
+
 void		WHOIS(std::string input, int socket_client, server & my_serv) 
 { 
     std::cout << "WHOIS called" << std::endl;
@@ -997,15 +1008,22 @@ void		WHOIS(std::string input, int socket_client, server & my_serv)
 		return;
 	}
 
+	std::cout << "args size :" << args.size() << std::endl;
+	std::cout << "args(1) :" << args[1] << std::endl;
+	std::cout << "find(',') == npos :" << (args[1].find(',') == std::string::npos) << std::endl;
 	if (args.size() == 1)
 	{
 		//ERR_NONICKNAMEGIVEN
 		tmp = send_reply("WHOIS", socket_client, my_serv, ERR_NONICKNAMEGIVEN, "");
 		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+	
 	}
-	else if (args.size() == 2 && args[1].find('#') != std::string::npos)
+	else if (args.size() == 2 
+	&& my_serv.get_regi_map().find(args[1]) == my_serv.get_regi_map().end() \
+	&& args[1].find(',') == std::string::npos)
 	{
 		//ERR_NOSUCHNICK
+		std::cout << "ERROR NOSUCHNICK" << std::endl;
 		tmp = send_reply(args[1], socket_client, my_serv, ERR_NOSUCHNICK, "");
 		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 	}
@@ -1016,6 +1034,7 @@ void		WHOIS(std::string input, int socket_client, server & my_serv)
 
 		for (unsigned long i = 0; i < nicks.size(); i++)
 		{
+			std::cout << "nick = " << nicks[i] << std::endl;
 			if (my_serv.get_regi_map().count(nicks[i]))
 			{
 				user		& source = my_serv.get_regi_map()[nicks[i]];
@@ -1053,6 +1072,8 @@ void		WHOIS(std::string input, int socket_client, server & my_serv)
 			{
 				// ERR_NOSUCHNICK
 				tmp = send_reply(args[1], socket_client, my_serv, ERR_NOSUCHNICK, "");
+				send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+				
 				break ;
 			}
 		}
