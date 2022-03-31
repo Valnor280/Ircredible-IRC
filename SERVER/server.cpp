@@ -28,6 +28,7 @@ server::server(char * port_number, char * pswd) : _pswd(pswd), _servername("Ircr
 	cmd_map["VERSION"] = &VERSION;
 	cmd_map["WHO"] = &WHO;
 	cmd_map["WHOIS"] = &WHOIS;
+	cmd_map["WHOWAS"] = &WHOWAS;
 
 	// CHANNEL-SIDE
 	cmd_map["INVITE"] = &INVITE;
