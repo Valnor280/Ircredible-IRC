@@ -1799,6 +1799,51 @@ void		PRIVMSG(std::string input, int socket_client, server & my_serv)
     {
        ret = send_reply(input, socket_client, my_serv, ERR_NOTEXTTOSEND, "");
     }
+	else if (splitted[1].find('*') != std::string::npos || splitted[1].find('?') != std::string::npos)
+	{
+		if(my_serv.get_usermap()[socket_client].get_mode().find('o') == std::string::npos)
+		{
+			std::string tmpm = send_reply("PRIVMSG", socket_client, my_serv, ERR_NOPRIVILEGES, "");
+			send(socket_client, tmpm.c_str(), tmpm.length(), MSG_DONTWAIT);
+			return;
+		}
+		else if (splitted[1].find('.') == std::string::npos)
+		{
+			std::string tmpm = "Permission Denied- WHAT WERE YOU TRYING TO DO YOU FUCKING BABOON\r\n";
+			send(socket_client, tmpm.c_str(), tmpm.length(), MSG_DONTWAIT);
+			return;
+		}
+		else if(splitted[1].find('.') != std::string::npos && std::find(splitted[1].begin() + splitted[1].find_last_of('.'), splitted[1].end(), '*') == splitted[1].end() && std::find(splitted[1].begin() + splitted[1].find_last_of('.'), splitted[1].end(), '?') == splitted[1].end())
+		{
+			std::map<std::string, channel>::iterator itchan = my_serv.get_chan_map().begin();
+			std::string tmp_input = std::string(input);
+			unsigned long tut = input.find_first_of(':');
+			//ndex;
+			std::cout << "PAR ICI\n";
+			while (itchan != my_serv.get_chan_map().end())
+			{
+				if(star_name_checker(itchan->first, splitted[1]))
+				{
+					/*if(tmp_input.find(splitted[1]) != std::string::npos) //for the location where mask is found
+					{   
+						index = tmp_input.find(splitted[1]);
+      					tmp_input.replace(index, itchan->first.length(), itchan->first + ' '); //remove and replace from that position
+					}*/
+					tmp_input = "PRIVMSG " + itchan->first + " " + input.substr(tut, input.length() - tut);
+					PRIVMSG(tmp_input, socket_client, my_serv);
+					//tmp_input = input;
+				}
+				itchan++;
+			}
+			return;
+		}
+		else
+		{
+			std::string tmpm = "Permission Denied- WHAT WERE YOU TRYING TO DO YOU FUCKING BABOON\r\n";
+			send(socket_client, tmpm.c_str(), tmpm.length(), MSG_DONTWAIT);
+			return;
+		}
+	}
     else if (*splitted[1].begin() == '#')//channel  !
     {
         std::cout << "message for channel -> " << splitted[1] << std::endl;
