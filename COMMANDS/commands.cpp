@@ -1785,13 +1785,15 @@ void		PRIVMSG(std::string input, int socket_client, server & my_serv)
             ++itchan;
         }
         
-        itchan = my_serv.get_chan_map().begin();
+        itchan = my_serv.get_chan_map().find(splitted[1]);
         if (itchan == my_serv.get_chan_map().end())//channel nexiste pas 
         {
             std::cout << "channel nexiste pas" << std::endl;
             // ret = ":" + my_serv.get_hostname() + " 401 " + sender.get_nick() + " :" + splitted[1] + " \r\n";
             ret = send_reply(input, socket_client, my_serv, ERR_NOSUCHCHANNEL, splitted[1]);
-        }
+       		send(socket_client, ret.c_str(), ret.size(), MSG_DONTWAIT);
+			return;
+	    }
         else if (find_ban_user(itchan->second.get_ban_list(), sender.get_id()) == true)//sender est ban du channel
         {
 			std::cout << "ICI1" << std::endl;
