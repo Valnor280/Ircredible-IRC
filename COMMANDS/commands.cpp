@@ -267,6 +267,7 @@ void		USER(std::string input, int socket_client, server & my_serv)
 		my_serv.get_regi_map().insert(std::make_pair(my_serv.get_usermap()[socket_client].get_nick(), *(&(my_serv.get_usermap()[socket_client]))));
 	}
 
+
 	std::cout << "username:" << username << " real name:" << realname << std::endl;
     std::cout << "input :[" << input << "]" << std::endl;
     std::cout << "socket :" << socket_client << std::endl;
@@ -1801,7 +1802,7 @@ void		PRIVMSG(std::string input, int socket_client, server & my_serv)
 			std::cout << "PAR ICI\n";
 			while (itchan != my_serv.get_chan_map().end())
 			{
-				if(star_name_checker(itchan->first, splitted[1]))
+				if(star_name_checker(itchan->first.c_str(), splitted[1].c_str(), (int)itchan->first.length(), (int)splitted[1].length()))
 				{
 					/*if(tmp_input.find(splitted[1]) != std::string::npos) //for the location where mask is found
 					{   
@@ -1836,6 +1837,7 @@ void		PRIVMSG(std::string input, int socket_client, server & my_serv)
         }
         
         itchan = my_serv.get_chan_map().find(splitted[1]);
+		std::cout << "ban :" << find_ban_user(itchan->second.get_ban_list(), sender.get_id()) << std::endl;
         if (itchan == my_serv.get_chan_map().end())//channel nexiste pas 
         {
             std::cout << "channel nexiste pas" << std::endl;

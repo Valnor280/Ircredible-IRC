@@ -1,6 +1,6 @@
 #include "commands.hpp"
 
-void		join_single(int socket_client, server &my_serv, std::string chan, std::string key)
+void		join_single(int socket_client, server &my_serv, std::string chan)
 {
 	std::cout << "COUCOU JE PASSE PAR ICI" << std::endl;
 	chan.erase(std::remove(chan.begin(), chan.end(), '\n'), chan.end());
@@ -17,7 +17,6 @@ void		join_single(int socket_client, server &my_serv, std::string chan, std::str
 		}
 		my_serv.get_chan_map()[chan].add_op_user(my_serv.get_usermap()[socket_client]);
 		my_serv.get_chan_map()[chan].set_name(chan);
-		my_serv.get_chan_map()[chan].set_key(key);
 		std::string tmp = ":" + my_serv.get_usermap()[socket_client].get_id() + " JOIN " + chan + "\r\n"; 
 		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 		if(my_serv.get_chan_map()[chan].get_topic().empty() != 0)
@@ -106,6 +105,7 @@ void		JOIN(std::string input, int socket_client, server & my_serv)
 	std::vector<std::string>	chan;
 	std::vector<std::string>	key;
 	std::string					tmp;
+
 	if (splitted[1].find(',') != std::string::npos)
 	{
 		chan = ft_split(splitted[1], ',');
@@ -137,7 +137,13 @@ void		JOIN(std::string input, int socket_client, server & my_serv)
 			int i = 0;
 			while(i != (int)chan.size())
 			{
-				join_single(socket_client, my_serv, chan[i], "");
+				if(my_serv.get_chan_map()[chan[i]].get_chan_mode().find('k') != std::string::npos)
+				{
+					tmp = send_reply("JOIN", socket_client, my_serv, ERR_BADCHANNELKEY, chan[i]);
+					send(socket_client, tmp.c_str(), tmp.length(), MSG_CONFIRM);
+					return;
+				}
+				join_single(socket_client, my_serv, chan[i]);
 				i++;
 			}
 		}
@@ -155,7 +161,7 @@ void		JOIN(std::string input, int socket_client, server & my_serv)
 					return;
 				}
 				if(key[y].compare(my_serv.get_chan_map()[chan[i]].get_key()) == 0 || my_serv.get_chan_map()[chan[i]].get_key().empty() == 1)
-					join_single(socket_client, my_serv, chan[i], key[y]);
+					join_single(socket_client, my_serv, chan[i]);
 				else
 				{
 					tmp = send_reply("JOIN", socket_client, my_serv, ERR_BADCHANNELKEY, chan[i]);
@@ -186,7 +192,18 @@ void		JOIN(std::string input, int socket_client, server & my_serv)
 			send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 			return;
 		}
-		join_single(socket_client, my_serv, chan[0], "");
+		if(key.empty() == true)
+		{
+			if(my_serv.get_chan_map()[chan[0]].get_chan_mode().find('k') != std::string::npos)
+			{
+				tmp = send_reply("JOIN", socket_client, my_serv, ERR_BADCHANNELKEY, chan[0]);
+				send(socket_client, tmp.c_str(), tmp.length(), MSG_CONFIRM);
+				return;
+			}
+			join_single(socket_client, my_serv, chan[0]);
+		}
+		else if(key[0].compare(my_serv.get_chan_map()[chan[0]].get_key()) == 0)
+			join_single(socket_client, my_serv, chan[0]);
 	}
     std::cout << std::endl << std::endl;
 };
