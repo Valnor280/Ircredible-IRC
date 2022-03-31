@@ -32,6 +32,6 @@ bool							star_name_checker(const char str[], const char pattern[], int n, int 
 bool    						isforbidenchan(char c);
 std::string						ft_to_string(size_t value);
 
-void rm_empty_map(server & my_serv);
+void 							rm_empty_map(server & my_serv);
 
 #endif
