@@ -112,7 +112,7 @@ void		JOIN(std::string input, int socket_client, server & my_serv)
 	}
 	else
 	{
-		if(splitted[1].find_first_of('#') == 0 && isalpha(splitted[1][1]))
+		if(splitted[1].find_first_of('#') == 0 && isforbidenchan(splitted[1][1]) != true)
 			chan.push_back(splitted[1]);
 		else
 		{
@@ -147,7 +147,7 @@ void		JOIN(std::string input, int socket_client, server & my_serv)
 			int y = 0;
 			while (i != (int)chan.size())
 			{
-				if(chan[i].find_first_of('#') != 0 && !(isalpha(chan[i][1])))
+				if(chan[i].find_first_of('#') != 0 && isforbidenchan(chan[i][1]) != true)
 				{
 					std::cout << "cbug2\n";
 					tmp = send_reply("JOIN", socket_client, my_serv, ERR_NOSUCHCHANNEL, chan[i]);
@@ -179,7 +179,7 @@ void		JOIN(std::string input, int socket_client, server & my_serv)
 	}
 	else
 	{			
-		if(chan[0].find_first_of('#') != 0 && !(isalpha(chan[0][1])))
+		if(chan[0].find_first_of('#') != 0 && isforbidenchan(chan[0][1]) != true)
 		{
 			std::cout << "cbug1\n";
 			tmp = send_reply("JOIN", socket_client, my_serv, ERR_NOSUCHCHANNEL, chan[0]);

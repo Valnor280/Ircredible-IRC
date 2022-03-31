@@ -7,6 +7,13 @@ bool    isspecial(char c)
     return (true);
 }
 
+bool    isforbidenchan(char c)
+{
+    if (c == '\0' || c == '\a' || c == '\r' || c == '\n' || c == ' ' || c == ',' || c == ':')
+        return (true);
+    return (false);
+}
+
 std::vector<std::string>		ft_split(std::string buffer, char sep)
 {
 	std::vector<std::string>				ret;
