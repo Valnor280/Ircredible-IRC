@@ -577,6 +577,16 @@ void		MODE(std::string input, int socket_client, server & my_serv)
 									//std::cout << "[3] args[k] = " << args[k] << std::endl;
 									if (args[k][0] != '-' && args[k][0] != '+')
 									{
+										if (args[i][0] == '+')
+										{
+											unsigned long	s = 0;
+											while (s < chan.get_ban_list().size())
+											{
+												if ((chan.get_ban_list())[s] == args[k])
+													return ;
+												s++;
+											}
+										}
 										//std::cout << "jusqu'ici c'est bon avec mod = " << mod << " et la lettre = " << args[i][j] << std::endl;
 										modif_mode_channel(target, args[i][j], mod, chan, args[k], my_serv);
 										args.erase(args.begin() + k);
@@ -907,6 +917,21 @@ void		WHO(std::string input, int socket_client, server & my_serv)
 							tmp += "* ";
 						else
 							tmp += " ";
+						tmp += ":0 " + (my_serv.get_usermap())[socket_client].get_real_name() + "\r\n";
+						send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+					}
+				}
+				for (unsigned long i = 0; i < chan.get_user_list(my_serv.get_usermap()).size(); i++)
+				{
+					std::cout << "on est dans la boucle avec i = " << i << std::endl;
+					if ((chan.get_op_list(my_serv.get_usermap())[i]).get_mode().find('i') == std::string::npos)
+					{
+						tmp = send_reply("WHO", (chan.get_op_list(my_serv.get_usermap()))[i].get_socket(), my_serv, RPL_WHOREPLY, "");
+						if ((chan.get_op_list(my_serv.get_usermap()))[i].get_mode().find('a') == std::string::npos)
+							tmp += " H";
+						else
+							tmp += " G";
+						tmp += "* ";
 						tmp += ":0 " + (my_serv.get_usermap())[socket_client].get_real_name() + "\r\n";
 						send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 					}
