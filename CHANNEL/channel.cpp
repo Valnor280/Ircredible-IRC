@@ -55,13 +55,8 @@ std::vector<user>	channel::get_op_list(std::map<int, user> umap)
 	return this->_op_list;
 }
 
-std::vector<user>	channel::get_ban_list(std::map<int, user> umap)
+std::vector<std::string>	channel::get_ban_list() const
 {
-	for (std::vector<user>::iterator itr = _user_list.begin(); itr != _user_list.end(); itr++)
-	{
-		if(umap[itr->get_socket()] != *itr)
-			*itr = umap[itr->get_socket()];
-	} 
 	return this->_ban_list;
 }
 
@@ -130,19 +125,24 @@ void				channel::remove_user( const user member )
 	this->_user_list.erase(find(_user_list.begin(), _user_list.end(), member));
 }
 
+void				channel::remove_invite( const user member )
+{
+	this->_invite_list.erase(find(_invite_list.begin(), _invite_list.end(), member));
+}
+
 void				channel::add_op_user( const user member )
 {
 	this->_op_list.push_back(member);
 }
 
-void				channel::add_ban( const user member )
+void				channel::add_ban( const std::string new_mask)
 {
-	this->_ban_list.push_back(member);
+	this->_ban_list.push_back(new_mask);
 }
 
-void				channel::remove_ban( const user member )
+void				channel::remove_ban( const std::string old_mask )
 {
-	this->_ban_list.erase(find(_ban_list.begin(), _ban_list.end(), member));
+	this->_ban_list.erase(find(_ban_list.begin(), _ban_list.end(), old_mask));
 }
 
 void				channel::remove_op_user( const user member )
@@ -168,6 +168,11 @@ void				channel::clear_op_list()
 void				channel::clear_mute_list()
 {
 	this->_mute_list.clear();
+}
+
+void				channel::clear_invite_list()
+{
+	this->_invite_list.clear();
 }
 
 bool operator==(const channel& lhs, const channel& rhs)

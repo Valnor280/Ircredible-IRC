@@ -3,7 +3,7 @@
 void server::user_read(int &num_sock_ready, int new_sock)
 {
 	//std::map<int, std::string> pending_user(); 
-	int ret;
+	long int ret;
 	_sock_ready = _sock_client;
 	user new_user = user();
 	while(num_sock_ready > 0)

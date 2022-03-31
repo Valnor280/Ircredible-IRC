@@ -2,7 +2,7 @@
 
 #include "USER/user.hpp"
 
-user::user(): _nick(""), _username(""), _real_name(""), _mode(""), _auth(1), _registration(0), _op_name("")
+user::user(): _nick(""), _username(""), _real_name(""), _mode(""), _auth(1), _registration(0), _quit(false), _op_name("")
 {
 	// nothing here
 	this->oct_recv = 0;
@@ -74,12 +74,32 @@ std::string		user::get_away_msg() const
 	return this->_away_msg;
 }
 
+std::string		user::get_buff()
+{
+	return this->_tmp_buff;
+}
+
+void	user::set_buff(std::string buff)
+{
+	_tmp_buff += buff;
+}
+
+void	user::erase_buff(int i, int y)
+{
+	_tmp_buff.erase(i, y);
+}
+
+void	user::clear_buff()
+{
+	_tmp_buff.clear();
+}
+
 int				user::get_socket() const
 {
 	return this->_socket;
 }
 
-long long int	user::get_connected_time() const
+long int	user::get_connected_time() const
 {
 	struct timeval tv;
 	gettimeofday(&tv, NULL);
@@ -146,6 +166,16 @@ void		user::set_hostname( std::string new_hostname )
 void		user::set_op_name( std::string new_op_name )
 {
 	this->_op_name = new_op_name;
+}
+
+void		user::set_quit( int quit )
+{
+	this->_quit = quit;
+}
+
+bool			user::get_quit() const
+{
+	return this->_quit;
 }
 
 void		user::set_registration( int new_reg )

@@ -42,10 +42,12 @@ class user
 										// 3 : ALL is set, RPL_WELCOME has been sent and user has been added to registered map
 		std::string		_away_msg; // the away msg used by the command away and its reply
 	
+		bool			_quit; // to know if a user already quitted
 		std::string     _status;
 		std::string		_hostname;
 		std::string		_op_name;
 		int				_socket;
+		std::string		_tmp_buff;
 
 
 		//STATS
@@ -70,17 +72,20 @@ class user
 		std::string		get_hostname() const;
 		std::string		get_op_name() const;
 		std::string		get_id() const; // Permet de construire une string tel que "[nickname]![username]@[hostname]"
+		bool			get_quit() const;
 		int				get_registration() const;
 		std::string		get_away_msg() const;
 		int				get_socket() const;
-		long long int	get_connected_time() const;
+		long int	get_connected_time() const;
 		unsigned long	get_oct_recv() const;
 		unsigned long	get_oct_send() const;
 		unsigned long	get_mess_recv() const;
 		unsigned long	get_mess_send() const;
+		std::string		get_buff();
 
 		//SETTERS
 		bool		set_nick( std::string new_nick );
+		void		set_quit( int quit );
 		bool		set_username( std::string new_username );
 		bool		set_real_name( std::string new_real_name );
 		void		set_mode( std::string new_access_level );
@@ -96,6 +101,9 @@ class user
 		void		add_oct_send(unsigned long nb);
 		void		add_mess_recv(unsigned long nb);
 		void		add_mess_send(unsigned long nb);
+		void		set_buff(std::string buff);
+		void		clear_buff(void);
+		void		erase_buff(int i, int y);
 
 
 		// UTILS

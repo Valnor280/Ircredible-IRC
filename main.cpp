@@ -25,4 +25,6 @@ int main(int ac, char **av)
 
 	signal(SIGPIPE, SIG_IGN);
 	test->loop();
+	delete test;
+	std::cout << "server closed" << std::endl;
 }

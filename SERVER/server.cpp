@@ -5,7 +5,7 @@
 
 
 
-server::server(char * port_number, char * pswd) : _pswd(pswd), _servername("Ircredible_IRC"), _version("2.0"), _motd("RTFM!"), _admin_pswd("pswd")
+server::server(char * port_number, char * pswd) : _pswd(pswd), _servername("Ircredible_IRC"), _version("2.0"), _motd("RTFM!"), _admin_pswd("pswd"), _shutdown(false)
 {
 	// SERVER-SIDE
 	cmd_map["ADMIN"] = &ADMIN;
@@ -15,27 +15,19 @@ server::server(char * port_number, char * pswd) : _pswd(pswd), _servername("Ircr
 	cmd_map["USER"] = &USER;
 	cmd_map["DIE"] = &DIE;
 	cmd_map["INFO"] = &INFO;
-	cmd_map["ISON"] = &ISON;
 	cmd_map["KILL"] = &KILL;
 	cmd_map["LIST"] = &LIST;
-	cmd_map["LUSERS"] = &LUSERS;
 	cmd_map["MODE"] = &MODE;
 	cmd_map["MOTD"] = &MOTD;
 	cmd_map["NAMES"] = &NAMES;
 	cmd_map["PART"] = &PART;
 	cmd_map["PING"] = &PING;
 	cmd_map["PONG"] = &PONG;
-	cmd_map["REHASH"] = &REHASH;
 	cmd_map["STATS"] = &STATS;
-	cmd_map["SUMMON"] = &SUMMON;
 	cmd_map["TIME"] = &TIME;
-	cmd_map["USERHOST"] = &USERHOST;
-	cmd_map["USERS"] = &USERS;
 	cmd_map["VERSION"] = &VERSION;
-	cmd_map["WALLOPS"] = &WALLOPS;
 	cmd_map["WHO"] = &WHO;
 	cmd_map["WHOIS"] = &WHOIS;
-	cmd_map["WHOWAS"] = &WHOWAS;
 
 	// CHANNEL-SIDE
 	cmd_map["INVITE"] = &INVITE;
@@ -49,8 +41,6 @@ server::server(char * port_number, char * pswd) : _pswd(pswd), _servername("Ircr
 	cmd_map["OPER"] = &OPER;
 	cmd_map["PRIVMSG"] = &PRIVMSG;
 	cmd_map["QUIT"] = &QUIT;
-	cmd_map["SETNAME"] = &SETNAME;
-	cmd_map["USERIP"] = &USERIP;
 
    	_time_struct = time(0);
 	// std::vector<std::string>		test = ft_split("PING 0.0.0.0\r\n", ' ');
@@ -145,7 +135,8 @@ server::server(char * port_number, char * pswd) : _pswd(pswd), _servername("Ircr
 void server::loop()
 {
 	int numsock;
-	int retbuff = 0;
+	long int retbuff = 0;
+	long int real_ret = 0;
 	int t;
 	int max_fd;
 	
@@ -161,22 +152,16 @@ void server::loop()
 		timeval time;
 
 		time.tv_sec = 0;
-		time.tv_usec= 50;
+		time.tv_usec= 10;
 		numsock = select(max_fd + 1, &_sock_ready, NULL, NULL, &time);
 		if(numsock == -1)
 		{
 			std::cout << "error select" << std::endl;
 			break;
 		}
-		/*else if(numsock == 0)
-		{
-			std::cout << "time out : " << time.tv_sec << " sec" << std::endl;
-		}*/
 		else
 		{
 			t = accept_connect(numsock);
-			/*if(t != 0)
-			 	user_read(numsock, t);*/
 		}
 		for(std::set<int>::iterator itr = _open_sock.begin(); itr != _open_sock.end(); itr++)
 		{
@@ -184,59 +169,70 @@ void server::loop()
 			{
 				//		std::cout << "before recv" << std::endl;
 
+				bzero(_buffer, 512);
 				retbuff = recv(*itr, _buffer, 512, MSG_DONTWAIT);
 				if (retbuff > 0)
 				{
 					_user_map[*itr].add_mess_recv(1);
-					_user_map[*itr].add_oct_recv(retbuff);
-					_buffer[retbuff] = 0;
+					_user_map[*itr].add_oct_recv((unsigned long)retbuff);
+					//_buffer[retbuff] = 0;
 					std::cout << "msg : " << _buffer << "socket :" << *itr << std::endl;
 					
 					user_itr = _user_map.find(*itr);
 				
 					//parse message
-					str_buff = _buffer;
-					while (!str_buff.empty())
+					_user_map[*itr].set_buff(_buffer);
+					std::cout << "cmd : " << _user_map[*itr].get_buff() << std::endl;
+					real_ret += retbuff;
+					str_buff = _user_map[*itr].get_buff();
+					if(str_buff.find('\r') != std::string::npos && str_buff.find('\n') != std::string::npos )
 					{
-						std::vector<std::string>		input_temp = ft_split(str_buff, '\n');
-						std::vector<std::string>		input_temp_2 = ft_split(input_temp[0], '\r');
-						std::vector<std::string>		input = ft_split(input_temp_2[0], ' ');
-						//std::cout << "str_buff '" << str_buff << "'" << std::endl;
-						if (cmd_map.find(ft_toupper(input[0])) == cmd_map.end())
+						std::cout << "je passe par la\n";
+						int ivc = 0;
+						while (!str_buff.empty() && ivc < 5)
 						{
-							send(*itr, send_reply(input[0], *itr, *this, 421, "").c_str(), send_reply(input[0], *itr, *this, 421, "").length(), MSG_DONTWAIT);
+							std::vector<std::string>		input_temp = ft_split(str_buff, '\n');
+							std::vector<std::string>		input_temp_2 = ft_split(input_temp[0], '\r');
+							std::vector<std::string>		input = ft_split(input_temp_2[0], ' ');
+							std::cout << "str_buff '" << str_buff << "'" << std::endl;
+							if (cmd_map.find(ft_toupper(input[0])) == cmd_map.end())
+							{
+								send(*itr, send_reply(input[0], *itr, *this, 421, "").c_str(), send_reply(input[0], *itr, *this, 421, "").length(), MSG_DONTWAIT);
+							}
+							else
+							{
+								cmd_map[ft_toupper(input[0])](input_temp_2[0], user_itr->first, *this);
+							}
+							
+							str_index = str_buff.find('\n');
+							str_buff.erase(0, str_index + 1);
+							ivc++;
 						}
-						else
-						{
-							cmd_map[ft_toupper(input[0])](str_buff, user_itr->first, *this);
-						}
-						
-						str_index = str_buff.find('\n');
-						str_buff.erase(0, str_index + 1);
+						_user_map[*itr].clear_buff();
 					}
-					/*for (int k = 0; k < FD_SETSIZE; ++k)
-						if (k != *itr && FD_ISSET(k, &_sock_client))
-						send(k, _buffer, retbuff, 0);*/
 
 				
 				}
 				else if(retbuff == 0)
 				{
 					std::cout << "\nsocket n'" << *itr << " is closed on client side.\n";
-					close(*itr);
+					if(_user_map[*itr].get_quit() == false)
+						QUIT("QUIT", *itr, *this);
 					if (_user_map[*itr].get_registration() == 3)
 						_registered_map.erase(_user_map[*itr].get_nick());
-            		FD_CLR(*itr, &_sock_client);
-					_user_map.erase(*itr);
 					_open_sock.erase(*itr);
+
 					if (_open_sock.empty() == 0)
 						break;
 				}
+				rm_empty_map(*this);
 				//	std::cout << "after recv" << std::endl;
 				//FD_CLR(*itr, &_sock_client);
 			}
 			
 		}
+		if(_shutdown == true)
+			break;
 	}
 }
 
@@ -247,8 +243,8 @@ std::map<int, user>		&server::get_usermap(void)
 
 server::~server()
 {
-	close(_connection);
-	close(_sockfd);
+	//close(_connection);
+	//close(_sockfd);
 }
 
 char *server::get_pswd()
@@ -295,4 +291,20 @@ std::map<std::string, channel>		&server::get_chan_map(void)
 std::string						server::get_admin_pswd(void) const
 {
 	return this->_admin_pswd;
+}
+
+void server::fd_erase(int socket)
+{
+	FD_CLR(socket, &_sock_client);
+	return ;
+}
+
+std::set<int>		&server::get_open_sock(void)
+{
+	return this->_open_sock;
+}
+
+void							server::set_shutdown(bool shu)
+{
+	this->_shutdown = shu;
 }

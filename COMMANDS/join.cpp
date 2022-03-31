@@ -5,7 +5,7 @@ void		join_single(int socket_client, server &my_serv, std::string chan, std::str
 	std::cout << "COUCOU JE PASSE PAR ICI" << std::endl;
 	chan.erase(std::remove(chan.begin(), chan.end(), '\n'), chan.end());
 	chan.erase(std::remove(chan.begin(), chan.end(), '\r'), chan.end());
-	if(my_serv.get_chan_map()[chan].get_op_list(my_serv.get_usermap()).empty() != 0)
+	if(my_serv.get_chan_map()[chan].get_op_list(my_serv.get_usermap()).empty() != 0 && my_serv.get_chan_map()[chan].get_user_list(my_serv.get_usermap()).empty() != 0)
 	{
 		std::cout << "COUCOU JE PASSE PAR OP" << std::endl;
 		if(my_serv.get_chan_map().size() == MAXCHAN)
@@ -34,25 +34,38 @@ void		join_single(int socket_client, server &my_serv, std::string chan, std::str
 	else
 	{
 		std::cout << "COUCOU JE PASSE PAR LA PLEBEs" << std::endl;
-		if(find(my_serv.get_chan_map()[chan].get_ban_list(my_serv.get_usermap()).begin(), my_serv.get_chan_map()[chan].get_ban_list(my_serv.get_usermap()).end(), my_serv.get_usermap()[socket_client]) == my_serv.get_chan_map()[chan].get_ban_list(my_serv.get_usermap()).end() || my_serv.get_chan_map()[chan].get_ban_list(my_serv.get_usermap()).empty() == 1)
-			my_serv.get_chan_map()[chan].add_user(my_serv.get_usermap()[socket_client]);
-		else
+
+		int size = my_serv.get_chan_map()[chan].get_user_list(my_serv.get_usermap()).size() + my_serv.get_chan_map()[chan].get_op_list(my_serv.get_usermap()).size();
+		if(my_serv.get_chan_map()[chan].get_chan_mode().find('l') != std::string::npos && size >= my_serv.get_chan_map()[chan].get_user_limit())
 		{
-			std::string tmp = send_reply("JOIN", socket_client, my_serv, ERR_BANNEDFROMCHAN, chan);
+			std::string tmp = send_reply("JOIN", socket_client, my_serv, ERR_CHANNELISFULL, chan);
 			send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 			return;
 		}
-		if(my_serv.get_chan_map()[chan].get_chan_mode().find('I') != std::string::npos && find(my_serv.get_chan_map()[chan].get_invite_list(my_serv.get_usermap()).begin(), my_serv.get_chan_map()[chan].get_invite_list(my_serv.get_usermap()).end(), my_serv.get_usermap()[socket_client]) == my_serv.get_chan_map()[chan].get_invite_list(my_serv.get_usermap()).end())
+		else if(my_serv.get_chan_map()[chan].get_user_list(my_serv.get_usermap()).size() == MAXCHANUSER)
+		{
+			std::string tmp = send_reply("JOIN", socket_client, my_serv, ERR_CHANNELISFULL, chan);
+			send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+			return;
+		}
+		else if(my_serv.get_chan_map()[chan].get_chan_mode().find('i') != std::string::npos && find_user(my_serv.get_chan_map()[chan].get_invite_list(my_serv.get_usermap()), my_serv.get_usermap()[socket_client]) == false)
 		{
 			std::string tmp = send_reply("JOIN", socket_client, my_serv, ERR_INVITEONLYCHAN, chan);
 			send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 			return;
 		}
-		if(my_serv.get_chan_map()[chan].get_user_list(my_serv.get_usermap()).size() == MAXCHANUSER)
+		else if(find(my_serv.get_chan_map()[chan].get_ban_list().begin(), my_serv.get_chan_map()[chan].get_ban_list().end(), (my_serv.get_usermap()[socket_client]).get_id()) != my_serv.get_chan_map()[chan].get_ban_list().end())
 		{
-			std::string tmp = send_reply("JOIN", socket_client, my_serv, ERR_CHANNELISFULL, chan);
+			std::string tmp = send_reply("JOIN", socket_client, my_serv, ERR_BANNEDFROMCHAN, chan);
 			send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 			return;
+		}
+		else
+		{
+			if(find_user(my_serv.get_chan_map()[chan].get_user_list(my_serv.get_usermap()), my_serv.get_usermap()[socket_client]) != true)
+				my_serv.get_chan_map()[chan].add_user(my_serv.get_usermap()[socket_client]);
+			if(my_serv.get_chan_map()[chan].get_chan_mode().find('i') != std::string::npos)
+				my_serv.get_chan_map()[chan].remove_invite(my_serv.get_usermap()[socket_client]);
 		}
 		std::vector<user> list = my_serv.get_chan_map()[chan].get_user_list(my_serv.get_usermap());
 		std::string tmp;
@@ -93,16 +106,21 @@ void		JOIN(std::string input, int socket_client, server & my_serv)
 	std::vector<std::string>	chan;
 	std::vector<std::string>	key;
 	std::string					tmp;
-	if (splitted[1].find(',') > 0)
+	if (splitted[1].find(',') != std::string::npos)
 	{
 		chan = ft_split(splitted[1], ',');
 	}
 	else
 	{
-		if(splitted[1].find_first_of('#') == 0)
+		if(splitted[1].find_first_of('#') == 0 && isforbidenchan(splitted[1][1]) != true)
 			chan.push_back(splitted[1]);
-		else 
+		else
+		{
+			std::cout << "cbug3\n";
+			tmp = send_reply("JOIN", socket_client, my_serv, ERR_NOSUCHCHANNEL, splitted[1]);
+			send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 			return;
+		}
 	}
 	if (splitted.size() > 2)
 	{
@@ -129,8 +147,13 @@ void		JOIN(std::string input, int socket_client, server & my_serv)
 			int y = 0;
 			while (i != (int)chan.size())
 			{
-				if(chan[i].find_first_of('#') != 0)
+				if(chan[i].find_first_of('#') != 0 && isforbidenchan(chan[i][1]) != true)
+				{
+					std::cout << "cbug2\n";
+					tmp = send_reply("JOIN", socket_client, my_serv, ERR_NOSUCHCHANNEL, chan[i]);
+					send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 					return;
+				}
 				if(key[y].compare(my_serv.get_chan_map()[chan[i]].get_key()) == 0 || my_serv.get_chan_map()[chan[i]].get_key().empty() == 1)
 					join_single(socket_client, my_serv, chan[i], key[y]);
 				else
@@ -149,14 +172,20 @@ void		JOIN(std::string input, int socket_client, server & my_serv)
 	{
 		for(std::map<std::string, channel>::iterator itr = my_serv.get_chan_map().begin(); itr != my_serv.get_chan_map().end(); itr++)
 		{
-			itr->second.remove_op_user(my_serv.get_usermap()[socket_client]);
-			itr->second.remove_user(my_serv.get_usermap()[socket_client]);
+			PART("PART " + itr->second.get_name(), socket_client, my_serv);
+			//itr->second.remove_op_user(my_serv.get_usermap()[socket_client]);
+			//itr->second.remove_user(my_serv.get_usermap()[socket_client]);
 		}
 	}
 	else
 	{			
-		if(chan[0].find_first_of('#') != 0)
+		if(chan[0].find_first_of('#') != 0 && isforbidenchan(chan[0][1]) != true)
+		{
+			std::cout << "cbug1\n";
+			tmp = send_reply("JOIN", socket_client, my_serv, ERR_NOSUCHCHANNEL, chan[0]);
+			send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 			return;
+		}
 		join_single(socket_client, my_serv, chan[0], "");
 	}
     std::cout << std::endl << std::endl;
