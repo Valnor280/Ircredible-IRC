@@ -1196,7 +1196,8 @@ void		LIST(std::string input, int socket_client, server & my_serv)
 			std::cout << "ICI1\n";
 			if(splitted[1].find_first_of('#') == 0)
 				chan.push_back(splitted[1]);
-			list_solo(chan[0], socket_client, my_serv);
+			if(chan.empty() != true)
+				list_solo(chan[0], socket_client, my_serv);
 		}
 		std::cout << "ICI2\n";
 		
