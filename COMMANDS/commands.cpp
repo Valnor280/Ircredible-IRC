@@ -833,10 +833,20 @@ void		VERSION(std::string input, int socket_client, server & my_serv)
 		return;
 	}
 
-    std::string tmp;
+	std::vector<std::string>	splitted = ft_split(input, ' ');
 
-	tmp = send_reply("VERSION", socket_client, my_serv, RPL_VERSION, " ");
-	send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+	if (splitted.size() > 1 && splitted[1] !=  my_serv.get_servername())
+	{
+		std::string tmp = send_reply("VERSIOM", socket_client, my_serv, ERR_NOSUCHSERVER, "");
+		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+	}
+	else
+	{
+    	std::string tmp;
+
+		tmp = send_reply("VERSION", socket_client, my_serv, RPL_VERSION, " ");
+		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+	}
     std::cout << "input :[" << input << "]" << std::endl;
     std::cout << "socket :" << socket_client << std::endl;
     my_serv.get_usermap()[socket_client].print_user();
@@ -1671,7 +1681,9 @@ void		TOPIC(std::string input, int socket_client, server & my_serv)
 			std::vector<user> list =  my_serv.get_chan_map()[splitted[1]].get_op_list(my_serv.get_usermap());
 			std::string str;
 			for(std::vector<std::string>::iterator itr = splitted.begin() + 2; itr != splitted.end(); itr++)
-				str += *itr;
+				str += *itr + " ";
+			str.erase(0, 1);
+			std::cout << str << std::endl;
 			my_serv.get_chan_map()[splitted[1]].set_topic(str);
 			for(std::vector<user>::iterator itr = list.begin(); itr != list.end(); ++itr)
 			{
