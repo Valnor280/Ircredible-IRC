@@ -30,6 +30,7 @@ bool							find_ban_user(std::vector<std::string> vec, std::string id);
 bool							check_name_match(user & target, user & member , std::string pattern);
 bool							star_name_checker(const char str[], const char pattern[], int n, int m);
 bool    						isforbidenchan(char c);
+bool    						isforbidenuser(char c);
 std::string						ft_to_string(size_t value);
 
 void 							rm_empty_map(server & my_serv);

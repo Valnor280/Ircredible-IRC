@@ -22,7 +22,7 @@ void		CAP(std::string input, int socket_client, server & my_serv)
 
 void		ADMIN(std::string input, int socket_client, server & my_serv) 
 {
-	if(my_serv.get_usermap()[socket_client].get_auth() == 1)
+	if(my_serv.get_usermap()[socket_client].get_registration()  != 3)
 	{
 		std::cout << my_serv.get_usermap()[socket_client].get_auth() << std::endl;
 		std::string tmp = ": User not authentificated\r\n";
@@ -165,7 +165,7 @@ void		PASS(std::string input, int socket_client, server & my_serv)
         std::cout << "Error Pass function: no \\r or \\n" << std::endl;
 	}
 	std::string pass = input.substr(begsub + 1, endsub - begsub - 1);
-	if (pass.compare(my_serv.get_pswd()) == 0 && my_serv.get_usermap()[socket_client].get_auth() == 1)
+	if (pass.compare(my_serv.get_pswd()) == 0 && my_serv.get_usermap()[socket_client].get_registration()  != 3)
 	{
 		my_serv.get_usermap()[socket_client].set_auth(0);
 		return;
@@ -253,6 +253,11 @@ void		USER(std::string input, int socket_client, server & my_serv)
 	// username = tmp_username;
 	// std::string tmp = "username already taken and was changed to : " + username + "\r\n";
 	//send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+	for(std::string::iterator i = username.begin(); i != username.end(); i++)
+	{
+		if(isforbidenuser(*i))
+			*i = '$';
+	}
 	my_serv.get_usermap()[socket_client].set_username(username);
 	my_serv.get_usermap()[socket_client].set_real_name(realname);
 
@@ -281,7 +286,7 @@ void		DIE(std::string input, int socket_client, server & my_serv)
 	std::string tmp;
 	(void)input;
 
-	if(my_serv.get_usermap()[socket_client].get_auth() == 1)
+	if(my_serv.get_usermap()[socket_client].get_registration()  != 3)
 	{
 		std::cout << my_serv.get_usermap()[socket_client].get_auth() << std::endl;
 		std::string tmp = ": User not authentificated\r\n";
@@ -313,7 +318,7 @@ void		INFO(std::string input, int socket_client, server & my_serv)
 	user				target = (my_serv.get_usermap())[socket_client];
 	std::vector<std::string>	splitted = ft_split(input, ' ');
 	
-	if(my_serv.get_usermap()[socket_client].get_auth() == 1)
+	if(my_serv.get_usermap()[socket_client].get_registration()  != 3)
 	{
 		std::cout << my_serv.get_usermap()[socket_client].get_auth() << std::endl;
 		std::string tmp = ": User not authentificated\r\n";
@@ -350,7 +355,7 @@ void		KILL(std::string input, int socket_client, server & my_serv)
     std::cout << "KILL called" << std::endl;
 	user				target = (my_serv.get_usermap())[socket_client];
 	
-	if(my_serv.get_usermap()[socket_client].get_auth() == 1)
+	if(my_serv.get_usermap()[socket_client].get_registration()  != 3)
 	{
 		std::cout << my_serv.get_usermap()[socket_client].get_auth() << std::endl;
 		std::string tmp = ": User not authentificated\r\n";
@@ -389,7 +394,7 @@ void		MODE(std::string input, int socket_client, server & my_serv)
     std::vector<std::string>    temp_2 = ft_split(temp[0], '\r');
     std::vector<std::string>    args = ft_split(temp_2[0], ' ');
 	
-	if(my_serv.get_usermap()[socket_client].get_auth() == 1)
+	if(my_serv.get_usermap()[socket_client].get_registration()  != 3)
 	{
 		std::cout << my_serv.get_usermap()[socket_client].get_auth() << std::endl;
 		std::string tmp = ": User not authentificated\r\n";
@@ -668,7 +673,7 @@ void		MOTD(std::string input, int socket_client, server & my_serv)
     std::cout << "MOTD called" << std::endl;
     std::vector<std::string>	splitted = ft_split(input, ' ');
 
-	if(my_serv.get_usermap()[socket_client].get_auth() == 1)
+	if(my_serv.get_usermap()[socket_client].get_registration()  != 3)
 	{
 		std::cout << my_serv.get_usermap()[socket_client].get_auth() << std::endl;
 		std::string tmp = ": User not authentificated\r\n";
@@ -718,7 +723,7 @@ void		NAMES(std::string input, int socket_client, server & my_serv)
 	std::vector<std::string>	chan;
 	std::string					tmp;
 
-	if(my_serv.get_usermap()[socket_client].get_auth() == 1)
+	if(my_serv.get_usermap()[socket_client].get_registration()  != 3)
 	{
 		std::cout << my_serv.get_usermap()[socket_client].get_auth() << std::endl;
 		std::string tmp = ": User not authentificated\r\n";
@@ -766,7 +771,7 @@ void		STATS(std::string input, int socket_client, server & my_serv)
 { 
     std::cout << "STATS called" << std::endl;
 
-	if(my_serv.get_usermap()[socket_client].get_auth() == 1)
+	if(my_serv.get_usermap()[socket_client].get_registration()  != 3)
 	{
 		std::cout << my_serv.get_usermap()[socket_client].get_auth() << std::endl;
 		std::string tmp = ": User not authentificated\r\n";
@@ -793,7 +798,7 @@ void		TIME(std::string input, int socket_client, server & my_serv)
 { 
     std::cout << "TIME called" << std::endl;
 
-	if(my_serv.get_usermap()[socket_client].get_auth() == 1)
+	if(my_serv.get_usermap()[socket_client].get_registration()  != 3)
 	{
 		std::cout << my_serv.get_usermap()[socket_client].get_auth() << std::endl;
 		std::string tmp = ": User not authentificated\r\n";
@@ -825,7 +830,7 @@ void		VERSION(std::string input, int socket_client, server & my_serv)
 { 
     std::cout << "VERSION called" << std::endl;
     
-	if(my_serv.get_usermap()[socket_client].get_auth() == 1)
+	if(my_serv.get_usermap()[socket_client].get_registration()  != 3)
 	{
 		std::cout << my_serv.get_usermap()[socket_client].get_auth() << std::endl;
 		std::string tmp = ": User not authentificated\r\n";
@@ -837,7 +842,7 @@ void		VERSION(std::string input, int socket_client, server & my_serv)
 
 	if (splitted.size() > 1 && splitted[1] !=  my_serv.get_servername())
 	{
-		std::string tmp = send_reply("VERSIOM", socket_client, my_serv, ERR_NOSUCHSERVER, "");
+		std::string tmp = send_reply("VERSIOn", socket_client, my_serv, ERR_NOSUCHSERVER, "");
 		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 	}
 	else
@@ -863,7 +868,7 @@ void		WHO(std::string input, int socket_client, server & my_serv)
     std::vector<std::string>    args = ft_split(temp_2[0], ' ');
 	user						& target = (my_serv.get_usermap())[socket_client];
 
-	if(my_serv.get_usermap()[socket_client].get_auth() == 1)
+	if(my_serv.get_usermap()[socket_client].get_registration()  != 3)
 	{
 		std::cout << my_serv.get_usermap()[socket_client].get_auth() << std::endl;
 		std::string tmp = ": User not authentificated\r\n";
@@ -1039,7 +1044,7 @@ void		WHOIS(std::string input, int socket_client, server & my_serv)
     std::vector<std::string>    args = ft_split(temp_2[0], ' ');
 	// user						& target = (my_serv.get_usermap())[socket_client];
 
-	if(my_serv.get_usermap()[socket_client].get_auth() == 1)
+	if(my_serv.get_usermap()[socket_client].get_registration()  != 3)
 	{
 		std::cout << my_serv.get_usermap()[socket_client].get_auth() << std::endl;
 		std::string tmp = ": User not authentificated\r\n";
@@ -1139,14 +1144,6 @@ void list_solo(std::string chan, int socket_client, server & my_serv)
 	std::cout << "ICI4\n";
 	std::string					tmp;
 
-	if(my_serv.get_usermap()[socket_client].get_auth() == 1)
-	{
-		std::cout << my_serv.get_usermap()[socket_client].get_auth() << std::endl;
-		std::string tmp = ": User not authentificated\r\n";
-		std::cout << tmp << std::endl;
-		return;
-	}
-
 	chan.erase(std::remove(chan.begin(), chan.end(), '\n'), chan.end());
 	chan.erase(std::remove(chan.begin(), chan.end(), '\r'), chan.end());
 	if(my_serv.get_chan_map()[chan].get_chan_mode().find('s') == std::string::npos)
@@ -1166,7 +1163,7 @@ void		LIST(std::string input, int socket_client, server & my_serv)
 	int i = 0;
 	std::map<std::string, channel> chan_map = my_serv.get_chan_map();
 
-	if(my_serv.get_usermap()[socket_client].get_auth() == 1)
+	if(my_serv.get_usermap()[socket_client].get_registration()  != 3)
 	{
 		std::cout << my_serv.get_usermap()[socket_client].get_auth() << std::endl;
 		std::string tmp = ": User not authentificated\r\n";
@@ -1176,25 +1173,32 @@ void		LIST(std::string input, int socket_client, server & my_serv)
 
 	if(splitted.size() > 2)
 	{
+		std::string tmp = send_reply("LIST", socket_client, my_serv, ERR_NOSUCHSERVER, "");
+		send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
+		return;
+	}
+	if(splitted.size() == 2)
+	{
 		if (splitted[1].find(',') != std::string::npos)
 		{
 			std::cout << "ICI\n";
 			chan = ft_split(splitted[1], ',');
+			while (i != (int)chan.size())
+			{
+			
+				if(chan[i].find_first_of('#') == 0)
+					list_solo(chan[i], socket_client, my_serv);
+				i++;
+			}
 		}
 		else
 		{
 			std::cout << "ICI1\n";
 			if(splitted[1].find_first_of('#') == 0)
 				chan.push_back(splitted[1]);
+			list_solo(chan[0], socket_client, my_serv);
 		}
 		std::cout << "ICI2\n";
-		while (i != (int)chan.size())
-		{
-			
-			if(chan[i].find_first_of('#') == 0)
-				list_solo(chan[i], socket_client, my_serv);
-			i++;
-		}
 		
 
 	}
@@ -1224,7 +1228,7 @@ void		PING(std::string input, int socket_client, server & my_serv)
 	user				        target = (my_serv.get_usermap())[socket_client];
 	std::vector<std::string>	splitted = ft_split(input, ' ');
 
-	if(my_serv.get_usermap()[socket_client].get_auth() == 1)
+	if(my_serv.get_usermap()[socket_client].get_registration()  != 3)
 	{
 		std::cout << my_serv.get_usermap()[socket_client].get_auth() << std::endl;
 		std::string tmp = ": User not authentificated\r\n";
@@ -1259,7 +1263,7 @@ void		PONG(std::string input, int socket_client, server & my_serv)
 	user				        target = (my_serv.get_usermap())[socket_client];
 	std::vector<std::string>	splitted = ft_split(input, ' ');
 
-	if(my_serv.get_usermap()[socket_client].get_auth() == 1)
+	if(my_serv.get_usermap()[socket_client].get_registration()  != 3)
 	{
 		std::cout << my_serv.get_usermap()[socket_client].get_auth() << std::endl;
 		std::string tmp = ": User not authentificated\r\n";
@@ -1294,7 +1298,7 @@ void		PART(std::string input, int socket_client, server & my_serv)
 
     std::vector<std::string> av = ft_split(input, ' ');
 
-	if(my_serv.get_usermap()[socket_client].get_auth() == 1)
+	if(my_serv.get_usermap()[socket_client].get_registration()  != 3)
 	{
 		std::cout << my_serv.get_usermap()[socket_client].get_auth() << std::endl;
 		std::string tmp = ": User not authentificated\r\n";
@@ -1427,7 +1431,7 @@ void		INVITE(std::string input, int socket_client, server & my_serv)
     std::string ret;
 	std::vector<std::string> splitted = ft_split(input, ' ');
 
-	if(my_serv.get_usermap()[socket_client].get_auth() == 1)
+	if(my_serv.get_usermap()[socket_client].get_registration()  != 3)
 	{
 		std::cout << my_serv.get_usermap()[socket_client].get_auth() << std::endl;
 		std::string tmp = ": User not authentificated\r\n";
@@ -1524,7 +1528,7 @@ void		KICK(std::string input, int socket_client, server & my_serv)
 	std::string msg_tmp;
 	std::string msg;
 
-	if(my_serv.get_usermap()[socket_client].get_auth() == 1)
+	if(my_serv.get_usermap()[socket_client].get_registration()  != 3)
 	{
 		std::cout << my_serv.get_usermap()[socket_client].get_auth() << std::endl;
 		std::string tmp = ": User not authentificated\r\n";
@@ -1665,7 +1669,7 @@ void		TOPIC(std::string input, int socket_client, server & my_serv)
 
 	std::cout << "size :" << splitted.size() << std::endl;
 
-	if(my_serv.get_usermap()[socket_client].get_auth() == 1)
+	if(my_serv.get_usermap()[socket_client].get_registration()  != 3)
 	{
 		std::cout << my_serv.get_usermap()[socket_client].get_auth() << std::endl;
 		std::string tmp = ": User not authentificated\r\n";
@@ -1738,7 +1742,7 @@ void		AWAY(std::string input, int socket_client, server & my_serv)
 	std::cout << "input :[" << input << "]" << std::endl;
 	unsigned long			cmd_pos = input.find("AWAY");
 
-	if(my_serv.get_usermap()[socket_client].get_auth() == 1)
+	if(my_serv.get_usermap()[socket_client].get_registration()  != 3)
 	{
 		std::cout << my_serv.get_usermap()[socket_client].get_auth() << std::endl;
 		std::string tmp = ": User not authentificated\r\n";
@@ -1782,7 +1786,7 @@ void		OPER(std::string input, int socket_client, server & my_serv)
 	std::vector<std::string>		splitted = ft_split(input, ' ');
 	std::string				tmp;
 
-	if(my_serv.get_usermap()[socket_client].get_auth() == 1)
+	if(my_serv.get_usermap()[socket_client].get_registration()  != 3)
 	{
 		std::cout << my_serv.get_usermap()[socket_client].get_auth() << std::endl;
 		std::string tmp = ": User not authentificated\r\n";
@@ -1830,7 +1834,7 @@ void		PRIVMSG(std::string input, int socket_client, server & my_serv)
 
     size_t i = 2;
 
-	if(my_serv.get_usermap()[socket_client].get_auth() == 1)
+	if(my_serv.get_usermap()[socket_client].get_registration()  != 3)
 	{
 		std::cout << my_serv.get_usermap()[socket_client].get_auth() << std::endl;
 		std::string tmp = ": User not authentificated\r\n";
@@ -2040,7 +2044,7 @@ void		NOTICE(std::string input, int socket_client, server & my_serv)
 { 
     std::cout << "NOTICE called" << std::endl;
     
- 	std::vector<std::string> splitted = ft_split(input, ' '); 
+ 	    std::vector<std::string> splitted = ft_split(input, ' '); 
     std::map<int, user> usermap = my_serv.get_usermap();    
     std::map<int, user>::iterator it = usermap.begin();
     user sender = usermap[socket_client];
@@ -2048,7 +2052,7 @@ void		NOTICE(std::string input, int socket_client, server & my_serv)
 
     size_t i = 2;
 
-	if(my_serv.get_usermap()[socket_client].get_auth() == 1)
+	if(my_serv.get_usermap()[socket_client].get_registration()  != 3)
 	{
 		std::cout << my_serv.get_usermap()[socket_client].get_auth() << std::endl;
 		std::string tmp = ": User not authentificated\r\n";
@@ -2058,12 +2062,59 @@ void		NOTICE(std::string input, int socket_client, server & my_serv)
 
     if (splitted.size() < 2 || *splitted[1].begin() == ':')
     {
-       std::cout << "NO_RECIPIENT" << std::endl;
+       std::cout << "NO RECIPIENT\n";
+	   return;
     }
     else if (splitted.size() > 2 && *splitted[2].begin() != ':')
     {
-       std::cout << "NO_TEXT" << std::endl;
+       std::cout << "NO TEXT TO SEND\n";
+	   return;
     }
+	else if (splitted[1].find('*') != std::string::npos || splitted[1].find('?') != std::string::npos)
+	{
+		if(my_serv.get_usermap()[socket_client].get_mode().find('o') == std::string::npos)
+		{
+			std::string tmpm = send_reply("NOTICE", socket_client, my_serv, ERR_NOPRIVILEGES, "");
+			send(socket_client, tmpm.c_str(), tmpm.length(), MSG_DONTWAIT);
+			return;
+		}
+		else if (splitted[1].find('.') == std::string::npos)
+		{
+			std::string tmpm = "Permission Denied- WHAT WERE YOU TRYING TO DO YOU IGNORANT FOOL\r\n";
+			std::cout << tmpm;
+			return;
+		}
+		else if(splitted[1].find('.') != std::string::npos && std::find(splitted[1].begin() + splitted[1].find_last_of('.'), splitted[1].end(), '*') == splitted[1].end() && std::find(splitted[1].begin() + splitted[1].find_last_of('.'), splitted[1].end(), '?') == splitted[1].end())
+		{
+			std::map<std::string, channel>::iterator itchan = my_serv.get_chan_map().begin();
+			std::string tmp_input = std::string(input);
+			unsigned long tut = input.find_first_of(':');
+			//ndex;
+			std::cout << "PAR ICI\n";
+			while (itchan != my_serv.get_chan_map().end())
+			{
+				if(star_name_checker(itchan->first.c_str(), splitted[1].c_str(), (int)itchan->first.length(), (int)splitted[1].length()))
+				{
+					/*if(tmp_input.find(splitted[1]) != std::string::npos) //for the location where mask is found
+					{   
+						index = tmp_input.find(splitted[1]);
+      					tmp_input.replace(index, itchan->first.length(), itchan->first + ' '); //remove and replace from that position
+					}*/
+					tmp_input = "NOTICE " + itchan->first + " " + input.substr(tut, input.length() - tut);
+					NOTICE(tmp_input, socket_client, my_serv);
+					//tmp_input = input;
+				}
+				itchan++;
+			}
+			return;
+		}
+		else
+		{
+			std::string tmpm = "Permission Denied- WHAT WERE YOU TRYING TO DO YOU IGNORANT FOOL\n";
+			std::cout << tmpm;
+			return;
+		}
+	}
     else if (*splitted[1].begin() == '#')//channel  !
     {
         std::cout << "message for channel -> " << splitted[1] << std::endl;
@@ -2076,26 +2127,29 @@ void		NOTICE(std::string input, int socket_client, server & my_serv)
             ++itchan;
         }
         
-        itchan = my_serv.get_chan_map().begin();
+        itchan = my_serv.get_chan_map().find(splitted[1]);
+		std::cout << "ban :" << find_ban_user(itchan->second.get_ban_list(), sender.get_id()) << std::endl;
         if (itchan == my_serv.get_chan_map().end())//channel nexiste pas 
         {
             std::cout << "channel nexiste pas" << std::endl;
-            // ret = ":" + my_serv.get_hostname() + " 401 " + sender.get_nick() + " :" + splitted[1] + " \r\n";
-            std::cout << "NO_CHANNEL" << std::endl;
-        }
-        else if (find_ban_user(itchan->second.get_ban_list(), sender.get_id()))//sender est ban du channel
+			return;
+	    }
+        else if (find_ban_user(itchan->second.get_ban_list(), sender.get_id()) == true)//sender est ban du channel
         {
-           std::cout << "CANNOTSENDTOCHAN" << std::endl;
+			std::cout << "cannot send to chan b" << std::endl;
+			return;
         }
         else if (	!find_user(itchan->second.get_user_list(my_serv.get_usermap()), sender) 
         		&&	!find_user(itchan->second.get_user_list(my_serv.get_usermap()), sender) 
 				&&	itchan->second.get_chan_mode().find('n') != std::string::npos)//mode n alors que sender n'est pas dans le channel
         {
-            std::cout << "CANNOTSENDTOCHAN" << std::endl;
+			std::cout << "Cannot end to chan n" << std::endl;
+			return;
         }
         else if (itchan->second.get_chan_mode().find('m') != std::string::npos && find_user(itchan->second.get_mute_list(my_serv.get_usermap()), sender) == true)//mode v + m
         {
-            std::cout << "CANNOTSENDTOCHAN" << std::endl;
+			std::cout << "Cannot send to chan v + m" << std::endl;
+			return;
         }
         else//tout va bien ou envoie tout sur le channel
         {
@@ -2115,7 +2169,7 @@ void		NOTICE(std::string input, int socket_client, server & my_serv)
                 ++i;
             }
            
-            ret += "\r\n";
+           ret += "\r\n";
             while (ituser != vect_user.end())
             {
                 std::cout << "user -> " << ituser->get_nick() << std::endl;
@@ -2170,11 +2224,10 @@ void		NOTICE(std::string input, int socket_client, server & my_serv)
 		(my_serv.get_regi_map().find(splitted[1]) == my_serv.get_regi_map().end() && my_serv.get_regi_map().find(splitted[1]) != my_serv.get_regi_map().begin()))
         {
             std::cout << "ERROR no nick !" << std::endl;
-	    	ret = ":" + my_serv.get_hostname() + " 401 " + sender.get_nick() + " :" + splitted[1] + " \r\n";//bug chelou avec \r
         }
         else if (it->second.get_mode().find('a') != std::string::npos)
         {
-            std::cout << "AWAY" << std::endl;
+            std::cout << "AWAY\n";
         }
         else 
         {
@@ -2213,7 +2266,7 @@ void		QUIT(std::string input, int socket_client, server & my_serv)
 	std::vector<std::string> splitted = ft_split(input, ' ');
 	user user_quit =  my_serv.get_usermap()[socket_client];
 
-	if(my_serv.get_usermap()[socket_client].get_auth() == 1)
+	if(my_serv.get_usermap()[socket_client].get_registration()  != 3)
 	{
 		std::cout << my_serv.get_usermap()[socket_client].get_auth() << std::endl;
 		std::string tmp = ": User not authentificated\r\n";
