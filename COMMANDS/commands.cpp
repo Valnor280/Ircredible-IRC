@@ -1450,7 +1450,8 @@ void		INVITE(std::string input, int socket_client, server & my_serv)
 	{
 		std::cout << "ERR_NOSUCHNICK" << std::endl;
 	    ret = send_reply(splitted[1], socket_client, my_serv, ERR_NOSUCHNICK, splitted[2]);
-        send(socket_client, ret.c_str(), ret.size(), MSG_DONTWAIT);
+        unsigned long t = send(socket_client, ret.c_str(), ret.size(), MSG_DONTWAIT);
+		std::cout << "NOSUCHNICK A ETE ENVOYE POUR t = " << t << std::endl;
 		return;
 	}
 	while (*(splitted[2].end() - 1) == '\n' || *(splitted[2].end() - 1) == '\r')// enleve les \r \n
@@ -1462,6 +1463,8 @@ void		INVITE(std::string input, int socket_client, server & my_serv)
 	{
 		//le channel n'existe pas
 		std::cout << "ERROR CHANNEL NOT FOUND" << std::endl;
+		ret = send_reply(splitted[2], socket_client, my_serv, ERR_NOSUCHCHANNEL, splitted[2]);
+        send(socket_client, ret.c_str(), ret.size(), MSG_DONTWAIT);
 		return;
 	}
 
@@ -1501,8 +1504,8 @@ void		INVITE(std::string input, int socket_client, server & my_serv)
 
 	ret = send_reply(splitted[1], socket_client, my_serv, RPL_INVITING, splitted[2]);
     send(my_serv.get_regi_map()[splitted[1]].get_socket(), ret.c_str(), ret.size(), MSG_DONTWAIT);
-	
-	my_serv.get_chan_map()[splitted[2]].add_invite(my_serv.get_regi_map()[splitted[1]]);
+	if (!(find_user(my_serv.get_chan_map()[splitted[2]].get_invite_list(my_serv.get_usermap()), my_serv.get_regi_map()[splitted[1]])))
+		my_serv.get_chan_map()[splitted[2]].add_invite(my_serv.get_regi_map()[splitted[1]]);
 
 
     std::cout << "input :[" << input << "]" << std::endl;
