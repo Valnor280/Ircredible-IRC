@@ -915,9 +915,10 @@ void		WHO(std::string input, int socket_client, server & my_serv)
 				std::cout << "on a passe la securite" << std::endl;
 				for (unsigned long i = 0; i < chan.get_user_list(my_serv.get_usermap()).size(); i++)
 				{
-					std::cout << "on est dans la boucle avec i = " << i << std::endl;
+					std::cout << "[1] on est dans la boucle avec i = " << i << std::endl;
 					if ((chan.get_user_list(my_serv.get_usermap())[i]).get_mode().find('i') == std::string::npos)
 					{
+						std::cout << "dans le if" << std::endl;
 						tmp = send_reply("WHO", (chan.get_user_list(my_serv.get_usermap()))[i].get_socket(), my_serv, RPL_WHOREPLY, "");
 						if ((chan.get_user_list(my_serv.get_usermap()))[i].get_mode().find('a') == std::string::npos)
 							tmp += " H";
@@ -931,11 +932,12 @@ void		WHO(std::string input, int socket_client, server & my_serv)
 						send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 					}
 				}
-				for (unsigned long i = 0; i < chan.get_user_list(my_serv.get_usermap()).size(); i++)
+				for (unsigned long i = 0; i < chan.get_op_list(my_serv.get_usermap()).size(); i++)
 				{
-					std::cout << "on est dans la boucle avec i = " << i << std::endl;
+					std::cout << "[2] on est dans la boucle avec i = " << i << std::endl;
 					if ((chan.get_op_list(my_serv.get_usermap())[i]).get_mode().find('i') == std::string::npos)
 					{
+						std::cout << "dans le if" << std::endl;
 						tmp = send_reply("WHO", (chan.get_op_list(my_serv.get_usermap()))[i].get_socket(), my_serv, RPL_WHOREPLY, "");
 						if ((chan.get_op_list(my_serv.get_usermap()))[i].get_mode().find('a') == std::string::npos)
 							tmp += " H";
@@ -988,10 +990,11 @@ void		WHO(std::string input, int socket_client, server & my_serv)
 				std::cout << "on a passe la securite" << std::endl;
 				for (unsigned long i = 0; i < chan.get_op_list(my_serv.get_usermap()).size(); i++)
 				{
-					std::cout << "on est dans la boucle avec i = " << i << std::endl;
-					if ((chan.get_user_list(my_serv.get_usermap())[i]).get_mode().find('i') == std::string::npos)
+					std::cout << "[3] on est dans la boucle avec i = " << i << std::endl;
+					if ((chan.get_op_list(my_serv.get_usermap())[i]).get_mode().find('i') == std::string::npos)
 					{
-						tmp = send_reply("WHO", (chan.get_user_list(my_serv.get_usermap()))[i].get_socket(), my_serv, RPL_WHOREPLY, "");
+						std::cout << "dans le if" << std::endl;
+						tmp = send_reply("WHO", (chan.get_op_list(my_serv.get_usermap()))[i].get_socket(), my_serv, RPL_WHOREPLY, "");
 						if ((chan.get_op_list(my_serv.get_usermap()))[i].get_mode().find('a') == std::string::npos)
 							tmp += " H";
 						else
@@ -1098,7 +1101,10 @@ void		WHOIS(std::string input, int socket_client, server & my_serv)
 						}
 						else if(find_user((*it).second.get_op_list(my_serv.get_usermap()), source))
 						{
-							tmp = send_reply("@+", source.get_socket(), my_serv, RPL_WHOISCHANNELS, (*it).second.get_name());
+							if ((*it).second.get_chan_mode().find('m') != std::string::npos)
+								tmp = send_reply("@+", source.get_socket(), my_serv, RPL_WHOISCHANNELS, (*it).second.get_name());
+							else
+								tmp = send_reply("@", source.get_socket(), my_serv, RPL_WHOISCHANNELS, (*it).second.get_name());
 							send(socket_client, tmp.c_str(), tmp.length(), MSG_DONTWAIT);
 						}
 					}
