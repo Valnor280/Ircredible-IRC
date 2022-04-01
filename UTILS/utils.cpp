@@ -14,6 +14,13 @@ bool    isforbidenchan(char c)
     return (false);
 }
 
+bool    isforbidenuser(char c)
+{
+    if (c == '\0' || c == ' ' || c == '\r' || c == '\n' || c == '@')
+        return (true);
+    return (false);
+}
+
 std::vector<std::string>		ft_split(std::string buffer, char sep)
 {
 	std::vector<std::string>				ret;
