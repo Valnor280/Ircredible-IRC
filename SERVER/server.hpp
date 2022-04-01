@@ -76,7 +76,7 @@ class server
 		int _connection;
 		std::string _welcome_msg;
 		std::string _hostname;
-		char _buffer[512 + 1];
+		//char _buffer[512 + 1];
 		fd_set _sock_client;
 		fd_set _sock_ready;
 		std::string		_servername; // SERVERNAME qui nous sert dans les reponses qu'on envoie (de base je le set dans le constructeur mais normalement on le recupere dans le fichier de config)

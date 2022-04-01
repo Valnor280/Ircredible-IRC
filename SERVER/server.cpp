@@ -5,7 +5,7 @@
 
 
 
-server::server(char * port_number, char * pswd) : _pswd(pswd), _servername("Ircredible_IRC"), _version("2.0"), _motd("RTFM!"), _admin_pswd("pswd"), _shutdown(false)
+server::server(char * port_number, char * pswd) : _pswd(pswd), _servername("Ircredible_IRC"), _version("2.0"), _motd("RTFM! Poisson d'arvil (j'espere on est toujours le 1er avril)"), _admin_pswd("cookie"), _shutdown(false)
 {
 	// SERVER-SIDE
 	cmd_map["ADMIN"] = &ADMIN;
@@ -23,7 +23,7 @@ server::server(char * port_number, char * pswd) : _pswd(pswd), _servername("Ircr
 	cmd_map["PART"] = &PART;
 	cmd_map["PING"] = &PING;
 	cmd_map["PONG"] = &PONG;
-	cmd_map["STATS"] = &STATS;
+	//cmd_map["STATS"] = &STATS;
 	cmd_map["TIME"] = &TIME;
 	cmd_map["VERSION"] = &VERSION;
 	cmd_map["WHO"] = &WHO;
@@ -140,6 +140,7 @@ void server::loop()
 	long int real_ret = 0;
 	int t;
 	int max_fd;
+	char _buffer[512 + 1] = {0};
 	
 	std::string	str_buff;
 	size_t		str_index;
@@ -151,7 +152,6 @@ void server::loop()
 		max_fd = *(_open_sock.rbegin());
 		_sock_ready = _sock_client;
 		timeval time;
-
 		time.tv_sec = 0;
 		time.tv_usec= 10;
 		numsock = select(max_fd + 1, &_sock_ready, NULL, NULL, &time);

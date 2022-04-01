@@ -8,7 +8,6 @@ CC_FLAGS = -Wall -Wextra -Werror -std=c++98 -g #${DEBUG_FLAG}
 SRCS =	main.cpp \
 		SERVER/server.cpp \
 		SERVER/accept.cpp \
-		SERVER/user_read.cpp \
 		USER/user.cpp \
 		COMMANDS/commands.cpp \
 		UTILS/utils.cpp \
@@ -23,24 +22,24 @@ HEADER = -I .# -I SERVER/ -I USER/
 
 all				: 	${NAME}
 $(NAME) 		: 	$(OBJS)	
-						@mkdir -p $(@D)
-						@echo Compiling...
-						@$(CC) $(CC_FLAGS) $^ -o $@
+						mkdir -p $(@D)
+						echo Compiling...
+						$(CC) $(CC_FLAGS) $^ -o $@
 -include $(DEP)
 $(OBJS_DIR)/%.o	:	%.cpp
-						@mkdir -p $(@D)
-						@$(CC) $(CC_FLAGS) ${HEADER} -MMD -c $< -o $@
+						mkdir -p $(@D)
+						$(CC) $(CC_FLAGS) ${HEADER} -MMD -c $< -o $@
 
 
 
 
 clean	:
-				@rm -rf $(OBJS_DIR) 
+				rm -rf $(OBJS_DIR) 
 fclean	:	clean
-				@rm -rf ${NAME}  
-			@echo fclean
+				rm -rf ${NAME}  
+			echo fclean
 re		:	fclean
-				@make all
+				make all
 
 irc : all 
 	./Ircredible 8000 pswd
@@ -48,4 +47,4 @@ irc1 : all
 	./Ircredible 8001 pswd
 irc2 : all 
 	./Ircredible 8002 pswd
-.PHONY : all clean fclean re test
+.PHONY : all clean fclean re test irc irc1 irc2
