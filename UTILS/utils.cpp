@@ -410,6 +410,16 @@ bool find_user(std::vector<user> vect, user usr)
 	return false;
 }
 
+bool find_user(std::vector<std::string> vect, std::string usr)
+{
+	for(std::vector<std::string>::iterator itr = vect.begin(); itr != vect.end(); itr++)
+	{
+		if(*itr == usr)
+			return true;
+	}
+	return false;
+}
+
 bool							find_ban_user(std::vector<std::string> vec, std::string id)
 {
 	//std::cout << "vec : " << vec[0] << " id : " << id << std::endl; 
