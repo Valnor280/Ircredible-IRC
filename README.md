@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 # FT_IRC
 
-project of the 42_cursus.
+Project of the 42_cursus.
 
 Ircredible_Irc is an irc server built from scratch in cpp which aim to provide all basic fonctionnality of an irc server followin the rfc including most of the command without multiserver gestion.
 
@@ -23,7 +23,7 @@ IRC connections.
 • password: The connection password. It will be needed by any IRC client that tries
 to connect to your server.
 
-connect using irsii client.
+Connect using irsii client.
 
 Enjoy !
 
